@@ -1,121 +1,307 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
 import { useLocation } from "wouter";
 import { useAuth } from "@/hooks/use-auth";
+import { User } from "@shared/schema";
 import { useToast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Loader2, User as UserIcon, Lock } from "lucide-react";
 
-const AuthPage = () => {
-  const [activeTab, setActiveTab] = useState<"login" | "signup">("login");
-  const { loginMutation, registerMutation, user, isLoading } = useAuth();
+// Schema for login form validation
+const loginSchema = z.object({
+  username: z.string().min(1, { message: "Username is required" }),
+  password: z.string().min(1, { message: "Password is required" }),
+});
+
+// Schema for registration form validation
+const registerSchema = z.object({
+  username: z.string().min(3, { message: "Username must be at least 3 characters" }),
+  password: z.string().min(6, { message: "Password must be at least 6 characters" }),
+  name: z.string().optional(),
+  email: z.string().email({ message: "Invalid email address" }).optional(),
+});
+
+type LoginFormValues = z.infer<typeof loginSchema>;
+type RegisterFormValues = z.infer<typeof registerSchema>;
+
+export default function AuthPage() {
+  const [isLogin, setIsLogin] = useState(true);
   const [_, setLocation] = useLocation();
+  const { loginMutation, registerMutation, user } = useAuth();
+  const { toast } = useToast();
 
-  // If user is logged in, redirect to onboarding or home
-  useEffect(() => {
-    if (user) {
-      if (!user.completedOnboarding) {
-        setLocation("/onboarding");
-      } else {
+  // If user is already logged in, redirect to home page
+  if (user) {
+    setLocation("/");
+    return null;
+  }
+
+  // Login form setup
+  const loginForm = useForm<LoginFormValues>({
+    resolver: zodResolver(loginSchema),
+    defaultValues: {
+      username: "",
+      password: "",
+    },
+  });
+
+  // Register form setup
+  const registerForm = useForm<RegisterFormValues>({
+    resolver: zodResolver(registerSchema),
+    defaultValues: {
+      username: "",
+      password: "",
+      name: "",
+      email: "",
+    },
+  });
+
+  // Handle login form submission
+  const onLoginSubmit = (values: LoginFormValues) => {
+    loginMutation.mutate(values, {
+      onSuccess: () => {
+        toast({
+          title: "Success",
+          description: "You have been logged in successfully",
+        });
         setLocation("/");
-      }
-    }
-  }, [user, setLocation]);
-
-  // Simplified placeholder login
-  const handleLogin = () => {
-    loginMutation.mutate({ 
-      username: "user@example.com", 
-      password: "password123" 
+      },
+      onError: (error: Error) => {
+        toast({
+          title: "Login failed",
+          description: error.message || "Invalid username or password",
+          variant: "destructive",
+        });
+      },
     });
   };
 
-  // Simplified placeholder signup
-  const handleSignup = () => {
-    registerMutation.mutate({ 
-      name: "Demo User", 
-      username: "user@example.com", 
-      password: "password123" 
+  // Handle registration form submission
+  const onRegisterSubmit = (values: RegisterFormValues) => {
+    registerMutation.mutate(values, {
+      onSuccess: () => {
+        toast({
+          title: "Account created",
+          description: "Your account has been created successfully",
+        });
+        setLocation("/");
+      },
+      onError: (error: Error) => {
+        toast({
+          title: "Registration failed",
+          description: error.message || "Username may already be taken",
+          variant: "destructive",
+        });
+      },
     });
   };
 
   return (
-    <div className="auth-container min-h-screen flex items-center justify-center px-4 py-12 gradient-primary">
-      <div className="dotted-grid w-full h-full absolute top-0 left-0 opacity-10"></div>
+    <div className="min-h-screen flex flex-col md:flex-row">
+      {/* Gradient background with dotted overlay */}
+      <div className="absolute inset-0 gradient-primary opacity-80 dotted-grid -z-10" />
       
-      <div className="w-full max-w-md bg-white rounded-xl shadow-xl p-8 relative z-10">
-        {/* Logo */}
-        <div className="text-center mb-8">
-          <h1 className="font-medium text-3xl text-gradient-primary">
-            Her<span className="font-light">Fitness</span>
+      {/* Auth form container */}
+      <div className="w-full md:w-1/2 p-6 md:p-10 flex items-center justify-center">
+        <div className="w-full max-w-md bg-white/95 rounded-lg shadow-xl p-8">
+          <div className="text-center mb-8">
+            <h1 className="text-4xl font-bold text-gradient-primary mb-2">
+              HerFitness
+            </h1>
+            <p className="text-gray-600">
+              {isLogin ? "Sign in to your account" : "Create a new account"}
+            </p>
+          </div>
+
+          {isLogin ? (
+            // Login Form
+            <form onSubmit={loginForm.handleSubmit(onLoginSubmit)} className="space-y-4">
+              <div className="space-y-2">
+                <Label htmlFor="username">Username</Label>
+                <div className="relative">
+                  <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                    <UserIcon className="h-5 w-5 text-gray-400" />
+                  </div>
+                  <Input
+                    id="username"
+                    type="text"
+                    placeholder="Username"
+                    className="pl-10"
+                    {...loginForm.register("username")}
+                  />
+                </div>
+                {loginForm.formState.errors.username && (
+                  <p className="text-sm text-red-500">
+                    {loginForm.formState.errors.username.message}
+                  </p>
+                )}
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="password">Password</Label>
+                <div className="relative">
+                  <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                    <Lock className="h-5 w-5 text-gray-400" />
+                  </div>
+                  <Input
+                    id="password"
+                    type="password"
+                    placeholder="Password"
+                    className="pl-10"
+                    {...loginForm.register("password")}
+                  />
+                </div>
+                {loginForm.formState.errors.password && (
+                  <p className="text-sm text-red-500">
+                    {loginForm.formState.errors.password.message}
+                  </p>
+                )}
+              </div>
+
+              <Button
+                type="submit"
+                className="w-full gradient-primary hover:opacity-90 transition-opacity"
+                disabled={loginMutation.isPending}
+              >
+                {loginMutation.isPending ? (
+                  <Loader2 className="h-4 w-4 animate-spin mr-2" />
+                ) : null}
+                Log In
+              </Button>
+
+              <p className="text-center text-sm text-gray-600 mt-4">
+                Don't have an account?{" "}
+                <button
+                  type="button"
+                  onClick={() => setIsLogin(false)}
+                  className="text-purple-600 hover:underline font-medium"
+                >
+                  Sign Up
+                </button>
+              </p>
+            </form>
+          ) : (
+            // Registration Form
+            <form onSubmit={registerForm.handleSubmit(onRegisterSubmit)} className="space-y-4">
+              <div className="space-y-2">
+                <Label htmlFor="register-username">Username</Label>
+                <div className="relative">
+                  <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                    <UserIcon className="h-5 w-5 text-gray-400" />
+                  </div>
+                  <Input
+                    id="register-username"
+                    type="text"
+                    placeholder="Username"
+                    className="pl-10"
+                    {...registerForm.register("username")}
+                  />
+                </div>
+                {registerForm.formState.errors.username && (
+                  <p className="text-sm text-red-500">
+                    {registerForm.formState.errors.username.message}
+                  </p>
+                )}
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="register-password">Password</Label>
+                <div className="relative">
+                  <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                    <Lock className="h-5 w-5 text-gray-400" />
+                  </div>
+                  <Input
+                    id="register-password"
+                    type="password"
+                    placeholder="Password"
+                    className="pl-10"
+                    {...registerForm.register("password")}
+                  />
+                </div>
+                {registerForm.formState.errors.password && (
+                  <p className="text-sm text-red-500">
+                    {registerForm.formState.errors.password.message}
+                  </p>
+                )}
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="name">Name (optional)</Label>
+                <Input
+                  id="name"
+                  type="text"
+                  placeholder="Your name"
+                  {...registerForm.register("name")}
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="email">Email (optional)</Label>
+                <Input
+                  id="email"
+                  type="email"
+                  placeholder="Your email"
+                  {...registerForm.register("email")}
+                />
+                {registerForm.formState.errors.email && (
+                  <p className="text-sm text-red-500">
+                    {registerForm.formState.errors.email.message}
+                  </p>
+                )}
+              </div>
+
+              <Button
+                type="submit"
+                className="w-full gradient-primary hover:opacity-90 transition-opacity"
+                disabled={registerMutation.isPending}
+              >
+                {registerMutation.isPending ? (
+                  <Loader2 className="h-4 w-4 animate-spin mr-2" />
+                ) : null}
+                Sign Up
+              </Button>
+
+              <p className="text-center text-sm text-gray-600 mt-4">
+                Already have an account?{" "}
+                <button
+                  type="button"
+                  onClick={() => setIsLogin(true)}
+                  className="text-purple-600 hover:underline font-medium"
+                >
+                  Log In
+                </button>
+              </p>
+            </form>
+          )}
+        </div>
+      </div>
+
+      {/* Hero section */}
+      <div className="hidden md:flex md:w-1/2 p-10 items-center justify-center">
+        <div className="text-white max-w-lg">
+          <h1 className="text-5xl font-bold mb-6">
+            Your personal fitness journey starts here
           </h1>
-          <p className="text-gray-600 mt-2 text-sm">The fitness app designed for women</p>
-        </div>
-        
-        {/* Auth Tabs */}
-        <div className="flex mb-8">
-          <button 
-            onClick={() => setActiveTab("login")}
-            className={`flex-1 py-2 px-4 font-medium text-center border-b-2 ${
-              activeTab === "login" 
-                ? "border-purple-500 text-purple-500" 
-                : "border-gray-200 text-gray-500"
-            }`}
-          >
-            Login
-          </button>
-          <button 
-            onClick={() => setActiveTab("signup")}
-            className={`flex-1 py-2 px-4 font-medium text-center border-b-2 ${
-              activeTab === "signup" 
-                ? "border-purple-500 text-purple-500" 
-                : "border-gray-200 text-gray-500"
-            }`}
-          >
-            Sign Up
-          </button>
-        </div>
-        
-        {/* Login Placeholder */}
-        {activeTab === "login" && (
-          <div className="space-y-6">
-            <div className="text-center p-8">
-              <h2 className="text-xl font-medium text-gray-800 mb-3">Welcome Back</h2>
-              <p className="text-gray-600">
-                Click the button below to login and continue to your personalized fitness journey
-              </p>
+          <p className="text-xl mb-8">
+            HerFitness helps you achieve your health and fitness goals with personalized workouts
+            designed specifically for women's needs.
+          </p>
+          <div className="grid grid-cols-2 gap-4">
+            <div className="bg-white/20 backdrop-blur-sm p-4 rounded-lg">
+              <h3 className="font-semibold text-lg mb-1">Personalized Plans</h3>
+              <p>Workouts tailored to your body's unique cycles</p>
             </div>
-            
-            <Button 
-              onClick={handleLogin} 
-              className="w-full py-6 gradient-primary text-white font-medium rounded-lg hover:opacity-95 transition-opacity shadow-md"
-              disabled={isLoading || loginMutation.isPending}
-            >
-              {loginMutation.isPending ? "Logging in..." : "Continue to HerFitness"}
-            </Button>
-          </div>
-        )}
-        
-        {/* Sign Up Placeholder */}
-        {activeTab === "signup" && (
-          <div className="space-y-6">
-            <div className="text-center p-8">
-              <h2 className="text-xl font-medium text-gray-800 mb-3">Join HerFitness</h2>
-              <p className="text-gray-600">
-                Click the button below to create your account and begin your personalized fitness journey
-              </p>
+            <div className="bg-white/20 backdrop-blur-sm p-4 rounded-lg">
+              <h3 className="font-semibold text-lg mb-1">Expert Guidance</h3>
+              <p>Created by trainers who understand women's health</p>
             </div>
-            
-            <Button 
-              onClick={handleSignup} 
-              className="w-full py-6 gradient-primary text-white font-medium rounded-lg hover:opacity-95 transition-opacity shadow-md"
-              disabled={isLoading || registerMutation.isPending}
-            >
-              {registerMutation.isPending ? "Creating Account..." : "Get Started with HerFitness"}
-            </Button>
           </div>
-        )}
+        </div>
       </div>
     </div>
   );
-};
-
-export default AuthPage;
+}
