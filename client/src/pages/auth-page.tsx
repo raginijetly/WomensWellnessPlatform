@@ -1,76 +1,31 @@
 import { useState } from "react";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { z } from "zod";
 import { useAuth } from "@/hooks/use-auth";
 import { useToast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
-import { Checkbox } from "@/components/ui/checkbox";
-import { LoginData } from "@shared/schema";
-
-// Extended schemas with additional validation
-const loginSchema = z.object({
-  username: z.string().email({ message: "Please enter a valid email address" }),
-  password: z.string().min(6, { message: "Password must be at least 6 characters" }),
-  remember: z.boolean().optional(),
-});
-
-const signupSchema = z.object({
-  name: z.string().min(2, { message: "Name must be at least 2 characters" }),
-  username: z.string().email({ message: "Please enter a valid email address" }),
-  password: z.string().min(6, { message: "Password must be at least 6 characters" }),
-  confirmPassword: z.string(),
-}).refine((data) => data.password === data.confirmPassword, {
-  message: "Passwords do not match",
-  path: ["confirmPassword"],
-});
-
-type LoginFormValues = z.infer<typeof loginSchema>;
-type SignupFormValues = z.infer<typeof signupSchema>;
 
 const AuthPage = () => {
   const [activeTab, setActiveTab] = useState<"login" | "signup">("login");
   const { loginMutation, registerMutation } = useAuth();
   const { toast } = useToast();
+  const [isLoading, setIsLoading] = useState(false);
 
-  // Login form
-  const loginForm = useForm<LoginFormValues>({
-    resolver: zodResolver(loginSchema),
-    defaultValues: {
-      username: "",
-      password: "",
-      remember: false,
-    },
-  });
-
-  // Signup form
-  const signupForm = useForm<SignupFormValues>({
-    resolver: zodResolver(signupSchema),
-    defaultValues: {
-      name: "",
-      username: "",
-      password: "",
-      confirmPassword: "",
-    },
-  });
-
-  const onLoginSubmit = (values: LoginFormValues) => {
-    const { username, password } = values;
-    loginMutation.mutate({ username, password });
+  // Simplified placeholder login
+  const handleLogin = () => {
+    setIsLoading(true);
+    loginMutation.mutate({ 
+      username: "user@example.com", 
+      password: "password123" 
+    });
   };
 
-  const onSignupSubmit = (values: SignupFormValues) => {
-    const { name, username, password } = values;
-    registerMutation.mutate({ name, username, password });
+  // Simplified placeholder signup
+  const handleSignup = () => {
+    setIsLoading(true);
+    registerMutation.mutate({ 
+      name: "Demo User", 
+      username: "user@example.com", 
+      password: "password123" 
+    });
   };
 
   return (
@@ -110,172 +65,44 @@ const AuthPage = () => {
           </button>
         </div>
         
-        {/* Login Form */}
+        {/* Login Placeholder */}
         {activeTab === "login" && (
-          <Form {...loginForm}>
-            <form onSubmit={loginForm.handleSubmit(onLoginSubmit)} className="space-y-4">
-              <FormField
-                control={loginForm.control}
-                name="username"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel className="text-gray-600">Email</FormLabel>
-                    <FormControl>
-                      <Input
-                        {...field}
-                        type="email"
-                        placeholder="youremail@example.com"
-                        className="px-4 py-3 rounded-lg border bg-gray-100 focus:bg-white transition-colors"
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              
-              <FormField
-                control={loginForm.control}
-                name="password"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel className="text-gray-600">Password</FormLabel>
-                    <FormControl>
-                      <Input
-                        {...field}
-                        type="password"
-                        placeholder="••••••••••"
-                        className="px-4 py-3 rounded-lg border bg-gray-100 focus:bg-white transition-colors"
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              
-              <div className="flex items-center justify-between text-sm">
-                <FormField
-                  control={loginForm.control}
-                  name="remember"
-                  render={({ field }) => (
-                    <div className="flex items-center space-x-2">
-                      <Checkbox
-                        id="remember"
-                        checked={field.value}
-                        onCheckedChange={field.onChange}
-                      />
-                      <label 
-                        htmlFor="remember" 
-                        className="text-gray-600 text-sm cursor-pointer"
-                      >
-                        Remember me
-                      </label>
-                    </div>
-                  )}
-                />
-                <a href="#" className="font-medium text-purple-500 hover:text-purple-600">
-                  Forgot password?
-                </a>
-              </div>
-              
-              <Button 
-                type="submit" 
-                className="w-full py-6 gradient-primary text-white font-medium rounded-lg hover:opacity-95 transition-opacity shadow-md"
-                disabled={loginMutation.isPending}
-              >
-                {loginMutation.isPending ? "Logging in..." : "Login"}
-              </Button>
-            </form>
-          </Form>
+          <div className="space-y-6">
+            <div className="text-center p-8">
+              <h2 className="text-xl font-medium text-gray-800 mb-3">Welcome Back</h2>
+              <p className="text-gray-600">
+                Click the button below to login and continue to your personalized fitness journey
+              </p>
+            </div>
+            
+            <Button 
+              onClick={handleLogin} 
+              className="w-full py-6 gradient-primary text-white font-medium rounded-lg hover:opacity-95 transition-opacity shadow-md"
+              disabled={isLoading || loginMutation.isPending}
+            >
+              {loginMutation.isPending ? "Logging in..." : "Continue to HerFitness"}
+            </Button>
+          </div>
         )}
         
-        {/* Sign Up Form */}
+        {/* Sign Up Placeholder */}
         {activeTab === "signup" && (
-          <Form {...signupForm}>
-            <form onSubmit={signupForm.handleSubmit(onSignupSubmit)} className="space-y-4">
-              <FormField
-                control={signupForm.control}
-                name="name"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel className="text-gray-600">Full Name</FormLabel>
-                    <FormControl>
-                      <Input
-                        {...field}
-                        placeholder="Your name"
-                        className="px-4 py-3 rounded-lg border bg-gray-100 focus:bg-white transition-colors"
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              
-              <FormField
-                control={signupForm.control}
-                name="username"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel className="text-gray-600">Email</FormLabel>
-                    <FormControl>
-                      <Input
-                        {...field}
-                        type="email"
-                        placeholder="youremail@example.com"
-                        className="px-4 py-3 rounded-lg border bg-gray-100 focus:bg-white transition-colors"
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              
-              <FormField
-                control={signupForm.control}
-                name="password"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel className="text-gray-600">Password</FormLabel>
-                    <FormControl>
-                      <Input
-                        {...field}
-                        type="password"
-                        placeholder="••••••••••"
-                        className="px-4 py-3 rounded-lg border bg-gray-100 focus:bg-white transition-colors"
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              
-              <FormField
-                control={signupForm.control}
-                name="confirmPassword"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel className="text-gray-600">Confirm Password</FormLabel>
-                    <FormControl>
-                      <Input
-                        {...field}
-                        type="password"
-                        placeholder="••••••••••"
-                        className="px-4 py-3 rounded-lg border bg-gray-100 focus:bg-white transition-colors"
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              
-              <Button 
-                type="submit" 
-                className="w-full py-6 gradient-primary text-white font-medium rounded-lg hover:opacity-95 transition-opacity shadow-md"
-                disabled={registerMutation.isPending}
-              >
-                {registerMutation.isPending ? "Creating Account..." : "Create Account"}
-              </Button>
-            </form>
-          </Form>
+          <div className="space-y-6">
+            <div className="text-center p-8">
+              <h2 className="text-xl font-medium text-gray-800 mb-3">Join HerFitness</h2>
+              <p className="text-gray-600">
+                Click the button below to create your account and begin your personalized fitness journey
+              </p>
+            </div>
+            
+            <Button 
+              onClick={handleSignup} 
+              className="w-full py-6 gradient-primary text-white font-medium rounded-lg hover:opacity-95 transition-opacity shadow-md"
+              disabled={isLoading || registerMutation.isPending}
+            >
+              {registerMutation.isPending ? "Creating Account..." : "Get Started with HerFitness"}
+            </Button>
+          </div>
         )}
       </div>
     </div>

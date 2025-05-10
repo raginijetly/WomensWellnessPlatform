@@ -43,17 +43,16 @@ export const insertUserSchema = createInsertSchema(users).pick({
   name: true,
 });
 
-export const loginSchema = insertUserSchema.pick({
-  username: true,
-  password: true,
+export const loginSchema = z.object({
+  username: z.string().min(1, { message: "Username is required" }),
+  password: z.string().min(1, { message: "Password is required" }),
 });
 
-export const onboardingSchema = createInsertSchema(users).pick({
-  lastPeriodDate: true,
-  age: true,
-  healthGoal: true,
-  completedOnboarding: true,
-}).extend({
+export const onboardingSchema = z.object({
+  lastPeriodDate: z.string().nullable().optional(),
+  age: z.number().nullable().optional(),
+  healthGoal: z.string().nullable().optional(),
+  completedOnboarding: z.boolean().optional(),
   healthConditions: z.array(z.string()).optional(),
 });
 

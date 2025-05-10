@@ -31,7 +31,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const updatedUser = await storage.updateUserOnboarding(
         req.user!.id, 
         onboardingData.lastPeriodDate || null, 
-        onboardingData.age ? parseInt(onboardingData.age) : null,
+        onboardingData.age || null,
         onboardingData.healthGoal || null
       );
 

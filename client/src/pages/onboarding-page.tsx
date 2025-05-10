@@ -59,7 +59,7 @@ const OnboardingPage = () => {
     resolver: zodResolver(onboardingSchema),
     defaultValues: {
       lastPeriodDate: "",
-      age: "",
+      age: undefined,
       healthGoal: "",
       healthConditions: [],
     },
@@ -89,7 +89,13 @@ const OnboardingPage = () => {
   });
 
   const onSubmit = (values: OnboardingFormValues) => {
-    onboardingMutation.mutate(values);
+    // Convert age value to number if present
+    const ageValue = values.age ? Number(values.age) : undefined;
+    
+    onboardingMutation.mutate({
+      ...values,
+      age: ageValue
+    });
   };
 
   // Go to next onboarding step
