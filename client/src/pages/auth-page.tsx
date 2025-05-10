@@ -109,12 +109,12 @@ export default function AuthPage() {
     <div className="min-h-screen flex flex-col md:flex-row">
       {/* Auth form container */}
       <div className="w-full md:w-1/2 p-6 md:p-10 flex items-center justify-center">
-        <div className="w-full max-w-md bg-white/95 backdrop-blur-sm rounded-lg shadow-lg p-8">
+        <div className="w-full max-w-md p-8">
           <div className="text-center mb-8">
-            <h1 className="text-4xl font-bold text-gradient-primary mb-2">
+            <h1 className="text-4xl font-bold text-white mb-2">
               HerFitness
             </h1>
-            <p className="text-gray-600">
+            <p className="text-white text-lg">
               {isLogin ? "Sign in to your account" : "Create a new account"}
             </p>
           </div>
@@ -123,7 +123,7 @@ export default function AuthPage() {
             // Login Form
             <form onSubmit={loginForm.handleSubmit(onLoginSubmit)} className="space-y-4">
               <div className="space-y-2">
-                <Label htmlFor="username">Username</Label>
+                <Label htmlFor="username" className="text-white">Username</Label>
                 <div className="relative">
                   <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
                     <UserIcon className="h-5 w-5 text-gray-400" />
@@ -144,7 +144,7 @@ export default function AuthPage() {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="password">Password</Label>
+                <Label htmlFor="password" className="text-white">Password</Label>
                 <div className="relative">
                   <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
                     <Lock className="h-5 w-5 text-gray-400" />
@@ -175,12 +175,12 @@ export default function AuthPage() {
                 Log In
               </Button>
 
-              <p className="text-center text-sm text-gray-600 mt-4">
+              <p className="text-center text-sm text-white mt-4">
                 Don't have an account?{" "}
                 <button
                   type="button"
                   onClick={() => setIsLogin(false)}
-                  className="text-purple-600 hover:underline font-medium"
+                  className="text-white font-bold hover:underline"
                 >
                   Sign Up
                 </button>
@@ -190,7 +190,7 @@ export default function AuthPage() {
             // Registration Form
             <form onSubmit={registerForm.handleSubmit(onRegisterSubmit)} className="space-y-4">
               <div className="space-y-2">
-                <Label htmlFor="register-username">Username</Label>
+                <Label htmlFor="register-username" className="text-white">Username</Label>
                 <div className="relative">
                   <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
                     <UserIcon className="h-5 w-5 text-gray-400" />
@@ -211,7 +211,7 @@ export default function AuthPage() {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="register-password">Password</Label>
+                <Label htmlFor="register-password" className="text-white">Password</Label>
                 <div className="relative">
                   <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
                     <Lock className="h-5 w-5 text-gray-400" />
@@ -232,7 +232,7 @@ export default function AuthPage() {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="name">Name (optional)</Label>
+                <Label htmlFor="name" className="text-white">Name (optional)</Label>
                 <Input
                   id="name"
                   type="text"
@@ -242,7 +242,7 @@ export default function AuthPage() {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="email">Email (optional)</Label>
+                <Label htmlFor="email" className="text-white">Email (optional)</Label>
                 <Input
                   id="email"
                   type="email"
@@ -267,12 +267,12 @@ export default function AuthPage() {
                 Sign Up
               </Button>
 
-              <p className="text-center text-sm text-gray-600 mt-4">
+              <p className="text-center text-sm text-white mt-4">
                 Already have an account?{" "}
                 <button
                   type="button"
                   onClick={() => setIsLogin(true)}
-                  className="text-purple-600 hover:underline font-medium"
+                  className="text-white font-bold hover:underline"
                 >
                   Log In
                 </button>
