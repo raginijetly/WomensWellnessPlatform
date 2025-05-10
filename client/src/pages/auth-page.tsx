@@ -108,13 +108,13 @@ export default function AuthPage() {
   return (
     <div className="min-h-screen flex flex-col md:flex-row">
       {/* Auth form container */}
-      <div className="w-full md:w-1/2 p-6 md:p-10 flex items-center justify-center">
-        <div className="w-full max-w-md p-8">
-          <div className="text-center mb-8">
-            <h1 className="text-4xl font-bold text-white mb-2">
+      <div className="w-full md:w-1/2 p-4 sm:p-6 md:p-10 flex items-center justify-center">
+        <div className="w-full max-w-md px-4 py-6 sm:p-8">
+          <div className="text-center mb-6 md:mb-8">
+            <h1 className="text-3xl sm:text-4xl font-bold text-white mb-2">
               HerFitness
             </h1>
-            <p className="text-white text-lg">
+            <p className="text-white text-base sm:text-lg">
               {isLogin ? "Sign in to your account" : "Create a new account"}
             </p>
           </div>
@@ -282,7 +282,25 @@ export default function AuthPage() {
         </div>
       </div>
 
-      {/* Hero section */}
+      {/* Mobile Hero section (shown at bottom on mobile) */}
+      <div className="md:hidden w-full px-4 pt-4 pb-8 mt-4 border-t border-white/20">
+        <div className="text-white text-center max-w-md mx-auto">
+          <h2 className="text-2xl font-bold mb-4">
+            Your fitness journey starts here
+          </h2>
+          <p className="text-base mb-6">
+            Personalized workouts designed for women's unique needs
+          </p>
+          <div className="flex flex-col space-y-3">
+            <div className="bg-white/20 backdrop-blur-sm p-3 rounded-lg">
+              <h3 className="font-semibold mb-1">Personalized Plans</h3>
+              <p className="text-sm">Workouts tailored to your body's unique cycles</p>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      {/* Desktop Hero section */}
       <div className="hidden md:flex md:w-1/2 p-10 items-center justify-center">
         <div className="text-white max-w-lg">
           <h1 className="text-5xl font-bold mb-6">

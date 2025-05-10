@@ -92,38 +92,38 @@ const OnboardingPage: FC = () => {
   }
   
   return (
-    <div className="min-h-screen py-8 px-4">
+    <div className="min-h-screen py-6 px-3 sm:py-8 sm:px-4">
       <div className="max-w-3xl mx-auto">
         <Card className="bg-white/95 shadow-lg">
-          <CardHeader className="text-center">
-            <CardTitle className="text-2xl font-bold text-purple-800">
+          <CardHeader className="text-center py-4 sm:py-6">
+            <CardTitle className="text-xl sm:text-2xl font-bold text-purple-800">
               Personalize Your Fitness Journey
             </CardTitle>
-            <CardDescription className="text-gray-600 mt-2">
+            <CardDescription className="text-gray-600 mt-2 text-sm sm:text-base">
               Let us customize your experience based on your unique needs
             </CardDescription>
           </CardHeader>
           
-          <CardContent className="space-y-8">
+          <CardContent className="space-y-6 sm:space-y-8 px-3 py-4 sm:p-6">
             {/* Date of last period */}
             <div className="space-y-2">
-              <h3 className="text-lg font-medium text-purple-700">
+              <h3 className="text-base sm:text-lg font-medium text-purple-700">
                 When was the first day of your last period?
               </h3>
-              <p className="text-sm text-gray-500 mb-4">
+              <p className="text-xs sm:text-sm text-gray-500 mb-3 sm:mb-4">
                 This helps us calculate your current cycle phase and provide relevant recommendations.
               </p>
-              <div className="border rounded-md mx-auto max-w-sm">
+              <div className="border rounded-md mx-auto max-w-[300px] sm:max-w-sm">
                 <Calendar
                   mode="single"
                   selected={date}
                   onSelect={setDate}
-                  className="mx-auto"
+                  className="mx-auto scale-90 sm:scale-100"
                   disabled={(date) => date > new Date()}
                 />
               </div>
               {date && (
-                <p className="text-sm text-center text-gray-600 mt-2">
+                <p className="text-xs sm:text-sm text-center text-gray-600 mt-2">
                   Selected: {format(date, "PPP")}
                 </p>
               )}
@@ -131,13 +131,13 @@ const OnboardingPage: FC = () => {
             
             {/* Age selection */}
             <div className="space-y-2">
-              <h3 className="text-lg font-medium text-purple-700">
+              <h3 className="text-base sm:text-lg font-medium text-purple-700">
                 What is your age?
               </h3>
-              <p className="text-sm text-gray-500 mb-4">
+              <p className="text-xs sm:text-sm text-gray-500 mb-3 sm:mb-4">
                 We'll use this to tailor advice appropriate for your life stage.
               </p>
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-2 sm:gap-3">
                 {[
                   { label: "Under 18", value: 16 },
                   { label: "18-29", value: 24 },
@@ -149,8 +149,9 @@ const OnboardingPage: FC = () => {
                   <Button
                     key={ageOption.label}
                     type="button"
+                    size="sm"
                     variant={age === ageOption.value ? "default" : "outline"}
-                    className={age === ageOption.value ? "gradient-primary" : ""}
+                    className={`text-xs sm:text-sm py-1 h-auto ${age === ageOption.value ? "gradient-primary" : ""}`}
                     onClick={() => setAge(ageOption.value)}
                   >
                     {ageOption.label}
@@ -161,17 +162,17 @@ const OnboardingPage: FC = () => {
             
             {/* Health Goals */}
             <div className="space-y-2">
-              <h3 className="text-lg font-medium text-purple-700">
+              <h3 className="text-base sm:text-lg font-medium text-purple-700">
                 What are your health goals?
               </h3>
-              <p className="text-sm text-gray-500 mb-4">
+              <p className="text-xs sm:text-sm text-gray-500 mb-3 sm:mb-4">
                 Select all that apply. This will help us prioritize content that aligns with your objectives.
               </p>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-3">
                 {HEALTH_GOALS.map((goal) => (
                   <div 
                     key={goal}
-                    className={`flex items-center space-x-2 border rounded-md p-3 cursor-pointer transition-colors ${
+                    className={`flex items-center space-x-2 border rounded-md p-2 sm:p-3 cursor-pointer transition-colors ${
                       healthGoals.includes(goal) ? "border-purple-500 bg-purple-50" : "border-gray-200"
                     }`}
                     onClick={() => toggleHealthGoal(goal)}
@@ -181,7 +182,10 @@ const OnboardingPage: FC = () => {
                       checked={healthGoals.includes(goal)} 
                       onCheckedChange={() => toggleHealthGoal(goal)}
                     />
-                    <Label htmlFor={`goal-${goal}`} className="cursor-pointer w-full">
+                    <Label 
+                      htmlFor={`goal-${goal}`} 
+                      className="cursor-pointer w-full text-sm sm:text-base"
+                    >
                       {goal}
                     </Label>
                   </div>
