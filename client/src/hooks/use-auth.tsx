@@ -17,6 +17,7 @@ type AuthContextType = {
   loginMutation: MutationResult<User, LoginData>;
   logoutMutation: MutationResult<void, void>;
   registerMutation: MutationResult<User, InsertUser>;
+  updateOnboarding: (data: any) => void;
 };
 
 // Create auth context
@@ -42,6 +43,7 @@ export const AuthContext = createContext<AuthContextType>({
     isSuccess: false,
     data: null,
   },
+  updateOnboarding: () => {},
 });
 
 export function AuthProvider({ children }: { children: ReactNode }) {
@@ -88,6 +90,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           username: credentials.username,
           password: "********", // Don't store real password
           email: null,
+          lastPeriodDate: null,
+          age: null,
+          healthGoal: null,
+          completedOnboarding: false,
         };
         
         setUser(newUser);
@@ -124,6 +130,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           password: "********", // Don't store actual password
           name: userData.name || null,
           email: userData.email || null,
+          lastPeriodDate: null,
+          age: null,
+          healthGoal: null,
+          completedOnboarding: false,
         };
         
         setUser(newUser);
@@ -166,6 +176,30 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     data: null,
   };
 
+  // Function to update onboarding information
+  const updateOnboarding = (onboardingData: Onboarding) => {
+    if (!user) return;
+    
+    // Create updated user with onboarding data
+    const updatedUser = {
+      ...user,
+      lastPeriodDate: onboardingData.lastPeriodDate || null,
+      age: onboardingData.age || null,
+      healthGoal: onboardingData.healthGoal || null,
+      completedOnboarding: true,
+    };
+    
+    // Update user state and localStorage
+    setUser(updatedUser);
+    localStorage.setItem('user', JSON.stringify(updatedUser));
+    
+    // Show success toast
+    toast({
+      title: "Profile updated",
+      description: "Your information has been saved successfully",
+    });
+  };
+
   return (
     <AuthContext.Provider
       value={{
@@ -175,6 +209,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         loginMutation,
         logoutMutation,
         registerMutation,
+        updateOnboarding,
       }}
     >
       {children}
