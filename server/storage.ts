@@ -11,13 +11,14 @@ export interface IStorage {
   createUser(user: InsertUser): Promise<User>;
   updateUserOnboarding(
     id: number, 
-    lastPeriodDate: Date | null, 
-    age: number | null
+    lastPeriodDate: string | null, 
+    age: number | null,
+    healthGoal: string | null
   ): Promise<User>;
   getUserHealthConditions(userId: number): Promise<HealthCondition[]>;
   addHealthCondition(userId: number, condition: InsertHealthCondition): Promise<HealthCondition>;
   clearUserHealthConditions(userId: number): Promise<void>;
-  sessionStore: session.SessionStore;
+  sessionStore: any; // session.SessionStore;
 }
 
 export class MemStorage implements IStorage {
@@ -54,6 +55,7 @@ export class MemStorage implements IStorage {
       id,
       lastPeriodDate: null,
       age: null,
+      healthGoal: null,
       completedOnboarding: false
     };
     this.users.set(id, user);
@@ -62,8 +64,9 @@ export class MemStorage implements IStorage {
 
   async updateUserOnboarding(
     id: number, 
-    lastPeriodDate: Date | null, 
-    age: number | null
+    lastPeriodDate: string | null, 
+    age: number | null,
+    healthGoal: string | null
   ): Promise<User> {
     const user = await this.getUser(id);
     if (!user) {
@@ -74,6 +77,7 @@ export class MemStorage implements IStorage {
       ...user,
       lastPeriodDate,
       age,
+      healthGoal,
       completedOnboarding: true
     };
 

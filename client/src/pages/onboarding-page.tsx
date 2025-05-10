@@ -15,19 +15,15 @@ import {
   FormField, 
   FormItem, 
   FormLabel, 
-  FormMessage 
+  FormMessage,
+  FormDescription 
 } from "@/components/ui/form";
+import {
+  RadioGroup,
+  RadioGroupItem
+} from "@/components/ui/radio-group";
 import HealthConditionCheckbox from "@/components/health-condition-checkbox";
-
-// Available health conditions
-const HEALTH_CONDITIONS = [
-  "PCOS",
-  "Prenatal",
-  "New Mom",
-  "Menopause",
-  "Thyroid",
-  "Diabetes"
-];
+import { HEALTH_CONDITIONS, HEALTH_GOALS } from "@shared/schema";
 
 // Validation schema for onboarding data
 const onboardingSchema = z.object({
@@ -39,6 +35,7 @@ const onboardingSchema = z.object({
     },
     { message: "Age must be between 18 and 100" }
   ),
+  healthGoal: z.string().min(1, { message: "Please select a health goal" }),
   healthConditions: z.array(z.string()).optional(),
 });
 
@@ -63,6 +60,7 @@ const OnboardingPage = () => {
     defaultValues: {
       lastPeriodDate: "",
       age: "",
+      healthGoal: "",
       healthConditions: [],
     },
   });
@@ -116,9 +114,20 @@ const OnboardingPage = () => {
         return;
       }
       form.clearErrors("age");
+      
+      // Also check health goal
+      const healthGoal = form.getValues("healthGoal");
+      if (!healthGoal) {
+        form.setError("healthGoal", {
+          type: "manual",
+          message: "Please select a health goal",
+        });
+        return;
+      }
+      form.clearErrors("healthGoal");
     }
     
-    setCurrentStep((prev) => Math.min(prev + 1, 3));
+    setCurrentStep((prev) => Math.min(prev + 1, 4));
   };
 
   // Go to previous onboarding step
@@ -189,7 +198,7 @@ const OnboardingPage = () => {
               </div>
             )}
             
-            {/* Step 2: Age */}
+            {/* Step 2: Age and Health Goal */}
             {currentStep === 2 && (
               <div className="space-y-6">
                 <FormField
@@ -212,6 +221,48 @@ const OnboardingPage = () => {
                       </FormControl>
                       <p className="mt-2 text-sm text-gray-600">
                         Your age helps us recommend appropriate fitness routines
+                      </p>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                
+                <FormField
+                  control={form.control}
+                  name="healthGoal"
+                  render={({ field }) => (
+                    <FormItem className="space-y-3">
+                      <FormLabel className="block text-sm font-medium text-gray-600 mb-2">
+                        Your primary health goal
+                      </FormLabel>
+                      <FormControl>
+                        <RadioGroup
+                          onValueChange={field.onChange}
+                          defaultValue={field.value}
+                          className="space-y-3"
+                        >
+                          {HEALTH_GOALS.map((goal) => (
+                            <div
+                              key={goal}
+                              className="flex items-center space-x-2 p-3 bg-gray-100 rounded-lg"
+                            >
+                              <RadioGroupItem 
+                                value={goal} 
+                                id={`goal-${goal}`} 
+                                className="text-purple-500"
+                              />
+                              <label
+                                htmlFor={`goal-${goal}`}
+                                className="text-base font-medium cursor-pointer flex-1"
+                              >
+                                {goal}
+                              </label>
+                            </div>
+                          ))}
+                        </RadioGroup>
+                      </FormControl>
+                      <p className="mt-2 text-sm text-gray-600">
+                        This helps us customize your fitness and nutrition program
                       </p>
                       <FormMessage />
                     </FormItem>

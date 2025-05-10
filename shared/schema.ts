@@ -2,6 +2,24 @@ import { pgTable, text, serial, integer, boolean, date, timestamp } from "drizzl
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
 
+// Available health goals
+export const HEALTH_GOALS = [
+  "General Fitness",
+  "Weight Management",
+  "Energy Boost",
+  "Mood Improvement"
+] as const;
+
+// Available health conditions
+export const HEALTH_CONDITIONS = [
+  "PCOS",
+  "Prenatal",
+  "New Mom",
+  "Menopause",
+  "Thyroid",
+  "Diabetes"
+] as const;
+
 export const users = pgTable("users", {
   id: serial("id").primaryKey(),
   username: text("username").notNull().unique(),
@@ -9,6 +27,7 @@ export const users = pgTable("users", {
   name: text("name"),
   lastPeriodDate: date("last_period_date"),
   age: integer("age"),
+  healthGoal: text("health_goal"),
   completedOnboarding: boolean("completed_onboarding").default(false).notNull(),
 });
 
@@ -32,7 +51,10 @@ export const loginSchema = insertUserSchema.pick({
 export const onboardingSchema = createInsertSchema(users).pick({
   lastPeriodDate: true,
   age: true,
+  healthGoal: true,
   completedOnboarding: true,
+}).extend({
+  healthConditions: z.array(z.string()).optional(),
 });
 
 export const insertHealthConditionSchema = createInsertSchema(healthConditions).pick({
