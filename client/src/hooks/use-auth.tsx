@@ -1,5 +1,5 @@
 import { createContext, ReactNode, useContext, useState, useEffect } from "react";
-import { InsertUser, User, LoginData } from "@shared/schema";
+import { InsertUser, User, LoginData, Onboarding } from "@shared/schema";
 import { useToast } from "@/hooks/use-toast";
 
 // Dummy type for mutations to simulate real functionality
@@ -17,7 +17,7 @@ type AuthContextType = {
   loginMutation: MutationResult<User, LoginData>;
   logoutMutation: MutationResult<void, void>;
   registerMutation: MutationResult<User, InsertUser>;
-  updateOnboarding: (data: any) => void;
+  updateOnboarding: (data: Onboarding) => void;
 };
 
 // Create auth context

@@ -22,6 +22,12 @@ const HomePage: FC = () => {
     setLocation("/auth");
     return null;
   }
+  
+  // If user hasn't completed onboarding, redirect to onboarding page
+  if (!user.completedOnboarding) {
+    setLocation("/onboarding");
+    return null;
+  }
 
   const handleLogout = () => {
     logoutMutation.mutate();

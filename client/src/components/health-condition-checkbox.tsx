@@ -1,4 +1,6 @@
 import { FC } from "react";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Label } from "@/components/ui/label";
 
 interface HealthConditionCheckboxProps {
   condition: string;
@@ -12,20 +14,19 @@ const HealthConditionCheckbox: FC<HealthConditionCheckboxProps> = ({
   onCheckedChange,
 }) => {
   return (
-    <label className="cursor-pointer bg-gray-100 rounded-lg p-3 hover:bg-gray-200 transition-colors">
-      <input 
-        type="checkbox" 
-        className="hidden" 
+    <div className="flex items-center space-x-2 mb-2">
+      <Checkbox
+        id={`condition-${condition}`}
         checked={checked}
-        onChange={(e) => onCheckedChange(e.target.checked)}
+        onCheckedChange={onCheckedChange}
       />
-      <div className="flex items-center">
-        <div className="w-5 h-5 border border-gray-300 rounded-md flex items-center justify-center mr-2">
-          <div className={`w-3 h-3 bg-purple-500 rounded-sm ${checked ? 'block' : 'hidden'}`}></div>
-        </div>
-        <span>{condition}</span>
-      </div>
-    </label>
+      <Label
+        htmlFor={`condition-${condition}`}
+        className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+      >
+        {condition}
+      </Label>
+    </div>
   );
 };
 
