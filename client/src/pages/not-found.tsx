@@ -5,8 +5,6 @@ import { ChevronLeft } from "lucide-react";
 export default function NotFound() {
   return (
     <div className="min-h-screen flex flex-col items-center justify-center p-4">
-      {/* Gradient background with dotted overlay */}
-      <div className="absolute inset-0 gradient-primary opacity-80 dotted-grid -z-10" />
       
       <div className="text-center max-w-md bg-white/90 p-8 rounded-lg shadow-lg">
         <h1 className="text-6xl font-bold text-gradient-primary">404</h1>

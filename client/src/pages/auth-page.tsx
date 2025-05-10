@@ -31,8 +31,13 @@ type RegisterFormValues = z.infer<typeof registerSchema>;
 export default function AuthPage() {
   const [isLogin, setIsLogin] = useState(true);
   const [_, setLocation] = useLocation();
-  const { loginMutation, registerMutation, user } = useAuth();
+  const auth = useAuth();
   const { toast } = useToast();
+  
+  // While auth is being initialized, show nothing
+  if (!auth) return null;
+  
+  const { loginMutation, registerMutation, user } = auth;
 
   // If user is already logged in, redirect to home page
   if (user) {
@@ -102,12 +107,9 @@ export default function AuthPage() {
 
   return (
     <div className="min-h-screen flex flex-col md:flex-row">
-      {/* Gradient background with dotted overlay */}
-      <div className="absolute inset-0 gradient-primary opacity-80 dotted-grid -z-10" />
-      
       {/* Auth form container */}
       <div className="w-full md:w-1/2 p-6 md:p-10 flex items-center justify-center">
-        <div className="w-full max-w-md bg-white/95 rounded-lg shadow-xl p-8">
+        <div className="w-full max-w-md bg-white/95 backdrop-blur-sm rounded-lg shadow-lg p-8">
           <div className="text-center mb-8">
             <h1 className="text-4xl font-bold text-gradient-primary mb-2">
               HerFitness

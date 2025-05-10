@@ -5,9 +5,18 @@ import { Button } from "@/components/ui/button";
 import { Loader2, LogOut, User } from "lucide-react";
 
 const HomePage: FC = () => {
-  const { user, logoutMutation } = useAuth();
+  const { user, logoutMutation, isLoading } = useAuth();
   const [_, setLocation] = useLocation();
 
+  // Show loading state while checking auth
+  if (isLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <Loader2 className="h-8 w-8 animate-spin text-purple-600" />
+      </div>
+    );
+  }
+  
   // If user is not logged in, redirect to auth page
   if (!user) {
     setLocation("/auth");
@@ -20,8 +29,6 @@ const HomePage: FC = () => {
 
   return (
     <div className="min-h-screen">
-      {/* Gradient background with dotted overlay */}
-      <div className="absolute inset-0 gradient-primary opacity-80 dotted-grid -z-10" />
 
       {/* Header */}
       <header className="bg-white/20 backdrop-blur-sm">
