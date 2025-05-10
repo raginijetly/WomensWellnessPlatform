@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -31,18 +31,23 @@ type RegisterFormValues = z.infer<typeof registerSchema>;
 export default function AuthPage() {
   const [isLogin, setIsLogin] = useState(true);
   const [_, setLocation] = useLocation();
-  const auth = useAuth();
+  const { user, isLoading, loginMutation, registerMutation } = useAuth();
   const { toast } = useToast();
   
-  // While auth is being initialized, show nothing
-  if (!auth) return null;
+  useEffect(() => {
+    // Redirect to home if user is already logged in
+    if (!isLoading && user) {
+      setLocation("/");
+    }
+  }, [user, isLoading, setLocation]);
   
-  const { loginMutation, registerMutation, user } = auth;
-
-  // If user is already logged in, redirect to home page
-  if (user) {
-    setLocation("/");
-    return null;
+  // If still loading or user is already logged in, return early
+  if (isLoading || user) {
+    return (
+      <div className="min-h-screen flex items-center justify-center gradient-primary">
+        <Loader2 className="h-8 w-8 animate-spin text-white" />
+      </div>
+    );
   }
 
   // Login form setup

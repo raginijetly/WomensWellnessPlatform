@@ -1,4 +1,4 @@
-import { FC } from "react";
+import { FC, useEffect } from "react";
 import { useAuth } from "@/hooks/use-auth";
 import { Link, useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
@@ -7,6 +7,17 @@ import { Loader2, LogOut, User } from "lucide-react";
 const HomePage: FC = () => {
   const { user, logoutMutation, isLoading } = useAuth();
   const [_, setLocation] = useLocation();
+
+  // Handle navigation effects based on auth state
+  useEffect(() => {
+    if (!isLoading) {
+      if (!user) {
+        setLocation("/auth");
+      } else if (!user.completedOnboarding) {
+        setLocation("/onboarding");
+      }
+    }
+  }, [user, isLoading, setLocation]);
 
   // Show loading state while checking auth
   if (isLoading) {
@@ -17,15 +28,8 @@ const HomePage: FC = () => {
     );
   }
   
-  // If user is not logged in, redirect to auth page
-  if (!user) {
-    setLocation("/auth");
-    return null;
-  }
-  
-  // If user hasn't completed onboarding, redirect to onboarding page
-  if (!user.completedOnboarding) {
-    setLocation("/onboarding");
+  // Exit early if user is not authenticated or hasn't completed onboarding
+  if (!user || !user.completedOnboarding) {
     return null;
   }
 
