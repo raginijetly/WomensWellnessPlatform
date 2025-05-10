@@ -7,7 +7,13 @@ export const HEALTH_GOALS = [
   "General Fitness",
   "Weight Management",
   "Energy Boost",
-  "Mood Improvement"
+  "Mood Improvement",
+  "Stress Reduction",
+  "Muscle Toning",
+  "Cardiovascular Health",
+  "Flexibility & Mobility",
+  "Better Sleep",
+  "Hormonal Balance"
 ] as const;
 
 // Available health conditions
@@ -38,7 +44,7 @@ export const users = pgTable("users", {
   // Onboarding fields
   lastPeriodDate: date("last_period_date"),
   age: integer("age"),
-  healthGoal: text("health_goal"),
+  healthGoals: text("health_goals").array(),
   completedOnboarding: boolean("completed_onboarding").default(false).notNull(),
 });
 
@@ -67,7 +73,7 @@ export const loginSchema = z.object({
 export const onboardingSchema = z.object({
   lastPeriodDate: z.string().nullable().optional(),
   age: z.number().min(13).max(100).nullable().optional(),
-  healthGoal: z.string().nullable().optional(),
+  healthGoals: z.array(z.string()).optional(),
   completedOnboarding: z.boolean().optional(),
   healthConditions: z.array(z.string()).optional(),
 });

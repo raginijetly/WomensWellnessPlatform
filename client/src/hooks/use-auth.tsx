@@ -92,7 +92,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           email: null,
           lastPeriodDate: null,
           age: null,
-          healthGoal: null,
+          healthGoals: [],
           completedOnboarding: false,
         };
         
@@ -132,7 +132,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           email: userData.email || null,
           lastPeriodDate: null,
           age: null,
-          healthGoal: null,
+          healthGoals: [],
           completedOnboarding: false,
         };
         
@@ -185,7 +185,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       ...user,
       lastPeriodDate: onboardingData.lastPeriodDate || null,
       age: onboardingData.age || null,
-      healthGoal: onboardingData.healthGoal || null,
+      healthGoals: onboardingData.healthGoals || [],
       completedOnboarding: true,
     };
     

@@ -166,11 +166,11 @@ export default function AuthPage() {
 
               <Button
                 type="submit"
-                className="w-full gradient-primary hover:opacity-90 transition-opacity"
+                className="w-full bg-white text-purple-700 hover:bg-purple-50 transition-colors border-2 border-white shadow-md font-bold"
                 disabled={loginMutation.isPending}
               >
                 {loginMutation.isPending ? (
-                  <Loader2 className="h-4 w-4 animate-spin mr-2" />
+                  <Loader2 className="h-4 w-4 animate-spin mr-2 text-purple-700" />
                 ) : null}
                 Log In
               </Button>
@@ -258,11 +258,11 @@ export default function AuthPage() {
 
               <Button
                 type="submit"
-                className="w-full gradient-primary hover:opacity-90 transition-opacity"
+                className="w-full bg-white text-purple-700 hover:bg-purple-50 transition-colors border-2 border-white shadow-md font-bold"
                 disabled={registerMutation.isPending}
               >
                 {registerMutation.isPending ? (
-                  <Loader2 className="h-4 w-4 animate-spin mr-2" />
+                  <Loader2 className="h-4 w-4 animate-spin mr-2 text-purple-700" />
                 ) : null}
                 Sign Up
               </Button>
