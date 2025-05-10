@@ -5,7 +5,6 @@ import { Button } from "@/components/ui/button";
 import { Loader2 } from "lucide-react";
 import { Calendar } from "@/components/ui/calendar";
 import { Label } from "@/components/ui/label";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card";
 import { HEALTH_GOALS, HEALTH_CONDITIONS } from "@shared/schema";
@@ -20,7 +19,7 @@ const OnboardingPage: FC = () => {
   // Form state
   const [date, setDate] = useState<Date | undefined>(undefined);
   const [age, setAge] = useState<number | undefined>(undefined);
-  const [healthGoal, setHealthGoal] = useState<string | undefined>(undefined);
+  const [healthGoals, setHealthGoals] = useState<string[]>([]);
   const [healthConditions, setHealthConditions] = useState<string[]>([]);
   const [isPending, setIsPending] = useState(false);
   
@@ -30,6 +29,15 @@ const OnboardingPage: FC = () => {
       prev.includes(condition)
         ? prev.filter(c => c !== condition)
         : [...prev, condition]
+    );
+  };
+  
+  // Helper function to toggle health goal
+  const toggleHealthGoal = (goal: string) => {
+    setHealthGoals(prev => 
+      prev.includes(goal)
+        ? prev.filter(g => g !== goal)
+        : [...prev, goal]
     );
   };
   
@@ -46,7 +54,7 @@ const OnboardingPage: FC = () => {
     const onboardingData = {
       lastPeriodDate: dateString,
       age: age || null,
-      healthGoal: healthGoal || null,
+      healthGoals: healthGoals,
       healthConditions,
       completedOnboarding: true,
     };
@@ -60,7 +68,7 @@ const OnboardingPage: FC = () => {
   };
   
   // Calculate if form is valid
-  const isValid = !!date && !!age && !!healthGoal;
+  const isValid = !!date && !!age && healthGoals.length > 0;
   
   // Show loading state while checking auth
   if (isLoading) {
@@ -151,34 +159,34 @@ const OnboardingPage: FC = () => {
               </div>
             </div>
             
-            {/* Primary Health Goal */}
+            {/* Health Goals */}
             <div className="space-y-2">
               <h3 className="text-lg font-medium text-purple-700">
-                What is your primary health goal?
+                What are your health goals?
               </h3>
               <p className="text-sm text-gray-500 mb-4">
-                This will help us prioritize content that aligns with your objectives.
+                Select all that apply. This will help us prioritize content that aligns with your objectives.
               </p>
-              <RadioGroup 
-                value={healthGoal} 
-                onValueChange={setHealthGoal}
-                className="grid grid-cols-1 sm:grid-cols-2 gap-3"
-              >
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 {HEALTH_GOALS.map((goal) => (
                   <div 
                     key={goal}
                     className={`flex items-center space-x-2 border rounded-md p-3 cursor-pointer transition-colors ${
-                      healthGoal === goal ? "border-purple-500 bg-purple-50" : "border-gray-200"
+                      healthGoals.includes(goal) ? "border-purple-500 bg-purple-50" : "border-gray-200"
                     }`}
-                    onClick={() => setHealthGoal(goal)}
+                    onClick={() => toggleHealthGoal(goal)}
                   >
-                    <RadioGroupItem value={goal} id={`goal-${goal}`} />
+                    <Checkbox 
+                      id={`goal-${goal}`} 
+                      checked={healthGoals.includes(goal)} 
+                      onCheckedChange={() => toggleHealthGoal(goal)}
+                    />
                     <Label htmlFor={`goal-${goal}`} className="cursor-pointer w-full">
                       {goal}
                     </Label>
                   </div>
                 ))}
-              </RadioGroup>
+              </div>
             </div>
             
             {/* Health Conditions */}
