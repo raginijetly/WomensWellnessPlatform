@@ -132,7 +132,7 @@ export default function AuthPage() {
                     id="username"
                     type="text"
                     placeholder="Username"
-                    className="pl-10"
+                    className="pl-10 h-11 text-base"
                     {...loginForm.register("username")}
                   />
                 </div>
@@ -153,7 +153,7 @@ export default function AuthPage() {
                     id="password"
                     type="password"
                     placeholder="Password"
-                    className="pl-10"
+                    className="pl-10 h-11 text-base"
                     {...loginForm.register("password")}
                   />
                 </div>
@@ -199,7 +199,7 @@ export default function AuthPage() {
                     id="register-username"
                     type="text"
                     placeholder="Username"
-                    className="pl-10"
+                    className="pl-10 h-11 text-base"
                     {...registerForm.register("username")}
                   />
                 </div>
@@ -220,7 +220,7 @@ export default function AuthPage() {
                     id="register-password"
                     type="password"
                     placeholder="Password"
-                    className="pl-10"
+                    className="pl-10 h-11 text-base"
                     {...registerForm.register("password")}
                   />
                 </div>
@@ -237,6 +237,7 @@ export default function AuthPage() {
                   id="name"
                   type="text"
                   placeholder="Your name"
+                  className="h-11 text-base"
                   {...registerForm.register("name")}
                 />
               </div>
@@ -247,6 +248,7 @@ export default function AuthPage() {
                   id="email"
                   type="email"
                   placeholder="Your email"
+                  className="h-11 text-base"
                   {...registerForm.register("email")}
                 />
                 {registerForm.formState.errors.email && (

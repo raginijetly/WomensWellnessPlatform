@@ -71,3 +71,41 @@ body {
   filter: invert(0.5) sepia(1) saturate(5) hue-rotate(260deg);
   cursor: pointer;
 }
+
+/* Mobile optimizations */
+@media (max-width: 640px) {
+  /* Optimized for iPhone and similar devices */
+  body {
+    font-size: 14px;
+  }
+  
+  /* Improved touch targets for better mobile UX */
+  button, 
+  a, 
+  label, 
+  [role="button"],
+  .cursor-pointer {
+    min-height: 42px;
+    touch-action: manipulation;
+  }
+  
+  /* Improved form controls */
+  input, 
+  select, 
+  textarea {
+    font-size: 16px; /* Prevents iOS zoom on focus */
+  }
+  
+  /* Improve spacing for stackable elements */
+  .space-y-2 > * + * {
+    margin-top: 0.6rem;
+  }
+  
+  /* iPhone-specific fixes */
+  @supports (-webkit-touch-callout: none) {
+    /* Fixes for iOS devices */
+    .min-h-screen {
+      min-height: -webkit-fill-available;
+    }
+  }
+}

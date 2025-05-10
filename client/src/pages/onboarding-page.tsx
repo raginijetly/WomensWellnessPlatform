@@ -195,28 +195,41 @@ const OnboardingPage: FC = () => {
             
             {/* Health Conditions */}
             <div className="space-y-2">
-              <h3 className="text-lg font-medium text-purple-700">
+              <h3 className="text-base sm:text-lg font-medium text-purple-700">
                 Do you have any specific health conditions?
               </h3>
-              <p className="text-sm text-gray-500 mb-4">
+              <p className="text-xs sm:text-sm text-gray-500 mb-3 sm:mb-4">
                 Select all that apply. This is optional but helps us provide more relevant guidance.
               </p>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                 {HEALTH_CONDITIONS.map((condition) => (
-                  <HealthConditionCheckbox
+                  <div 
                     key={condition}
-                    condition={condition}
-                    checked={healthConditions.includes(condition)}
-                    onCheckedChange={() => toggleHealthCondition(condition)}
-                  />
+                    className={`flex items-center space-x-2 border rounded-md p-2 sm:p-3 cursor-pointer transition-colors ${
+                      healthConditions.includes(condition) ? "border-purple-500 bg-purple-50" : "border-gray-200"
+                    }`}
+                    onClick={() => toggleHealthCondition(condition)}
+                  >
+                    <Checkbox 
+                      id={`condition-${condition}`} 
+                      checked={healthConditions.includes(condition)} 
+                      onCheckedChange={() => toggleHealthCondition(condition)}
+                    />
+                    <Label 
+                      htmlFor={`condition-${condition}`} 
+                      className="cursor-pointer w-full text-sm sm:text-base"
+                    >
+                      {condition}
+                    </Label>
+                  </div>
                 ))}
               </div>
             </div>
           </CardContent>
           
-          <CardFooter className="flex flex-col space-y-4">
+          <CardFooter className="flex flex-col space-y-3 sm:space-y-4 px-4 py-4 sm:p-6">
             <Button 
-              className="w-full gradient-primary hover:opacity-90"
+              className="w-full gradient-primary hover:opacity-90 py-2 h-auto text-sm sm:text-base font-medium"
               onClick={handleSubmit}
               disabled={!isValid || isPending}
             >
@@ -229,7 +242,7 @@ const OnboardingPage: FC = () => {
                 "Complete & Continue"
               )}
             </Button>
-            <p className="text-xs text-gray-500 text-center">
+            <p className="text-xs text-gray-500 text-center px-2">
               Your information is private and secure. We only use it to personalize your experience.
             </p>
           </CardFooter>
