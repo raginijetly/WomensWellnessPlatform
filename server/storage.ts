@@ -26,7 +26,7 @@ export class MemStorage implements IStorage {
   private healthConditions: Map<number, HealthCondition[]>;
   currentId: number;
   healthConditionId: number;
-  sessionStore: session.SessionStore;
+  sessionStore: any;
 
   constructor() {
     this.users = new Map();
@@ -56,6 +56,7 @@ export class MemStorage implements IStorage {
       lastPeriodDate: null,
       age: null,
       healthGoal: null,
+      name: insertUser.name || null,
       completedOnboarding: false
     };
     this.users.set(id, user);

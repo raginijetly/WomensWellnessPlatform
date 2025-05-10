@@ -127,7 +127,7 @@ const OnboardingPage = () => {
       form.clearErrors("healthGoal");
     }
     
-    setCurrentStep((prev) => Math.min(prev + 1, 4));
+    setCurrentStep((prev) => Math.min(prev + 1, 3));
   };
 
   // Go to previous onboarding step
