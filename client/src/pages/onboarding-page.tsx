@@ -89,13 +89,14 @@ const OnboardingPage = () => {
   });
 
   const onSubmit = (values: OnboardingFormValues) => {
-    // Convert age value to number if present
-    const ageValue = values.age ? Number(values.age) : undefined;
-    
-    onboardingMutation.mutate({
+    // Make a copy of the values to submit
+    const submitValues = {
       ...values,
-      age: ageValue
-    });
+      // Convert age value to number if present
+      age: values.age ? Number(values.age) : null
+    };
+    
+    onboardingMutation.mutate(submitValues);
   };
 
   // Go to next onboarding step

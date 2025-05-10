@@ -32,80 +32,96 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   // Simple login mutation
   const loginMutation = useMutation({
+    mutationKey: ["login"],
     mutationFn: async (credentials: LoginData) => {
+      const res = await apiRequest("POST", "/api/login", credentials);
+      return await res.json();
+    },
+    onMutate: () => {
       setIsLoading(true);
-      try {
-        const res = await apiRequest("POST", "/api/login", credentials);
-        const userData = await res.json();
-        setUser(userData);
-        setIsLoading(false);
-        toast({
-          title: "Login successful",
-          description: `Welcome back, ${userData.name || userData.username}!`,
-        });
-        return userData;
-      } catch (err: any) {
-        setError(err);
-        setIsLoading(false);
-        toast({
-          title: "Login failed",
-          description: err.message,
-          variant: "destructive",
-        });
-        throw err;
-      }
+      setError(null);
+    },
+    onSuccess: (userData) => {
+      setUser(userData);
+      queryClient.setQueryData(["/api/user"], userData);
+      toast({
+        title: "Login successful",
+        description: `Welcome back, ${userData.name || userData.username}!`,
+      });
+    },
+    onError: (err: any) => {
+      setError(err);
+      toast({
+        title: "Login failed",
+        description: err.message || "Something went wrong",
+        variant: "destructive",
+      });
+    },
+    onSettled: () => {
+      setIsLoading(false);
     }
   });
 
   // Simple register mutation
   const registerMutation = useMutation({
+    mutationKey: ["register"],
     mutationFn: async (credentials: InsertUser) => {
+      const res = await apiRequest("POST", "/api/register", credentials);
+      return await res.json();
+    },
+    onMutate: () => {
       setIsLoading(true);
-      try {
-        const res = await apiRequest("POST", "/api/register", credentials);
-        const userData = await res.json();
-        setUser(userData);
-        setIsLoading(false);
-        toast({
-          title: "Registration successful",
-          description: "Your account has been created successfully.",
-        });
-        return userData;
-      } catch (err: any) {
-        setError(err);
-        setIsLoading(false);
-        toast({
-          title: "Registration failed",
-          description: err.message,
-          variant: "destructive",
-        });
-        throw err;
-      }
+      setError(null);
+    },
+    onSuccess: (userData) => {
+      setUser(userData);
+      queryClient.setQueryData(["/api/user"], userData);
+      toast({
+        title: "Registration successful",
+        description: "Your account has been created successfully.",
+      });
+    },
+    onError: (err: any) => {
+      setError(err);
+      toast({
+        title: "Registration failed",
+        description: err.message || "Something went wrong",
+        variant: "destructive",
+      });
+    },
+    onSettled: () => {
+      setIsLoading(false);
     }
   });
 
   // Simple logout mutation
   const logoutMutation = useMutation({
+    mutationKey: ["logout"],
     mutationFn: async () => {
+      await apiRequest("POST", "/api/logout");
+    },
+    onMutate: () => {
       setIsLoading(true);
-      try {
-        await apiRequest("POST", "/api/logout");
-        setUser(null);
-        setIsLoading(false);
-        toast({
-          title: "Logged out",
-          description: "You have been logged out successfully.",
-        });
-      } catch (err: any) {
-        setError(err);
-        setIsLoading(false);
-        toast({
-          title: "Logout failed",
-          description: err.message,
-          variant: "destructive",
-        });
-        throw err;
-      }
+      setError(null);
+    },
+    onSuccess: () => {
+      setUser(null);
+      queryClient.setQueryData(["/api/user"], null);
+      toast({
+        title: "Logged out",
+        description: "You have been logged out successfully.",
+      });
+    },
+    onError: (err: any) => {
+      setError(err);
+      toast({
+        title: "Logout failed",
+        description: err.message || "Something went wrong",
+        variant: "destructive",
+      });
+    },
+    onSettled: () => {
+      setIsLoading(false);
     }
   });
 

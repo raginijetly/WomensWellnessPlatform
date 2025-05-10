@@ -1,17 +1,27 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useLocation } from "wouter";
 import { useAuth } from "@/hooks/use-auth";
 import { useToast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
 
 const AuthPage = () => {
   const [activeTab, setActiveTab] = useState<"login" | "signup">("login");
-  const { loginMutation, registerMutation } = useAuth();
-  const { toast } = useToast();
-  const [isLoading, setIsLoading] = useState(false);
+  const { loginMutation, registerMutation, user, isLoading } = useAuth();
+  const [_, setLocation] = useLocation();
+
+  // If user is logged in, redirect to onboarding or home
+  useEffect(() => {
+    if (user) {
+      if (!user.completedOnboarding) {
+        setLocation("/onboarding");
+      } else {
+        setLocation("/");
+      }
+    }
+  }, [user, setLocation]);
 
   // Simplified placeholder login
   const handleLogin = () => {
-    setIsLoading(true);
     loginMutation.mutate({ 
       username: "user@example.com", 
       password: "password123" 
@@ -20,7 +30,6 @@ const AuthPage = () => {
 
   // Simplified placeholder signup
   const handleSignup = () => {
-    setIsLoading(true);
     registerMutation.mutate({ 
       name: "Demo User", 
       username: "user@example.com", 
