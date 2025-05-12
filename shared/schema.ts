@@ -65,6 +65,7 @@ export const users = pgTable("users", {
   age: integer("age"),
   periodsRegular: text("periods_regular"),
   healthGoals: text("health_goals").array(),
+  healthConditions: text("health_conditions").array(),
   lifeStage: text("life_stage"),
   symptoms: text("symptoms").array(),
   completedOnboarding: boolean("completed_onboarding").default(false).notNull(),

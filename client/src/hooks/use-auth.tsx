@@ -91,8 +91,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           password: "********", // Don't store real password
           email: null,
           lastPeriodDate: null,
+          dontKnowPeriodDate: false,
           age: null,
+          periodsRegular: null,
           healthGoals: [],
+          healthConditions: [],
+          lifeStage: null,
+          symptoms: [],
           completedOnboarding: false,
         };
         
@@ -131,8 +136,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           name: userData.name || null,
           email: userData.email || null,
           lastPeriodDate: null,
+          dontKnowPeriodDate: false,
           age: null,
+          periodsRegular: null,
           healthGoals: [],
+          healthConditions: [],
+          lifeStage: null,
+          symptoms: [],
           completedOnboarding: false,
         };
         
@@ -184,8 +194,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const updatedUser = {
       ...user,
       lastPeriodDate: onboardingData.lastPeriodDate || null,
+      dontKnowPeriodDate: onboardingData.dontKnowPeriodDate || false,
       age: onboardingData.age || null,
+      periodsRegular: onboardingData.periodsRegular || null,
       healthGoals: onboardingData.healthGoals || [],
+      healthConditions: onboardingData.healthConditions || [],
+      lifeStage: onboardingData.lifeStage || null,
+      symptoms: onboardingData.symptoms || [],
       completedOnboarding: true,
     };
     
