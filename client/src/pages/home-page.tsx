@@ -30,6 +30,8 @@ const HomePage: FC = () => {
   
   // Calculate cycle information when user data is available
   useEffect(() => {
+    console.log("User data in useEffect:", user);
+    
     if (user?.lastPeriodDate) {
       // Parse the date from ISO string
       const periodDate = new Date(user.lastPeriodDate);
@@ -59,17 +61,40 @@ const HomePage: FC = () => {
         daysUntilNextPhase = 29 - cycleDayNum;
       }
       
+      console.log("Setting cycle phase to:", phase);
       setCyclePhase(phase);
       setNextPhaseIn(daysUntilNextPhase);
     } else {
       // Default values if no date is selected
       setCycleDay(1);
+      console.log("No period date, setting default phase to: Unknown");
       setCyclePhase("Unknown");
       setNextPhaseIn(null);
       setCyclePercentage(0);
     }
+    
+    // Log the state after setting
+    console.log("After state update in useEffect, cyclePhase is:", cyclePhase);
   }, [user]);
 
+  // Log whenever cyclePhase changes
+  useEffect(() => {
+    console.log("cyclePhase changed to:", cyclePhase);
+  }, [cyclePhase]);
+  
+  // Ensure we always have a default phase
+  useEffect(() => {
+    // Add a small delay to let other state updates complete
+    const timer = setTimeout(() => {
+      if (cyclePhase === null) {
+        console.log("Setting default phase in fallback useEffect");
+        setCyclePhase("Unknown");
+      }
+    }, 100);
+    
+    return () => clearTimeout(timer);
+  }, [cyclePhase]);
+  
   // Handle navigation effects based on auth state
   useEffect(() => {
     if (!isLoading) {
@@ -295,7 +320,7 @@ const HomePage: FC = () => {
                     <span>Day 1</span>
                     <span>Day 28</span>
                   </div>
-                  <Progress value={cyclePercentage} className="h-2 bg-white/20" indicatorClassName="bg-white" />
+                  <Progress value={cyclePercentage} className="h-2 bg-white/20" />
                 </div>
               </>
             ) : (
@@ -319,8 +344,9 @@ const HomePage: FC = () => {
             </div>
             
             <div className="space-y-3">
+              {/* Debug log: {console.log("Debug cyclePhase value:", cyclePhase)} */}
               <p className="text-sm text-gray-600">
-                Based on your {cyclePhase.toLowerCase()} phase, focus on:
+                Based on your {cyclePhase ? cyclePhase.toLowerCase() : 'current'} phase, focus on:
               </p>
               <ul className="space-y-2">
                 {workoutRecommendations.map((rec, i) => (
@@ -347,8 +373,9 @@ const HomePage: FC = () => {
             </div>
             
             <div className="space-y-3">
+              {/* Debug log: {console.log("Debug cyclePhase value (nutrition):", cyclePhase)} */}
               <p className="text-sm text-gray-600">
-                Foods to focus on during your {cyclePhase.toLowerCase()} phase:
+                Foods to focus on during your {cyclePhase ? cyclePhase.toLowerCase() : 'current'} phase:
               </p>
               <ul className="space-y-2">
                 {nutritionRecommendations.map((rec, i) => (

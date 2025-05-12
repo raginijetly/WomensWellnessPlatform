@@ -1,0 +1,26 @@
+It's tricky to get Replit to fully debug itself with a single prompt if you don't know how to code, but you can give it very targeted instructions to help narrow down the issue. Here's a breakdown of what you can tell Replit, combining precision with simplicity:
+
+1. The Essential Error Information
+
+Begin by providing the exact error message: "I am getting this error: Cannot read properties of null (reading 'toLowerCase')"
+Specify the file and line number: "This is happening in the file /home/runner/workspace/client/src/pages/home-page.tsx on line 323."
+2. Focus on the Variable
+
+Identify the problematic variable: "The error seems to be related to a variable called cyclePhase."
+Ask Replit to check its value: "Can you add a temporary line of code right before line 323 that will display the value of cyclePhase? I want to know what its value is at that point."
+In Replit terms, this translates to asking it to insert a console.log() statement.
+3. Potential Causes (Hint at Them)
+
+Suggest common causes (in simple terms): "I've been told this error often happens when the program tries to use some information before it's ready. Could it be that cyclePhase doesn't have a value yet when line 323 runs?"
+Ask about data loading: "Is cyclePhase loaded from somewhere else? If so, could you check if line 323 is running before that loading is finished?"
+4. Request Specific Actions
+
+Be very clear on what you want Replit to do: "Please add the console.log() line, run the code, and then tell me what the output is for cyclePhase. Don't try to fix the code yet, I just want to understand the value of cyclePhase."
+Putting it All Together: A Sample Prompt for Replit
+
+"I am getting this error: Cannot read properties of null (reading 'toLowerCase') in the file /home/runner/workspace/client/src/pages/home-page.tsx on line 323. The error seems to be related to a variable called cyclePhase.
+
+Could you add a temporary line of code right before line 323 that will display the value of cyclePhase? I want to know what its value is at that point. I've been told this error often happens when the program tries to use some information before it's ready, so could it be that cyclePhase doesn't have a value yet when line 323 runs? Is cyclePhase loaded from somewhere else? If so, could you check if line 323 is running before that loading is finished?
+
+Please add the console.log() line, run the code, and then tell me what the output is for cyclePhase. Don't try to fix the code yet, I just want to understand the value of cyclePhase."
+
