@@ -121,11 +121,10 @@ const AuthPage = () => {
 
   // Main render
   return (
-    <div className="min-h-screen gradient-primary flex flex-col md:flex-row">
-      {/* LEFT SIDE - Auth form */}
-      <div className="w-full md:w-1/2 p-6 flex items-center justify-center">
-        <div className="w-full max-w-md">
-          <h1 className="text-3xl font-bold text-white mb-10 text-center">HerFitness</h1>
+    <div className="min-h-screen gradient-primary flex flex-col">
+      <div className="w-full p-6 flex-1 flex flex-col">
+        <div className="w-full max-w-md mx-auto">
+          <h1 className="text-3xl font-bold text-white mb-8 text-center">HerFitness</h1>
           
           {/* Tab navigation */}
           <div className="flex border-b border-white/30 mb-6">
@@ -295,34 +294,34 @@ const AuthPage = () => {
         </div>
       </div>
       
-      {/* RIGHT SIDE - Hero/Marketing */}
-      <div className="hidden md:block md:w-1/2 p-10 flex items-center justify-center">
-        <div className="max-w-lg">
-          <h2 className="text-3xl font-bold text-white mb-4">Your personalized wellness journey starts here</h2>
-          <p className="text-white/80 mb-6">
+      {/* Hero/Marketing section - now at the bottom for mobile */}
+      <div className="w-full p-6 pt-0 pb-8 bg-white/5 backdrop-blur-sm">
+        <div className="max-w-md mx-auto">
+          <h2 className="text-2xl font-bold text-white mb-3">Your personalized wellness journey starts here</h2>
+          <p className="text-white/80 mb-4 text-sm">
             HerFitness is designed specifically for women, with personalized fitness recommendations 
             that adapt to your unique health needs, including your menstrual cycle.
           </p>
-          <ul className="space-y-2 text-white/90">
+          <ul className="space-y-2 text-white/90 text-sm">
             <li className="flex items-start">
-              <div className="bg-white/20 rounded-full p-1 mr-2 mt-1">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <div className="bg-white/20 rounded-full p-1 mr-2 mt-0.5 flex-shrink-0">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                   <path d="M20 6L9 17L4 12" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
                 </svg>
               </div>
               <span>Personalized workouts based on your cycle phase</span>
             </li>
             <li className="flex items-start">
-              <div className="bg-white/20 rounded-full p-1 mr-2 mt-1">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <div className="bg-white/20 rounded-full p-1 mr-2 mt-0.5 flex-shrink-0">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                   <path d="M20 6L9 17L4 12" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
                 </svg>
               </div>
               <span>Nutrition guidance adapting to your body's needs</span>
             </li>
             <li className="flex items-start">
-              <div className="bg-white/20 rounded-full p-1 mr-2 mt-1">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <div className="bg-white/20 rounded-full p-1 mr-2 mt-0.5 flex-shrink-0">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                   <path d="M20 6L9 17L4 12" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
                 </svg>
               </div>
@@ -330,14 +329,6 @@ const AuthPage = () => {
             </li>
           </ul>
         </div>
-      </div>
-      
-      {/* Mobile hero section (simplified) */}
-      <div className="block md:hidden p-6 mt-4 bg-white/10 rounded-lg">
-        <h2 className="text-xl font-bold text-white mb-2">Your personalized wellness journey</h2>
-        <p className="text-white/80 text-sm">
-          Join HerFitness for personalized workouts and nutrition that adapt to your body's needs.
-        </p>
       </div>
     </div>
   );

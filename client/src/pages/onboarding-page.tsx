@@ -1,16 +1,20 @@
-import { FC, useState } from "react";
+import { FC, useState, useEffect } from "react";
 import { useLocation } from "wouter";
 import { useAuth } from "@/hooks/use-auth";
 import { Button } from "@/components/ui/button";
-import { Loader2 } from "lucide-react";
+import { Loader2, Calendar as CalendarIcon } from "lucide-react";
 import { Calendar } from "@/components/ui/calendar";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card";
+import { Progress } from "@/components/ui/progress";
 import { HEALTH_GOALS, HEALTH_CONDITIONS } from "@shared/schema";
 import { format } from "date-fns";
 
-import HealthConditionCheckbox from "@/components/health-condition-checkbox";
+// Define the different onboarding steps
+type OnboardingStep = 'period' | 'age' | 'goals' | 'conditions';
+
+// Number of total onboarding steps
+const TOTAL_STEPS = 4;
 
 const OnboardingPage: FC = () => {
   const { user, isLoading, updateOnboarding } = useAuth();
@@ -22,6 +26,25 @@ const OnboardingPage: FC = () => {
   const [healthGoals, setHealthGoals] = useState<string[]>([]);
   const [healthConditions, setHealthConditions] = useState<string[]>([]);
   const [isPending, setIsPending] = useState(false);
+  
+  // Current step in the onboarding process
+  const [currentStep, setCurrentStep] = useState<OnboardingStep>('period');
+  
+  // Helper function to get step number
+  const getStepNumber = (step: OnboardingStep): number => {
+    switch (step) {
+      case 'period': return 1;
+      case 'age': return 2;
+      case 'goals': return 3;
+      case 'conditions': return 4;
+      default: return 1;
+    }
+  };
+  
+  // Helper function to get completion percentage
+  const getCompletionPercentage = (): number => {
+    return (getStepNumber(currentStep) - 1) * (100 / TOTAL_STEPS);
+  };
   
   // Helper function to toggle health condition
   const toggleHealthCondition = (condition: string) => {
@@ -39,6 +62,35 @@ const OnboardingPage: FC = () => {
         ? prev.filter(g => g !== goal)
         : [...prev, goal]
     );
+  };
+  
+  // Move to the next step
+  const goToNextStep = () => {
+    switch (currentStep) {
+      case 'period':
+        setCurrentStep('age');
+        break;
+      case 'age':
+        setCurrentStep('goals');
+        break;
+      case 'goals':
+        setCurrentStep('conditions');
+        break;
+      case 'conditions':
+        handleSubmit();
+        break;
+    }
+  };
+  
+  // Check if the current step is valid
+  const isCurrentStepValid = (): boolean => {
+    switch (currentStep) {
+      case 'period': return !!date;
+      case 'age': return !!age;
+      case 'goals': return healthGoals.length > 0;
+      case 'conditions': return true; // Conditions are optional
+      default: return false;
+    }
   };
   
   // Handle onboarding submission
@@ -67,77 +119,103 @@ const OnboardingPage: FC = () => {
     }, 800);
   };
   
-  // Calculate if form is valid
-  const isValid = !!date && !!age && healthGoals.length > 0;
-  
   // Show loading state while checking auth
   if (isLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <Loader2 className="h-8 w-8 animate-spin text-purple-600" />
+      <div className="min-h-screen flex items-center justify-center gradient-primary">
+        <Loader2 className="h-8 w-8 animate-spin text-white" />
       </div>
     );
   }
   
-  // If user is not logged in, redirect to auth page
-  if (!user) {
-    setLocation("/auth");
+  // Navigation effects
+  useEffect(() => {
+    if (!isLoading) {
+      if (!user) {
+        setLocation("/auth");
+      } else if (user.completedOnboarding) {
+        setLocation("/");
+      }
+    }
+  }, [user, isLoading, setLocation]);
+  
+  // Exit early if not authenticated or already completed onboarding
+  if (!user || user.completedOnboarding) {
     return null;
   }
   
-  // If user has already completed onboarding, redirect to home
-  if (user.completedOnboarding) {
-    setLocation("/");
-    return null;
-  }
+  // Current progress percentage
+  const progressPercentage = getCompletionPercentage();
   
   return (
-    <div className="min-h-screen py-6 px-3 sm:py-8 sm:px-4">
-      <div className="max-w-3xl mx-auto">
-        <Card className="bg-white/95 shadow-lg">
-          <CardHeader className="text-center py-4 sm:py-6">
-            <CardTitle className="text-xl sm:text-2xl font-bold text-purple-800">
-              Personalize Your Fitness Journey
-            </CardTitle>
-            <CardDescription className="text-gray-600 mt-2 text-sm sm:text-base">
-              Let us customize your experience based on your unique needs
-            </CardDescription>
-          </CardHeader>
-          
-          <CardContent className="space-y-6 sm:space-y-8 px-3 py-4 sm:p-6">
-            {/* Date of last period */}
-            <div className="space-y-2">
-              <h3 className="text-base sm:text-lg font-medium text-purple-700">
-                When was the first day of your last period?
-              </h3>
-              <p className="text-xs sm:text-sm text-gray-500 mb-3 sm:mb-4">
-                This helps us calculate your current cycle phase and provide relevant recommendations.
+    <div className="min-h-screen gradient-primary flex flex-col p-6">
+      {/* Progress indicator */}
+      <div className="mb-6">
+        <div className="flex justify-between items-center mb-2">
+          <div className="text-purple-900 font-medium">
+            Step {getStepNumber(currentStep)} of {TOTAL_STEPS}
+          </div>
+          <div className="text-purple-900 font-medium">
+            {progressPercentage}%
+          </div>
+        </div>
+        <Progress value={progressPercentage} className="h-2 bg-purple-200" />
+      </div>
+      
+      <div className="flex-1 flex flex-col">
+        {/* Period Step */}
+        {currentStep === 'period' && (
+          <div className="flex flex-col h-full">
+            <div className="mb-6 text-center">
+              <h2 className="text-2xl font-bold text-purple-900 mb-2">When was your last period?</h2>
+              <p className="text-purple-800/80">
+                This helps us personalize your fitness plan based on your cycle
               </p>
-              <div className="border rounded-md mx-auto max-w-[300px] sm:max-w-sm">
+            </div>
+            
+            <div className="flex-1 flex items-center justify-center">
+              <div className="bg-white rounded-lg p-4 w-full max-w-md">
+                <div className="flex items-center mb-2">
+                  <CalendarIcon className="mr-2 h-5 w-5 text-purple-500" />
+                  <span className="text-gray-700">Date of last period</span>
+                </div>
                 <Calendar
                   mode="single"
                   selected={date}
                   onSelect={setDate}
-                  className="mx-auto scale-90 sm:scale-100"
+                  className="mx-auto"
                   disabled={(date) => date > new Date()}
                 />
+                {date && (
+                  <p className="text-sm text-center text-gray-600 mt-2">
+                    Selected: {format(date, "MMMM d, yyyy")}
+                  </p>
+                )}
               </div>
-              {date && (
-                <p className="text-xs sm:text-sm text-center text-gray-600 mt-2">
-                  Selected: {format(date, "PPP")}
-                </p>
-              )}
             </div>
             
-            {/* Age selection */}
-            <div className="space-y-2">
-              <h3 className="text-base sm:text-lg font-medium text-purple-700">
-                What is your age?
-              </h3>
-              <p className="text-xs sm:text-sm text-gray-500 mb-3 sm:mb-4">
-                We'll use this to tailor advice appropriate for your life stage.
+            <Button
+              className="w-full py-2.5 mt-6 gradient-primary hover:opacity-90"
+              onClick={goToNextStep}
+              disabled={!isCurrentStepValid()}
+            >
+              Continue
+            </Button>
+          </div>
+        )}
+        
+        {/* Age Step */}
+        {currentStep === 'age' && (
+          <div className="flex flex-col h-full">
+            <div className="mb-6 text-center">
+              <h2 className="text-2xl font-bold text-purple-900 mb-2">What's your age?</h2>
+              <p className="text-purple-800/80">
+                We'll tailor recommendations specific to your life stage
               </p>
-              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-2 sm:gap-3">
+            </div>
+            
+            <div className="flex-1 flex items-center justify-center">
+              <div className="grid grid-cols-2 gap-3 w-full max-w-md">
                 {[
                   { label: "Under 18", value: 16 },
                   { label: "18-29", value: 24 },
@@ -149,9 +227,12 @@ const OnboardingPage: FC = () => {
                   <Button
                     key={ageOption.label}
                     type="button"
-                    size="sm"
-                    variant={age === ageOption.value ? "default" : "outline"}
-                    className={`text-xs sm:text-sm py-1 h-auto ${age === ageOption.value ? "gradient-primary" : ""}`}
+                    variant="outline"
+                    className={`py-3 text-base h-auto border-2 ${
+                      age === ageOption.value 
+                        ? "border-purple-500 bg-purple-100 text-purple-900" 
+                        : "border-white bg-white text-gray-700"
+                    }`}
                     onClick={() => setAge(ageOption.value)}
                   >
                     {ageOption.label}
@@ -160,20 +241,35 @@ const OnboardingPage: FC = () => {
               </div>
             </div>
             
-            {/* Health Goals */}
-            <div className="space-y-2">
-              <h3 className="text-base sm:text-lg font-medium text-purple-700">
-                What are your health goals?
-              </h3>
-              <p className="text-xs sm:text-sm text-gray-500 mb-3 sm:mb-4">
-                Select all that apply. This will help us prioritize content that aligns with your objectives.
+            <Button
+              className="w-full py-2.5 mt-6 gradient-primary hover:opacity-90"
+              onClick={goToNextStep}
+              disabled={!isCurrentStepValid()}
+            >
+              Continue
+            </Button>
+          </div>
+        )}
+        
+        {/* Health Goals Step */}
+        {currentStep === 'goals' && (
+          <div className="flex flex-col h-full">
+            <div className="mb-6 text-center">
+              <h2 className="text-2xl font-bold text-purple-900 mb-2">What are your health goals?</h2>
+              <p className="text-purple-800/80">
+                Select all that apply to personalize your journey
               </p>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-3">
+            </div>
+            
+            <div className="flex-1 flex flex-col overflow-y-auto">
+              <div className="grid grid-cols-1 gap-3 w-full max-w-md mx-auto">
                 {HEALTH_GOALS.map((goal) => (
                   <div 
                     key={goal}
-                    className={`flex items-center space-x-2 border rounded-md p-2 sm:p-3 cursor-pointer transition-colors ${
-                      healthGoals.includes(goal) ? "border-purple-500 bg-purple-50" : "border-gray-200"
+                    className={`flex items-center space-x-2 rounded-md py-3 px-4 cursor-pointer transition-colors ${
+                      healthGoals.includes(goal) 
+                        ? "bg-purple-100 border-2 border-purple-500" 
+                        : "bg-white border-2 border-white"
                     }`}
                     onClick={() => toggleHealthGoal(goal)}
                   >
@@ -181,10 +277,11 @@ const OnboardingPage: FC = () => {
                       id={`goal-${goal}`} 
                       checked={healthGoals.includes(goal)} 
                       onCheckedChange={() => toggleHealthGoal(goal)}
+                      className="data-[state=checked]:bg-purple-600"
                     />
                     <Label 
                       htmlFor={`goal-${goal}`} 
-                      className="cursor-pointer w-full text-sm sm:text-base"
+                      className="cursor-pointer w-full text-gray-700"
                     >
                       {goal}
                     </Label>
@@ -193,20 +290,35 @@ const OnboardingPage: FC = () => {
               </div>
             </div>
             
-            {/* Health Conditions */}
-            <div className="space-y-2">
-              <h3 className="text-base sm:text-lg font-medium text-purple-700">
-                Do you have any specific health conditions?
-              </h3>
-              <p className="text-xs sm:text-sm text-gray-500 mb-3 sm:mb-4">
-                Select all that apply. This is optional but helps us provide more relevant guidance.
+            <Button
+              className="w-full py-2.5 mt-6 gradient-primary hover:opacity-90"
+              onClick={goToNextStep}
+              disabled={!isCurrentStepValid()}
+            >
+              Continue
+            </Button>
+          </div>
+        )}
+        
+        {/* Health Conditions Step */}
+        {currentStep === 'conditions' && (
+          <div className="flex flex-col h-full">
+            <div className="mb-6 text-center">
+              <h2 className="text-2xl font-bold text-purple-900 mb-2">Any health conditions?</h2>
+              <p className="text-purple-800/80">
+                This is optional but helps us provide safer recommendations
               </p>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+            </div>
+            
+            <div className="flex-1 flex flex-col overflow-y-auto">
+              <div className="grid grid-cols-1 gap-3 w-full max-w-md mx-auto">
                 {HEALTH_CONDITIONS.map((condition) => (
                   <div 
                     key={condition}
-                    className={`flex items-center space-x-2 border rounded-md p-2 sm:p-3 cursor-pointer transition-colors ${
-                      healthConditions.includes(condition) ? "border-purple-500 bg-purple-50" : "border-gray-200"
+                    className={`flex items-center space-x-2 rounded-md py-3 px-4 cursor-pointer transition-colors ${
+                      healthConditions.includes(condition) 
+                        ? "bg-purple-100 border-2 border-purple-500" 
+                        : "bg-white border-2 border-white"
                     }`}
                     onClick={() => toggleHealthCondition(condition)}
                   >
@@ -214,10 +326,11 @@ const OnboardingPage: FC = () => {
                       id={`condition-${condition}`} 
                       checked={healthConditions.includes(condition)} 
                       onCheckedChange={() => toggleHealthCondition(condition)}
+                      className="data-[state=checked]:bg-purple-600"
                     />
                     <Label 
                       htmlFor={`condition-${condition}`} 
-                      className="cursor-pointer w-full text-sm sm:text-base"
+                      className="cursor-pointer w-full text-gray-700"
                     >
                       {condition}
                     </Label>
@@ -225,13 +338,11 @@ const OnboardingPage: FC = () => {
                 ))}
               </div>
             </div>
-          </CardContent>
-          
-          <CardFooter className="flex flex-col space-y-3 sm:space-y-4 px-4 py-4 sm:p-6">
-            <Button 
-              className="w-full gradient-primary hover:opacity-90 py-2 h-auto text-sm sm:text-base font-medium"
-              onClick={handleSubmit}
-              disabled={!isValid || isPending}
+            
+            <Button
+              className="w-full py-2.5 mt-6 gradient-primary hover:opacity-90"
+              onClick={goToNextStep}
+              disabled={isPending}
             >
               {isPending ? (
                 <>
@@ -242,11 +353,11 @@ const OnboardingPage: FC = () => {
                 "Complete & Continue"
               )}
             </Button>
-            <p className="text-xs text-gray-500 text-center px-2">
+            <p className="text-xs text-white/80 text-center px-2 mt-2">
               Your information is private and secure. We only use it to personalize your experience.
             </p>
-          </CardFooter>
-        </Card>
+          </div>
+        )}
       </div>
     </div>
   );
