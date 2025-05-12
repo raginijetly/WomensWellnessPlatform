@@ -4,26 +4,44 @@ import { z } from "zod";
 
 // Available health goals
 export const HEALTH_GOALS = [
-  "General Fitness",
-  "Weight Management",
-  "Energy Boost",
-  "Mood Improvement",
-  "Stress Reduction",
-  "Muscle Toning",
-  "Cardiovascular Health",
-  "Flexibility & Mobility",
-  "Better Sleep",
-  "Hormonal Balance"
+  "Weight management",
+  "Get stronger",
+  "Reduce stress/Manage my mood better",
+  "Improve sleep quality",
+  "Balance my hormones"
 ] as const;
 
 // Available health conditions
 export const HEALTH_CONDITIONS = [
   "PCOS",
+  "Thyroid disorder",
+  "Diabetes",
+  "Fibroids",
+  "Endometriosis"
+] as const;
+
+// Life stages
+export const LIFE_STAGES = [
+  "None",
   "Prenatal",
-  "New Mom",
-  "Menopause",
-  "Thyroid", 
-  "Diabetes"
+  "Postpartum",
+  "Menopause"
+] as const;
+
+// Symptoms
+export const SYMPTOMS = [
+  "Acne",
+  "Hair loss",
+  "Excessive Hair growth",
+  "Low libido",
+  "Fatigue"
+] as const;
+
+// Period regularity options
+export const PERIOD_REGULARITY = [
+  "Yes",
+  "No",
+  "I'm unsure"
 ] as const;
 
 // Menstrual cycle phases
@@ -43,8 +61,12 @@ export const users = pgTable("users", {
   email: text("email"),
   // Onboarding fields
   lastPeriodDate: date("last_period_date"),
+  dontKnowPeriodDate: boolean("dont_know_period_date").default(false),
   age: integer("age"),
+  periodsRegular: text("periods_regular"),
   healthGoals: text("health_goals").array(),
+  lifeStage: text("life_stage"),
+  symptoms: text("symptoms").array(),
   completedOnboarding: boolean("completed_onboarding").default(false).notNull(),
 });
 
@@ -72,10 +94,14 @@ export const loginSchema = z.object({
 // Onboarding schema
 export const onboardingSchema = z.object({
   lastPeriodDate: z.string().nullable().optional(),
+  dontKnowPeriodDate: z.boolean().optional(),
   age: z.number().min(13).max(100).nullable().optional(),
+  periodsRegular: z.string().optional(),
   healthGoals: z.array(z.string()).optional(),
-  completedOnboarding: z.boolean().optional(),
   healthConditions: z.array(z.string()).optional(),
+  lifeStage: z.string().optional(),
+  symptoms: z.array(z.string()).optional(),
+  completedOnboarding: z.boolean().optional(),
 });
 
 // Define types

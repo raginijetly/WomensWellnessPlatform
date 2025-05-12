@@ -1,0 +1,34 @@
+
+1. Age - Open text box to enter age
+2. First Date of last period: 
+    * Input: Calendar input (with an option to say "I don't know" which then provides the alternative text option)
+        * If user selects I don’t know then calendar goes away and pop up text comes up “You can log the first day of your last period later or log the beginning of your new one later”
+    * Purpose: To use to to immediately calculate the user's current estimated cycle day and understand which period phase they are in (menstruation, follicular, ovulation, luteal)
+3. Are your periods regular?
+    * Input: Have 3 options and below the option display small text which pops up when user selects Yes/No/I am unsure
+        * Yes - "Great! We can provide insights to help you optimize your lifestyle and habits to better align with your cycle."
+        * No - "Okay, we can help you track your periods and better understand your body's signals, even if they're irregular."
+        * I'm unsure - "No problem. We'll help you learn more about your cycle and provide personalized insights.”
+4. What are your primary health goals? (Multi select)
+    1. Weight management
+    2. Get stronger
+    3. Reduce stress/ Manage my mood bette
+    4. Improve sleep quality
+    5. Balance my hormones
+5. Do you have any of the following health conditions? (Multi select): 
+    1. PCOS
+    2. Thyroid disorder
+    3. Diabetes.
+    4. Fibroids
+    5. Endometriosis
+6. Are you currently in any of these major life stages? (Single select)
+    * Have 3 options and below the option display small text which pops up when user selects any of the options
+    1. Prenatal - “Congratulations! We're here to support you and your changing needs during this journey.”
+    2. Postpartum - "Congratulations! We're here to support your recovery and wellness after childbirth.
+    3. Menopause - "Changing bodies are hard. we are here to guide you through these changes and help adapt your lifestyle better
+7. In the past few months, have you experienced any of the following symptoms?
+    1. Acne
+    2. Hair loss
+    3. Excessive Hair growth
+    4. Low libido
+    5. Fatigue
