@@ -285,13 +285,13 @@ const HomePage: FC = () => {
         </div>
         
         {/* Cycle information */}
-        <section className="mb-8 bg-white/10 backdrop-blur-md rounded-xl p-6 text-white">
+        <section className="mb-8 bg-white rounded-xl p-6 shadow-md">
           <div className="flex items-center justify-between mb-4">
-            <h3 className="text-xl font-semibold flex items-center">
-              <Calendar className="mr-2 h-5 w-5" />
+            <h3 className="text-xl font-semibold flex items-center text-gray-800">
+              <Calendar className="mr-2 h-5 w-5 text-purple-600" />
               Cycle Tracking
             </h3>
-            <Button variant="ghost" className="text-white hover:bg-white/20 py-1 px-2 h-auto text-sm">
+            <Button variant="ghost" className="text-purple-600 hover:bg-purple-50 py-1 px-2 h-auto text-sm">
               Update <ArrowRight className="ml-1 h-3 w-3" />
             </Button>
           </div>
@@ -301,34 +301,42 @@ const HomePage: FC = () => {
               <>
                 <div className="flex justify-between items-center">
                   <div>
-                    <span className="text-sm opacity-80">Current phase</span>
+                    <span className="text-sm text-gray-500">Current phase</span>
                     <div className="flex items-center">
                       {getPhaseIcon()}
-                      <span className="ml-2 text-lg font-medium">{cyclePhase}</span>
+                      <span className="ml-2 text-lg font-medium text-gray-800">{cyclePhase}</span>
                     </div>
                   </div>
-                  <div>
-                    <span className="text-sm opacity-80">Cycle day</span>
-                    <div className="text-lg font-medium text-center">{cycleDay}</div>
+                  
+                  {/* More prominent cycle day */}
+                  <div className="flex flex-col items-center">
+                    <div className="w-20 h-20 rounded-full bg-yellow-100 flex flex-col items-center justify-center shadow-sm border border-yellow-200">
+                      <span className="text-3xl font-bold text-purple-600">{cycleDay}</span>
+                      <span className="text-xs text-gray-600">Day of cycle</span>
+                    </div>
+                    <span className={`text-sm font-medium mt-1 ${getPhaseColor()}`}>
+                      {cyclePhase} Phase
+                    </span>
                   </div>
+                  
                   <div>
-                    <span className="text-sm opacity-80">Next phase in</span>
-                    <div className="text-lg font-medium text-center">{nextPhaseIn} days</div>
+                    <span className="text-sm text-gray-500">Next phase in</span>
+                    <div className="text-lg font-medium text-center text-gray-800">{nextPhaseIn} days</div>
                   </div>
                 </div>
                 
                 <div>
-                  <div className="flex justify-between text-xs mb-1">
+                  <div className="flex justify-between text-xs mb-1 text-gray-500">
                     <span>Day 1</span>
                     <span>Day 28</span>
                   </div>
-                  <Progress value={cyclePercentage} className="h-2 bg-white/20" />
+                  <Progress value={cyclePercentage} className="h-2 bg-gray-100" />
                 </div>
               </>
             ) : (
               <div className="text-center py-2">
-                <p>Track your cycle to get personalized recommendations</p>
-                <Button variant="outline" className="mt-2 bg-white/10 text-white border-white/20 hover:bg-white/20">
+                <p className="text-gray-700">Track your cycle to get personalized recommendations</p>
+                <Button variant="outline" className="mt-2 text-purple-600 border-purple-200 hover:bg-purple-50">
                   Add Period Date
                 </Button>
               </div>
@@ -347,7 +355,24 @@ const HomePage: FC = () => {
             
             <div className="space-y-3">
               {/* Debug log: {console.log("Debug cyclePhase value:", cyclePhase)} */}
-              <p className="text-sm text-gray-600">
+              <div className="text-sm text-gray-600 mb-3">
+                {cyclePhase === "Follicular" && (
+                  <p>The Follicular phase is a great time to build muscle as your energy increases. Your body naturally has more stamina now.</p>
+                )}
+                {cyclePhase === "Ovulation" && (
+                  <p>During Ovulation, your energy is at its peak, making it ideal for high-intensity workouts and setting new personal records.</p>
+                )}
+                {cyclePhase === "Luteal" && (
+                  <p>In the Luteal phase, your body is winding down. Focus on moderate activity and active recovery to support this transition.</p>
+                )}
+                {cyclePhase === "Menstruation" && (
+                  <p>During Menstruation, your energy is lower. Gentle movement supports your body's natural recovery process.</p>
+                )}
+                {cyclePhase === "Unknown" && (
+                  <p>Matching your workouts to your cycle phase can optimize results and make exercise feel more natural and enjoyable.</p>
+                )}
+              </div>
+              <p className="text-sm text-gray-600 font-medium">
                 Based on your {cyclePhase ? cyclePhase.toLowerCase() : 'current'} phase, focus on:
               </p>
               <ul className="space-y-2">

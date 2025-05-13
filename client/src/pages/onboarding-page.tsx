@@ -538,7 +538,7 @@ const OnboardingPage: FC = () => {
             
             <div className="mt-auto pt-6 space-y-3">
               <Button
-                className="w-full py-2.5 gradient-primary hover:opacity-90 shadow-lg"
+                className="w-full continue-button"
                 onClick={goToNextStep}
               >
                 Continue
@@ -609,7 +609,7 @@ const OnboardingPage: FC = () => {
             
             <div className="mt-auto pt-6 space-y-3">
               <Button
-                className="w-full py-2.5 gradient-primary hover:opacity-90 shadow-lg"
+                className="w-full continue-button"
                 onClick={goToNextStep}
               >
                 Continue
@@ -678,7 +678,7 @@ const OnboardingPage: FC = () => {
             
             <div className="mt-auto pt-6 space-y-3">
               <Button
-                className="w-full py-3 gradient-primary hover:opacity-90 shadow-lg text-lg font-medium"
+                className="w-full continue-button"
                 onClick={goToNextStep}
               >
                 Continue
