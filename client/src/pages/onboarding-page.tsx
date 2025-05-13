@@ -218,14 +218,11 @@ const OnboardingPage: FC = () => {
   return (
     <div className="min-h-screen gradient-primary flex flex-col p-6">
       {currentStep !== 'completion' && (
-        /* Progress indicator */
+        /* Progress indicator - removing percentage and keeping just step count */
         <div className="mb-6">
-          <div className="flex justify-between items-center mb-2">
+          <div className="flex items-center mb-2">
             <div className="text-purple-900 font-medium">
               Step {getStepNumber(currentStep)} of {TOTAL_STEPS}
-            </div>
-            <div className="text-purple-900 font-medium">
-              {progressPercentage}%
             </div>
           </div>
           <Progress value={progressPercentage} className="h-2 bg-purple-200" />
@@ -259,7 +256,7 @@ const OnboardingPage: FC = () => {
             
             <div className="mt-auto pt-6 space-y-3">
               <Button
-                className="w-full py-2.5 gradient-primary hover:opacity-90"
+                className="w-full py-3 gradient-primary hover:opacity-90 shadow-lg text-lg font-medium"
                 onClick={goToNextStep}
                 disabled={!ageInput}
               >
@@ -293,13 +290,16 @@ const OnboardingPage: FC = () => {
                     <CalendarIcon className="mr-2 h-5 w-5 text-purple-500" />
                     <span className="text-gray-700">First day of last period</span>
                   </div>
-                  <Calendar
-                    mode="single"
-                    selected={dateInput}
-                    onSelect={setDateInput}
-                    className="mx-auto"
-                    disabled={(date) => date > new Date()}
-                  />
+                  {/* Center calendar and make it use full width */}
+                  <div className="flex justify-center w-full">
+                    <Calendar
+                      mode="single"
+                      selected={dateInput}
+                      onSelect={setDateInput}
+                      className="w-full"
+                      disabled={(date) => date > new Date()}
+                    />
+                  </div>
                   {dateInput && (
                     <p className="text-sm text-center text-gray-600 mt-2">
                       Selected: {format(dateInput, "MMMM d, yyyy")}
@@ -333,7 +333,7 @@ const OnboardingPage: FC = () => {
             
             <div className="mt-auto pt-6 space-y-3">
               <Button
-                className="w-full py-2.5 gradient-primary hover:opacity-90"
+                className="w-full py-3 gradient-primary hover:opacity-90 shadow-lg text-lg font-medium"
                 onClick={goToNextStep}
               >
                 Continue
@@ -362,7 +362,7 @@ const OnboardingPage: FC = () => {
             <div className="flex-1 flex flex-col justify-center">
               <div className="grid grid-cols-1 gap-4 w-full max-w-md mx-auto">
                 {PERIOD_REGULARITY.map((option) => (
-                  <div key={option} className="space-y-2">
+                  <div key={option}>
                     <button
                       className={`w-full py-3 px-4 text-left border-2 rounded-lg ${
                         periodsRegular === option 
@@ -372,15 +372,16 @@ const OnboardingPage: FC = () => {
                       onClick={() => setPeriodsRegular(option)}
                     >
                       <span className="text-gray-800 font-medium">{option}</span>
+                      
+                      {/* Integrated follow-up content within the same container */}
+                      {periodsRegular === option && (
+                        <div className="text-sm text-purple-700 mt-2">
+                          {option === "Yes" && "Great! We can provide insights to help you optimize your lifestyle and habits to better align with your cycle."}
+                          {option === "No" && "Okay, we can help you track your periods and better understand your body's signals, even if they're irregular."}
+                          {option === "I'm unsure" && "No problem. We'll help you learn more about your cycle and provide personalized insights."}
+                        </div>
+                      )}
                     </button>
-                    
-                    {periodsRegular === option && (
-                      <div className="text-sm text-purple-700 p-2 bg-purple-50/70 rounded border border-purple-100">
-                        {option === "Yes" && "Great! We can provide insights to help you optimize your lifestyle and habits to better align with your cycle."}
-                        {option === "No" && "Okay, we can help you track your periods and better understand your body's signals, even if they're irregular."}
-                        {option === "I'm unsure" && "No problem. We'll help you learn more about your cycle and provide personalized insights."}
-                      </div>
-                    )}
                   </div>
                 ))}
               </div>
@@ -388,7 +389,7 @@ const OnboardingPage: FC = () => {
             
             <div className="mt-auto pt-6 space-y-3">
               <Button
-                className="w-full py-2.5 gradient-primary hover:opacity-90"
+                className="w-full py-3 gradient-primary hover:opacity-90 shadow-lg text-lg font-medium"
                 onClick={goToNextStep}
                 disabled={!periodsRegular}
               >
@@ -499,12 +500,24 @@ const OnboardingPage: FC = () => {
                     </Label>
                   </div>
                 ))}
+                
+                {/* None of these apply option */}
+                <div 
+                  className={`flex items-center space-x-2 rounded-md py-3 px-4 cursor-pointer transition-colors bg-white border-2 border-white`}
+                  onClick={() => setHealthConditions([])}
+                >
+                  <Label 
+                    className="cursor-pointer w-full text-gray-700 font-medium"
+                  >
+                    None of these apply to me
+                  </Label>
+                </div>
               </div>
             </div>
             
             <div className="mt-auto pt-6 space-y-3">
               <Button
-                className="w-full py-2.5 gradient-primary hover:opacity-90"
+                className="w-full py-2.5 gradient-primary hover:opacity-90 shadow-lg"
                 onClick={goToNextStep}
               >
                 Continue
@@ -532,6 +545,21 @@ const OnboardingPage: FC = () => {
             
             <div className="flex-1 flex flex-col justify-center">
               <div className="grid grid-cols-1 gap-4 w-full max-w-md mx-auto">
+                {/* Add "None" as first option in the list */}
+                <div key="None" className="space-y-2">
+                  <button
+                    className={`w-full py-3 px-4 text-left border-2 rounded-lg ${
+                      lifeStage === "None" 
+                        ? "border-purple-500 bg-purple-100" 
+                        : "border-white bg-white"
+                    }`}
+                    onClick={() => setLifeStage("None")}
+                  >
+                    <span className="text-gray-800 font-medium">None of these apply to me</span>
+                  </button>
+                </div>
+                
+                {/* Other life stage options */}
                 {LIFE_STAGES.slice(1).map((stage) => (
                   <div key={stage} className="space-y-2">
                     <button
@@ -543,15 +571,16 @@ const OnboardingPage: FC = () => {
                       onClick={() => setLifeStage(stage)}
                     >
                       <span className="text-gray-800 font-medium">{stage}</span>
+                      
+                      {/* Integrated follow-up content within the button */}
+                      {lifeStage === stage && (
+                        <div className="text-sm text-purple-700 mt-2">
+                          {stage === "Prenatal" && "Congratulations! We're here to support you and your changing needs during this journey."}
+                          {stage === "Postpartum" && "Congratulations! We're here to support your recovery and wellness after childbirth."}
+                          {stage === "Menopause" && "Changing bodies are hard. We are here to guide you through these changes and help adapt your lifestyle better."}
+                        </div>
+                      )}
                     </button>
-                    
-                    {lifeStage === stage && (
-                      <div className="text-sm text-purple-700 p-2 bg-purple-50/70 rounded border border-purple-100">
-                        {stage === "Prenatal" && "Congratulations! We're here to support you and your changing needs during this journey."}
-                        {stage === "Postpartum" && "Congratulations! We're here to support your recovery and wellness after childbirth."}
-                        {stage === "Menopause" && "Changing bodies are hard. We are here to guide you through these changes and help adapt your lifestyle better."}
-                      </div>
-                    )}
                   </div>
                 ))}
               </div>
@@ -559,7 +588,7 @@ const OnboardingPage: FC = () => {
             
             <div className="mt-auto pt-6 space-y-3">
               <Button
-                className="w-full py-2.5 gradient-primary hover:opacity-90"
+                className="w-full py-2.5 gradient-primary hover:opacity-90 shadow-lg"
                 onClick={goToNextStep}
               >
                 Continue
@@ -567,12 +596,9 @@ const OnboardingPage: FC = () => {
               <Button
                 variant="ghost"
                 className="w-full py-2.5 text-purple-800 hover:text-purple-900 hover:bg-purple-50/50"
-                onClick={() => {
-                  setLifeStage("None");
-                  skipStep();
-                }}
+                onClick={skipStep}
               >
-                None of these apply to me
+                Skip for now
               </Button>
             </div>
           </div>
@@ -614,12 +640,24 @@ const OnboardingPage: FC = () => {
                     </Label>
                   </div>
                 ))}
+                
+                {/* None of these apply option */}
+                <div 
+                  className={`flex items-center space-x-2 rounded-md py-3 px-4 cursor-pointer transition-colors bg-white border-2 border-white`}
+                  onClick={() => setSymptoms([])}
+                >
+                  <Label 
+                    className="cursor-pointer w-full text-gray-700 font-medium"
+                  >
+                    None of these apply to me
+                  </Label>
+                </div>
               </div>
             </div>
             
             <div className="mt-auto pt-6 space-y-3">
               <Button
-                className="w-full py-2.5 gradient-primary hover:opacity-90"
+                className="w-full py-3 gradient-primary hover:opacity-90 shadow-lg text-lg font-medium"
                 onClick={goToNextStep}
               >
                 Continue
