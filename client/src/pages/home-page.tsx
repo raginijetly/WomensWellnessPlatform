@@ -22,11 +22,13 @@ const HomePage: FC = () => {
   const { user, logoutMutation, isLoading } = useAuth();
   const [_, setLocation] = useLocation();
   
-  // Cycle tracking state
-  const [cycleDay, setCycleDay] = useState<number | null>(null);
-  const [cyclePhase, setCyclePhase] = useState<string | null>(null);
+  // Cycle tracking state - initialize with default values
+  const [cycleDay, setCycleDay] = useState<number>(1);
+  const [cyclePhase, setCyclePhase] = useState<string>("Unknown");
   const [nextPhaseIn, setNextPhaseIn] = useState<number | null>(null);
   const [cyclePercentage, setCyclePercentage] = useState<number>(0);
+  
+  // We now initialize states with default values, so no need for a separate initialization effect
   
   // Calculate cycle information when user data is available
   useEffect(() => {
