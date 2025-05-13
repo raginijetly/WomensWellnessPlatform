@@ -401,7 +401,24 @@ const HomePage: FC = () => {
             
             <div className="space-y-3">
               {/* Debug log: {console.log("Debug cyclePhase value (nutrition):", cyclePhase)} */}
-              <p className="text-sm text-gray-600">
+              <div className="text-sm text-gray-600 mb-3">
+                {cyclePhase === "Follicular" && (
+                  <p>During your follicular phase, focus on foods that support rising estrogen levels. Your metabolism is increasing and your body needs more nutrients.</p>
+                )}
+                {cyclePhase === "Ovulation" && (
+                  <p>During ovulation, your body benefits from antioxidant-rich foods that support hormone balance and cellular health.</p>
+                )}
+                {cyclePhase === "Luteal" && (
+                  <p>In the luteal phase, your body needs foods that help balance mood and reduce bloating as progesterone rises.</p>
+                )}
+                {cyclePhase === "Menstruation" && (
+                  <p>During menstruation, your body needs extra iron and anti-inflammatory foods to replenish what's lost and reduce discomfort.</p>
+                )}
+                {cyclePhase === "Unknown" && (
+                  <p>Eating according to your cycle phase can help manage symptoms and provide your body with exactly what it needs when it needs it.</p>
+                )}
+              </div>
+              <p className="text-sm text-gray-600 font-medium">
                 Foods to focus on during your {cyclePhase ? cyclePhase.toLowerCase() : 'current'} phase:
               </p>
               <ul className="space-y-2">
