@@ -119,8 +119,11 @@ export default function AuthPage() {
             <h1 className="text-3xl sm:text-4xl font-bold text-white mb-2">
               HerFitness
             </h1>
-            <p className="text-white text-base sm:text-lg">
-              {isLogin ? "Sign in to your account" : "Create a new account"}
+            <p className="text-white text-base sm:text-lg opacity-90 mb-1">
+              Cycle-Smart Fitness for Every Stage of Womanhood
+            </p>
+            <p className="text-white text-sm sm:text-base opacity-80">
+              Built by Women for Women
             </p>
           </div>
 
@@ -289,45 +292,9 @@ export default function AuthPage() {
         </div>
       </div>
 
-      {/* Mobile Hero section (shown at bottom on mobile) */}
-      <div className="md:hidden w-full px-4 pt-4 pb-8 mt-4 border-t border-white/20">
-        <div className="text-white text-center max-w-md mx-auto">
-          <h2 className="text-2xl font-bold mb-4">
-            Your fitness journey starts here
-          </h2>
-          <p className="text-base mb-6">
-            Personalized workouts designed for women's unique needs
-          </p>
-          <div className="flex flex-col space-y-3">
-            <div className="bg-white/20 backdrop-blur-sm p-3 rounded-lg">
-              <h3 className="font-semibold mb-1">Personalized Plans</h3>
-              <p className="text-sm">Workouts tailored to your body's unique cycles</p>
-            </div>
-          </div>
-        </div>
-      </div>
-      
-      {/* Desktop Hero section */}
-      <div className="hidden md:flex md:w-1/2 p-10 items-center justify-center">
-        <div className="text-white max-w-lg">
-          <h1 className="text-5xl font-bold mb-6">
-            Your personal fitness journey starts here
-          </h1>
-          <p className="text-xl mb-8">
-            HerFitness helps you achieve your health and fitness goals with personalized workouts
-            designed specifically for women's needs.
-          </p>
-          <div className="grid grid-cols-2 gap-4">
-            <div className="bg-white/20 backdrop-blur-sm p-4 rounded-lg">
-              <h3 className="font-semibold text-lg mb-1">Personalized Plans</h3>
-              <p>Workouts tailored to your body's unique cycles</p>
-            </div>
-            <div className="bg-white/20 backdrop-blur-sm p-4 rounded-lg">
-              <h3 className="font-semibold text-lg mb-1">Expert Guidance</h3>
-              <p>Created by trainers who understand women's health</p>
-            </div>
-          </div>
-        </div>
+      {/* Hero section - removed per request to declutter */}
+      <div className="hidden md:flex md:w-1/2 gradient-primary items-center justify-center">
+        {/* Empty as per request */}
       </div>
     </div>
   );

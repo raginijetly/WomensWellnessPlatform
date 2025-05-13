@@ -290,28 +290,28 @@ const OnboardingPage: FC = () => {
                     <CalendarIcon className="mr-2 h-5 w-5 text-purple-500" />
                     <span className="text-gray-700">First day of last period</span>
                   </div>
-                  {/* Center calendar and make it use full width */}
+                  
+                  {/* Fixed calendar layout to avoid blank space on right */}
                   <div className="flex justify-center w-full">
                     <Calendar
                       mode="single"
                       selected={dateInput}
                       onSelect={setDateInput}
-                      className="w-full"
+                      className="w-full block"
+                      styles={{
+                        root: { width: '100%' },
+                        month: { width: '100%' },
+                        table: { width: '100%' }
+                      }}
                       disabled={(date) => date > new Date()}
                     />
                   </div>
+                  
                   {dateInput && (
                     <p className="text-sm text-center text-gray-600 mt-2">
                       Selected: {format(dateInput, "MMMM d, yyyy")}
                     </p>
                   )}
-                  <Button
-                    variant="ghost"
-                    className="w-full mt-4 text-purple-600"
-                    onClick={() => setDontKnowDate(true)}
-                  >
-                    I don't know
-                  </Button>
                 </div>
               </div>
             ) : (
@@ -333,18 +333,28 @@ const OnboardingPage: FC = () => {
             
             <div className="mt-auto pt-6 space-y-3">
               <Button
-                className="w-full py-3 gradient-primary hover:opacity-90 shadow-lg text-lg font-medium"
+                className="w-full py-3 gradient-primary hover:opacity-90 shadow-lg text-lg font-medium border border-white"
                 onClick={goToNextStep}
               >
                 Continue
               </Button>
-              <Button
-                variant="ghost"
-                className="w-full py-2.5 text-purple-800 hover:text-purple-900 hover:bg-purple-50/50"
-                onClick={skipStep}
-              >
-                Skip for now
-              </Button>
+              {!dontKnowDate ? (
+                <Button
+                  variant="ghost"
+                  className="w-full py-2.5 text-purple-800 hover:text-purple-900 hover:bg-purple-50/50"
+                  onClick={() => setDontKnowDate(true)}
+                >
+                  I don't know
+                </Button>
+              ) : (
+                <Button
+                  variant="ghost"
+                  className="w-full py-2.5 text-purple-800 hover:text-purple-900 hover:bg-purple-50/50"
+                  onClick={skipStep}
+                >
+                  Skip for now
+                </Button>
+              )}
             </div>
           </div>
         )}
@@ -503,10 +513,21 @@ const OnboardingPage: FC = () => {
                 
                 {/* None of these apply option */}
                 <div 
-                  className={`flex items-center space-x-2 rounded-md py-3 px-4 cursor-pointer transition-colors bg-white border-2 border-white`}
+                  className={`flex items-center space-x-2 rounded-md py-3 px-4 cursor-pointer transition-colors ${
+                    healthConditions.length === 0 
+                      ? "bg-purple-100 border-2 border-purple-500" 
+                      : "bg-white border-2 border-white"
+                  }`}
                   onClick={() => setHealthConditions([])}
                 >
+                  <Checkbox 
+                    id="condition-none" 
+                    checked={healthConditions.length === 0} 
+                    onCheckedChange={() => setHealthConditions([])}
+                    className="data-[state=checked]:bg-purple-600"
+                  />
                   <Label 
+                    htmlFor="condition-none" 
                     className="cursor-pointer w-full text-gray-700 font-medium"
                   >
                     None of these apply to me
