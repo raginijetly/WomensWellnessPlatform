@@ -35,8 +35,10 @@ const OnboardingPage: FC = () => {
   const [periodsRegular, setPeriodsRegular] = useState<string | null>(null);
   const [healthGoals, setHealthGoals] = useState<string[]>([]);
   const [healthConditions, setHealthConditions] = useState<string[]>([]);
+  const [noneHealthCondition, setNoneHealthCondition] = useState<boolean>(false);
   const [lifeStage, setLifeStage] = useState<string | null>(null);
   const [symptoms, setSymptoms] = useState<string[]>([]);
+  const [noneSymptoms, setNoneSymptoms] = useState<boolean>(false);
   const [isPending, setIsPending] = useState(false);
   
   // Current step in the onboarding process
@@ -514,16 +516,26 @@ const OnboardingPage: FC = () => {
                 {/* None of these apply option */}
                 <div 
                   className={`flex items-center space-x-2 rounded-md py-3 px-4 cursor-pointer transition-colors ${
-                    healthConditions.length === 0 
+                    noneHealthCondition
                       ? "bg-purple-100 border-2 border-purple-500" 
                       : "bg-white border-2 border-white"
                   }`}
-                  onClick={() => setHealthConditions([])}
+                  onClick={() => {
+                    setNoneHealthCondition(!noneHealthCondition);
+                    if (!noneHealthCondition) {
+                      setHealthConditions([]);
+                    }
+                  }}
                 >
                   <Checkbox 
                     id="condition-none" 
-                    checked={healthConditions.length === 0} 
-                    onCheckedChange={() => setHealthConditions([])}
+                    checked={noneHealthCondition} 
+                    onCheckedChange={(checked) => {
+                      setNoneHealthCondition(checked === true);
+                      if (checked) {
+                        setHealthConditions([]);
+                      }
+                    }}
                     className="data-[state=checked]:bg-purple-600"
                   />
                   <Label 
@@ -665,16 +677,26 @@ const OnboardingPage: FC = () => {
                 {/* None of these apply option */}
                 <div 
                   className={`flex items-center space-x-2 rounded-md py-3 px-4 cursor-pointer transition-colors ${
-                    symptoms.length === 0 
+                    noneSymptoms
                       ? "bg-purple-100 border-2 border-purple-500" 
                       : "bg-white border-2 border-white"
                   }`}
-                  onClick={() => setSymptoms([])}
+                  onClick={() => {
+                    setNoneSymptoms(!noneSymptoms);
+                    if (!noneSymptoms) {
+                      setSymptoms([]);
+                    }
+                  }}
                 >
                   <Checkbox 
                     id="symptom-none" 
-                    checked={symptoms.length === 0} 
-                    onCheckedChange={() => setSymptoms([])}
+                    checked={noneSymptoms} 
+                    onCheckedChange={(checked) => {
+                      setNoneSymptoms(checked === true);
+                      if (checked) {
+                        setSymptoms([]);
+                      }
+                    }}
                     className="data-[state=checked]:bg-purple-600"
                   />
                   <Label 

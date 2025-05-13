@@ -299,8 +299,8 @@ const HomePage: FC = () => {
           <div className="flex flex-col space-y-4">
             {user.lastPeriodDate ? (
               <>
-                <div className="flex justify-between items-center">
-                  <div>
+                <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center">
+                  <div className="mb-4 sm:mb-0">
                     <span className="text-sm text-gray-500">Current phase</span>
                     <div className="flex items-center">
                       {getPhaseIcon()}
@@ -309,7 +309,7 @@ const HomePage: FC = () => {
                   </div>
                   
                   {/* Clean and sleek cycle day */}
-                  <div className="flex flex-col items-center">
+                  <div className="flex flex-col items-center mb-4 sm:mb-0 order-first sm:order-none">
                     <div className="flex flex-col items-center justify-center">
                       <div className="w-20 h-20 rounded-full bg-purple-100 flex items-center justify-center border-4 border-purple-200">
                         <span className="text-4xl font-bold text-purple-600">{cycleDay}</span>
@@ -339,7 +339,7 @@ const HomePage: FC = () => {
                   {/* Hormone Levels Section */}
                   <div className="mt-6">
                     <h4 className="text-sm font-medium text-gray-700 mb-3">HORMONE LEVELS</h4>
-                    <div className="grid grid-cols-3 gap-4">
+                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                       {/* Estrogen */}
                       <div>
                         <div className="flex justify-between items-center mb-1">
