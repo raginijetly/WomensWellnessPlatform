@@ -124,7 +124,15 @@ const AuthPage = () => {
     <div className="min-h-screen gradient-primary flex flex-col">
       <div className="w-full p-6 flex-1 flex flex-col">
         <div className="w-full max-w-md mx-auto">
-          <h1 className="text-3xl font-bold text-white mb-8 text-center">HerFitness</h1>
+          <div className="text-center mb-8">
+            <h1 className="text-3xl font-bold text-white mb-2">HerFitness</h1>
+            <p className="text-white text-base opacity-90 mb-1">
+              Cycle-Smart Fitness for Every Stage of Womanhood
+            </p>
+            <p className="text-white text-sm opacity-80">
+              Built by Women for Women
+            </p>
+          </div>
           
           {/* Tab navigation */}
           <div className="flex border-b border-white/30 mb-6">
@@ -294,42 +302,7 @@ const AuthPage = () => {
         </div>
       </div>
       
-      {/* Hero/Marketing section - now at the bottom for mobile */}
-      <div className="w-full p-6 pt-0 pb-8 bg-white/5 backdrop-blur-sm">
-        <div className="max-w-md mx-auto">
-          <h2 className="text-2xl font-bold text-white mb-3">Your personalized wellness journey starts here</h2>
-          <p className="text-white/80 mb-4 text-sm">
-            HerFitness is designed specifically for women, with personalized fitness recommendations 
-            that adapt to your unique health needs, including your menstrual cycle.
-          </p>
-          <ul className="space-y-2 text-white/90 text-sm">
-            <li className="flex items-start">
-              <div className="bg-white/20 rounded-full p-1 mr-2 mt-0.5 flex-shrink-0">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <path d="M20 6L9 17L4 12" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                </svg>
-              </div>
-              <span>Personalized workouts based on your cycle phase</span>
-            </li>
-            <li className="flex items-start">
-              <div className="bg-white/20 rounded-full p-1 mr-2 mt-0.5 flex-shrink-0">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <path d="M20 6L9 17L4 12" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                </svg>
-              </div>
-              <span>Nutrition guidance adapting to your body's needs</span>
-            </li>
-            <li className="flex items-start">
-              <div className="bg-white/20 rounded-full p-1 mr-2 mt-0.5 flex-shrink-0">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <path d="M20 6L9 17L4 12" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                </svg>
-              </div>
-              <span>Supportive community of women on similar journeys</span>
-            </li>
-          </ul>
-        </div>
-      </div>
+      {/* No hero/marketing section as per request */}
     </div>
   );
 };
