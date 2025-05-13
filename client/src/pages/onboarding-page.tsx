@@ -256,7 +256,7 @@ const OnboardingPage: FC = () => {
             
             <div className="mt-auto pt-6 space-y-3">
               <Button
-                className="w-full continue-button"
+                className="w-full py-3 gradient-primary hover:opacity-90 shadow-lg text-lg font-medium border border-white"
                 onClick={goToNextStep}
                 disabled={!ageInput}
               >
@@ -333,7 +333,7 @@ const OnboardingPage: FC = () => {
             
             <div className="mt-auto pt-6 space-y-3">
               <Button
-                className="w-full continue-button"
+                className="w-full py-3 gradient-primary hover:opacity-90 shadow-lg text-lg font-medium border border-white"
                 onClick={goToNextStep}
               >
                 Continue
@@ -399,7 +399,7 @@ const OnboardingPage: FC = () => {
             
             <div className="mt-auto pt-6 space-y-3">
               <Button
-                className="w-full continue-button"
+                className="w-full py-3 gradient-primary hover:opacity-90 shadow-lg text-lg font-medium border border-white"
                 onClick={goToNextStep}
                 disabled={!periodsRegular}
               >
@@ -457,7 +457,7 @@ const OnboardingPage: FC = () => {
             
             <div className="mt-auto pt-6 space-y-3">
               <Button
-                className="w-full continue-button"
+                className="w-full py-3 gradient-primary hover:opacity-90 shadow-lg text-lg font-medium border border-white"
                 onClick={goToNextStep}
                 disabled={healthGoals.length === 0}
               >
@@ -538,7 +538,7 @@ const OnboardingPage: FC = () => {
             
             <div className="mt-auto pt-6 space-y-3">
               <Button
-                className="w-full continue-button"
+                className="w-full py-3 gradient-primary hover:opacity-90 shadow-lg text-lg font-medium border border-white"
                 onClick={goToNextStep}
               >
                 Continue
@@ -609,7 +609,7 @@ const OnboardingPage: FC = () => {
             
             <div className="mt-auto pt-6 space-y-3">
               <Button
-                className="w-full continue-button"
+                className="w-full py-3 gradient-primary hover:opacity-90 shadow-lg text-lg font-medium border border-white"
                 onClick={goToNextStep}
               >
                 Continue
@@ -678,7 +678,7 @@ const OnboardingPage: FC = () => {
             
             <div className="mt-auto pt-6 space-y-3">
               <Button
-                className="w-full continue-button"
+                className="w-full py-3 gradient-primary hover:opacity-90 shadow-lg text-lg font-medium border border-white"
                 onClick={goToNextStep}
               >
                 Continue
