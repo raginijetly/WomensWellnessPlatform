@@ -308,15 +308,12 @@ const HomePage: FC = () => {
                     </div>
                   </div>
                   
-                  {/* More prominent cycle day */}
+                  {/* Clean and sleek cycle day */}
                   <div className="flex flex-col items-center">
-                    <div className="w-20 h-20 rounded-full bg-yellow-100 flex flex-col items-center justify-center shadow-sm border border-yellow-200">
-                      <span className="text-3xl font-bold text-purple-600">{cycleDay}</span>
-                      <span className="text-xs text-gray-600">Day of cycle</span>
+                    <div className="flex flex-col items-center justify-center">
+                      <span className="text-4xl font-bold text-purple-600">{cycleDay}</span>
+                      <span className="text-xs text-gray-600 mt-1">Day of cycle</span>
                     </div>
-                    <span className={`text-sm font-medium mt-1 ${getPhaseColor()}`}>
-                      {cyclePhase} Phase
-                    </span>
                   </div>
                   
                   <div>
@@ -347,7 +344,7 @@ const HomePage: FC = () => {
         {/* Recommendations */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
           {/* Workout recommendations */}
-          <section className={`p-6 rounded-xl border ${getPhaseBackgroundColor()} ${getPhaseBorderColor()}`}>
+          <section className="p-6 rounded-xl border bg-white shadow-md">
             <div className="flex items-center mb-4">
               <Dumbbell className="h-5 w-5 mr-2 text-purple-600" />
               <h3 className="font-semibold text-gray-800">Workout Recommendations</h3>
@@ -393,7 +390,7 @@ const HomePage: FC = () => {
           </section>
           
           {/* Nutrition recommendations */}
-          <section className={`p-6 rounded-xl border ${getPhaseBackgroundColor()} ${getPhaseBorderColor()}`}>
+          <section className="p-6 rounded-xl border bg-white shadow-md">
             <div className="flex items-center mb-4">
               <Heart className="h-5 w-5 mr-2 text-purple-600" />
               <h3 className="font-semibold text-gray-800">Nutrition Recommendations</h3>
