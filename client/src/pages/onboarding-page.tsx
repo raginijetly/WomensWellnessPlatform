@@ -664,11 +664,22 @@ const OnboardingPage: FC = () => {
                 
                 {/* None of these apply option */}
                 <div 
-                  className={`flex items-center space-x-2 rounded-md py-3 px-4 cursor-pointer transition-colors bg-white border-2 border-white`}
+                  className={`flex items-center space-x-2 rounded-md py-3 px-4 cursor-pointer transition-colors ${
+                    symptoms.length === 0 
+                      ? "bg-purple-100 border-2 border-purple-500" 
+                      : "bg-white border-2 border-white"
+                  }`}
                   onClick={() => setSymptoms([])}
                 >
+                  <Checkbox 
+                    id="symptom-none" 
+                    checked={symptoms.length === 0} 
+                    onCheckedChange={() => setSymptoms([])}
+                    className="data-[state=checked]:bg-purple-600"
+                  />
                   <Label 
-                    className="cursor-pointer w-full text-gray-700 font-medium"
+                    htmlFor="symptom-none" 
+                    className="cursor-pointer w-full text-gray-700"
                   >
                     None of these apply to me
                   </Label>
