@@ -66,6 +66,25 @@ body {
   opacity: 0.9;
 }
 
+/* Prominent continue button for onboarding */
+.continue-button {
+  background: linear-gradient(135deg, hsl(var(--brand-purple-medium)), hsl(var(--brand-purple)));
+  color: white;
+  padding: 0.8rem 1.5rem;
+  font-size: 1.125rem;
+  font-weight: 600;
+  border-radius: 0.5rem;
+  box-shadow: 0 4px 10px rgba(138, 75, 175, 0.4), 0 0 0 2px rgba(255, 255, 255, 0.2);
+  transition: all 0.2s ease;
+  text-align: center;
+  border: 1px solid white;
+}
+
+.continue-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 12px rgba(138, 75, 175, 0.5), 0 0 0 2px rgba(255, 255, 255, 0.3);
+}
+
 /* Custom input styles */
 .custom-date-input::-webkit-calendar-picker-indicator {
   filter: invert(0.5) sepia(1) saturate(5) hue-rotate(260deg);

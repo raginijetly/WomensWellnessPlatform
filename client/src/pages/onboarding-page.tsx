@@ -566,22 +566,8 @@ const OnboardingPage: FC = () => {
             
             <div className="flex-1 flex flex-col justify-center">
               <div className="grid grid-cols-1 gap-4 w-full max-w-md mx-auto">
-                {/* Add "None" as first option in the list */}
-                <div key="None" className="space-y-2">
-                  <button
-                    className={`w-full py-3 px-4 text-left border-2 rounded-lg ${
-                      lifeStage === "None" 
-                        ? "border-purple-500 bg-purple-100" 
-                        : "border-white bg-white"
-                    }`}
-                    onClick={() => setLifeStage("None")}
-                  >
-                    <span className="text-gray-800 font-medium">None of these apply to me</span>
-                  </button>
-                </div>
-                
-                {/* Other life stage options */}
-                {LIFE_STAGES.slice(1).map((stage) => (
+                {/* Life stage options without None first */}
+                {LIFE_STAGES.filter(stage => stage !== "None").map((stage) => (
                   <div key={stage} className="space-y-2">
                     <button
                       className={`w-full py-3 px-4 text-left border-2 rounded-lg ${
@@ -604,6 +590,20 @@ const OnboardingPage: FC = () => {
                     </button>
                   </div>
                 ))}
+                
+                {/* Add "None" as the last option */}
+                <div key="None" className="space-y-2">
+                  <button
+                    className={`w-full py-3 px-4 text-left border-2 rounded-lg ${
+                      lifeStage === "None" 
+                        ? "border-purple-500 bg-purple-100" 
+                        : "border-white bg-white"
+                    }`}
+                    onClick={() => setLifeStage("None")}
+                  >
+                    <span className="text-gray-800 font-medium">None of these apply to me</span>
+                  </button>
+                </div>
               </div>
             </div>
             
