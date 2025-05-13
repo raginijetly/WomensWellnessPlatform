@@ -66,11 +66,18 @@ const OnboardingPage: FC = () => {
   
   // Toggle functions for multi-selects
   const toggleHealthCondition = (condition: string) => {
-    setHealthConditions(prev => 
-      prev.includes(condition)
+    setHealthConditions(prev => {
+      const newConditions = prev.includes(condition)
         ? prev.filter(c => c !== condition)
-        : [...prev, condition]
-    );
+        : [...prev, condition];
+      
+      // If user selects any condition, uncheck "None" option
+      if (newConditions.length > 0) {
+        setNoneHealthCondition(false);
+      }
+      
+      return newConditions;
+    });
   };
   
   const toggleHealthGoal = (goal: string) => {
@@ -82,11 +89,18 @@ const OnboardingPage: FC = () => {
   };
   
   const toggleSymptom = (symptom: string) => {
-    setSymptoms(prev => 
-      prev.includes(symptom)
+    setSymptoms(prev => {
+      const newSymptoms = prev.includes(symptom)
         ? prev.filter(s => s !== symptom)
-        : [...prev, symptom]
-    );
+        : [...prev, symptom];
+      
+      // If user selects any symptom, uncheck "None" option
+      if (newSymptoms.length > 0) {
+        setNoneSymptoms(false);
+      }
+      
+      return newSymptoms;
+    });
   };
   
   // Move to the next step
