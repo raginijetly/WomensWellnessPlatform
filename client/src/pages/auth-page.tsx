@@ -292,44 +292,9 @@ export default function AuthPage() {
         </div>
       </div>
 
-      {/* Hero section with taglines */}
+      {/* Hero section - clean and minimal */}
       <div className="hidden md:flex md:w-1/2 gradient-primary items-center justify-center">
-        <div className="max-w-md p-10 text-white">
-          <h2 className="text-3xl font-bold mb-4">
-            Your personalized wellness journey starts here
-          </h2>
-          <p className="mb-6 text-lg">
-            HerFitness is designed specifically for women, with personalized fitness 
-            recommendations that adapt to your unique health needs, including your menstrual cycle.
-          </p>
-          
-          <ul className="space-y-4">
-            <li className="flex items-center">
-              <div className="w-6 h-6 rounded-full bg-white/20 flex items-center justify-center mr-3">
-                <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path>
-                </svg>
-              </div>
-              <span>Personalized workouts based on your cycle phase</span>
-            </li>
-            <li className="flex items-center">
-              <div className="w-6 h-6 rounded-full bg-white/20 flex items-center justify-center mr-3">
-                <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path>
-                </svg>
-              </div>
-              <span>Nutrition guidance adapting to your body's needs</span>
-            </li>
-            <li className="flex items-center">
-              <div className="w-6 h-6 rounded-full bg-white/20 flex items-center justify-center mr-3">
-                <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path>
-                </svg>
-              </div>
-              <span>Supportive community of women on similar journeys</span>
-            </li>
-          </ul>
-        </div>
+        {/* Empty as per request for a minimal design */}
       </div>
     </div>
   );
