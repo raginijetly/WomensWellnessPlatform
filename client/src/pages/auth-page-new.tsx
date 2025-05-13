@@ -124,7 +124,15 @@ const AuthPage = () => {
     <div className="min-h-screen gradient-primary flex flex-col">
       <div className="w-full p-6 flex-1 flex flex-col">
         <div className="w-full max-w-md mx-auto">
-          <h1 className="text-3xl font-bold text-white mb-8 text-center">HerFitness</h1>
+          <div className="text-center mb-8">
+            <h1 className="text-3xl font-bold text-white mb-2">HerFitness</h1>
+            <p className="text-white text-base opacity-90 mb-1">
+              Cycle-Smart Fitness for Every Stage of Womanhood
+            </p>
+            <p className="text-white text-sm opacity-80">
+              Built by Women for Women
+            </p>
+          </div>
           
           {/* Tab navigation */}
           <div className="flex border-b border-white/30 mb-6">
