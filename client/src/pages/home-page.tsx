@@ -329,7 +329,12 @@ const HomePage: FC = () => {
                     <span>Day 1</span>
                     <span>Day 28</span>
                   </div>
-                  <Progress value={cyclePercentage} className="h-2 bg-gray-100" />
+                  <div className="h-2 w-full rounded-full bg-gray-50 overflow-hidden">
+                    <div 
+                      className="h-full bg-gradient-to-r from-purple-200 to-purple-400" 
+                      style={{ width: `${cyclePercentage}%` }}
+                    ></div>
+                  </div>
                   
                   {/* Hormone Levels Section */}
                   <div className="mt-6">
@@ -339,11 +344,11 @@ const HomePage: FC = () => {
                       <div>
                         <div className="flex justify-between items-center mb-1">
                           <span className="text-sm font-medium">Estrogen</span>
-                          <span className="text-xs text-green-500">rising</span>
+                          <span className="text-xs text-pink-400">rising</span>
                         </div>
-                        <div className="w-full bg-pink-100 h-2 rounded-full overflow-hidden">
+                        <div className="w-full bg-pink-50 h-2 rounded-full overflow-hidden">
                           <div 
-                            className="bg-pink-400 h-full rounded-full" 
+                            className="bg-gradient-to-r from-pink-100 to-pink-300 h-full rounded-full" 
                             style={{ width: '60%' }}
                           ></div>
                         </div>
@@ -356,9 +361,9 @@ const HomePage: FC = () => {
                           <span className="text-sm font-medium">Progesterone</span>
                           <span className="text-xs text-gray-500">stable</span>
                         </div>
-                        <div className="w-full bg-blue-100 h-2 rounded-full overflow-hidden">
+                        <div className="w-full bg-blue-50 h-2 rounded-full overflow-hidden">
                           <div 
-                            className="bg-blue-400 h-full rounded-full" 
+                            className="bg-gradient-to-r from-blue-100 to-blue-200 h-full rounded-full" 
                             style={{ width: '40%' }}
                           ></div>
                         </div>
@@ -369,11 +374,11 @@ const HomePage: FC = () => {
                       <div>
                         <div className="flex justify-between items-center mb-1">
                           <span className="text-sm font-medium">Testosterone</span>
-                          <span className="text-xs text-green-500">rising</span>
+                          <span className="text-xs text-amber-400">rising</span>
                         </div>
-                        <div className="w-full bg-yellow-100 h-2 rounded-full overflow-hidden">
+                        <div className="w-full bg-amber-50 h-2 rounded-full overflow-hidden">
                           <div 
-                            className="bg-yellow-400 h-full rounded-full" 
+                            className="bg-gradient-to-r from-amber-100 to-amber-200 h-full rounded-full" 
                             style={{ width: '70%' }}
                           ></div>
                         </div>
