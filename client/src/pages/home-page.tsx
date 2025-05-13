@@ -289,7 +289,7 @@ const HomePage: FC = () => {
           <div className="flex items-center justify-between mb-4">
             <h3 className="text-xl font-semibold flex items-center text-gray-800">
               <Calendar className="mr-2 h-5 w-5 text-purple-600" />
-              Cycle Tracking
+              Your Daily Insight
             </h3>
             <Button variant="ghost" className="text-purple-600 hover:bg-purple-50 py-1 px-2 h-auto text-sm">
               Update <ArrowRight className="ml-1 h-3 w-3" />
@@ -311,8 +311,10 @@ const HomePage: FC = () => {
                   {/* Clean and sleek cycle day */}
                   <div className="flex flex-col items-center">
                     <div className="flex flex-col items-center justify-center">
-                      <span className="text-4xl font-bold text-purple-600">{cycleDay}</span>
-                      <span className="text-xs text-gray-600 mt-1">Day of cycle</span>
+                      <div className="w-20 h-20 rounded-full bg-purple-100 flex items-center justify-center border-4 border-purple-200">
+                        <span className="text-4xl font-bold text-purple-600">{cycleDay}</span>
+                      </div>
+                      <span className="text-xs text-gray-600 mt-2">Day of cycle</span>
                     </div>
                   </div>
                   
@@ -328,6 +330,57 @@ const HomePage: FC = () => {
                     <span>Day 28</span>
                   </div>
                   <Progress value={cyclePercentage} className="h-2 bg-gray-100" />
+                  
+                  {/* Hormone Levels Section */}
+                  <div className="mt-6">
+                    <h4 className="text-sm font-medium text-gray-700 mb-3">HORMONE LEVELS</h4>
+                    <div className="grid grid-cols-3 gap-4">
+                      {/* Estrogen */}
+                      <div>
+                        <div className="flex justify-between items-center mb-1">
+                          <span className="text-sm font-medium">Estrogen</span>
+                          <span className="text-xs text-green-500">rising</span>
+                        </div>
+                        <div className="w-full bg-pink-100 h-2 rounded-full overflow-hidden">
+                          <div 
+                            className="bg-pink-400 h-full rounded-full" 
+                            style={{ width: '60%' }}
+                          ></div>
+                        </div>
+                        <p className="text-xs text-gray-500 mt-1">Peaks during ovulation, boosting energy and mood</p>
+                      </div>
+                      
+                      {/* Progesterone */}
+                      <div>
+                        <div className="flex justify-between items-center mb-1">
+                          <span className="text-sm font-medium">Progesterone</span>
+                          <span className="text-xs text-gray-500">stable</span>
+                        </div>
+                        <div className="w-full bg-blue-100 h-2 rounded-full overflow-hidden">
+                          <div 
+                            className="bg-blue-400 h-full rounded-full" 
+                            style={{ width: '40%' }}
+                          ></div>
+                        </div>
+                        <p className="text-xs text-gray-500 mt-1">Low during ovulation, will rise in luteal phase</p>
+                      </div>
+                      
+                      {/* Testosterone */}
+                      <div>
+                        <div className="flex justify-between items-center mb-1">
+                          <span className="text-sm font-medium">Testosterone</span>
+                          <span className="text-xs text-green-500">rising</span>
+                        </div>
+                        <div className="w-full bg-yellow-100 h-2 rounded-full overflow-hidden">
+                          <div 
+                            className="bg-yellow-400 h-full rounded-full" 
+                            style={{ width: '70%' }}
+                          ></div>
+                        </div>
+                        <p className="text-xs text-gray-500 mt-1">Increases during ovulation, boosting libido</p>
+                      </div>
+                    </div>
+                  </div>
                 </div>
               </>
             ) : (
