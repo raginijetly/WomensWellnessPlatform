@@ -343,7 +343,7 @@ const HomePage: FC = () => {
                       {/* Estrogen */}
                       <div>
                         <div className="flex justify-between items-center mb-1">
-                          <span className="text-sm font-medium">Estrogen</span>
+                          <span className="text-sm font-medium text-pink-500">Estrogen</span>
                           <span className="text-xs text-pink-400">rising</span>
                         </div>
                         <div className="w-full bg-pink-50 h-2 rounded-full overflow-hidden">
@@ -358,7 +358,7 @@ const HomePage: FC = () => {
                       {/* Progesterone */}
                       <div>
                         <div className="flex justify-between items-center mb-1">
-                          <span className="text-sm font-medium">Progesterone</span>
+                          <span className="text-sm font-medium text-blue-400">Progesterone</span>
                           <span className="text-xs text-gray-500">stable</span>
                         </div>
                         <div className="w-full bg-blue-50 h-2 rounded-full overflow-hidden">
@@ -373,7 +373,7 @@ const HomePage: FC = () => {
                       {/* Testosterone */}
                       <div>
                         <div className="flex justify-between items-center mb-1">
-                          <span className="text-sm font-medium">Testosterone</span>
+                          <span className="text-sm font-medium text-amber-500">Testosterone</span>
                           <span className="text-xs text-amber-400">rising</span>
                         </div>
                         <div className="w-full bg-amber-50 h-2 rounded-full overflow-hidden">
