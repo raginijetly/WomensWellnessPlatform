@@ -250,13 +250,27 @@ const HomePage: FC = () => {
         <div className="container mx-auto px-4 py-4 flex justify-between items-center">
           <h1 className="text-2xl font-bold text-white">HerFitness</h1>
           <div className="flex items-center gap-2">
-            <Button
-              variant="ghost"
-              className="text-white hover:bg-white/20 p-2 bg-white/10 rounded-full border border-white/20"
-              onClick={() => {}} // Profile action
-            >
-              <User className="h-6 w-6" />
-            </Button>
+            <div className="relative group">
+              <Button
+                variant="ghost"
+                className="text-white hover:bg-white/20 p-2 bg-white/10 rounded-full border border-white/20"
+              >
+                <User className="h-6 w-6" />
+              </Button>
+              
+              {/* Profile dropdown menu */}
+              <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg overflow-hidden z-20 opacity-0 scale-95 group-hover:opacity-100 group-hover:scale-100 transition-all duration-200 origin-top-right">
+                <div className="py-2">
+                  <button
+                    className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-purple-50 hover:text-purple-800 flex items-center gap-2"
+                    onClick={handleLogout}
+                  >
+                    <LogOut className="h-4 w-4" />
+                    Logout
+                  </button>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </header>
@@ -312,9 +326,11 @@ const HomePage: FC = () => {
                     </div>
                   </div>
                   
-                  <div>
+                  <div className="mb-4 sm:mb-0">
                     <span className="text-sm text-gray-500">Next phase in</span>
-                    <div className="text-lg font-medium text-gray-800">{nextPhaseIn} days</div>
+                    <div className="flex items-center">
+                      <span className="text-lg font-medium text-gray-800">{nextPhaseIn} days</span>
+                    </div>
                   </div>
                 </div>
                 
@@ -516,7 +532,7 @@ const HomePage: FC = () => {
           <p className="text-sm mt-1">Built by Women for Women</p>
           <Button
             variant="outline"
-            className="text-white hover:bg-white/30 mx-auto mt-4 mb-12 flex items-center gap-2 border border-white/40 font-medium"
+            className="text-white bg-white/10 hover:bg-white/30 mx-auto mt-4 mb-6 flex items-center gap-2 border border-purple-200 font-medium shadow-sm px-5 py-2"
             onClick={handleLogout}
             disabled={logoutMutation.isPending}
           >
