@@ -252,10 +252,10 @@ const HomePage: FC = () => {
           <div className="flex items-center gap-2">
             <Button
               variant="ghost"
-              className="text-white hover:bg-white/20 p-2"
+              className="text-white hover:bg-white/20 p-2 bg-white/10 rounded-full border border-white/20"
               onClick={() => {}} // Profile action
             >
-              <User className="h-5 w-5" />
+              <User className="h-6 w-6" />
             </Button>
           </div>
         </div>
@@ -314,7 +314,7 @@ const HomePage: FC = () => {
                   
                   <div>
                     <span className="text-sm text-gray-500">Next phase in</span>
-                    <div className="text-lg font-medium text-center text-gray-800">{nextPhaseIn} days</div>
+                    <div className="text-lg font-medium text-gray-800">{nextPhaseIn} days</div>
                   </div>
                 </div>
                 
@@ -530,8 +530,8 @@ const HomePage: FC = () => {
         </div>
       </footer>
       
-      {/* Bottom Navigation Bar - Mobile Only */}
-      <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 flex justify-between items-center px-2 py-2 sm:hidden z-10">
+      {/* Bottom Navigation Bar - Visible on all devices */}
+      <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 flex justify-between items-center px-2 py-2 z-10">
         <Button variant="ghost" className="text-purple-600 flex flex-col items-center p-1 h-auto w-1/5">
           <div className="flex flex-col items-center justify-center">
             <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 20 20">

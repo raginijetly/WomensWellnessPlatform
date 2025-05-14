@@ -458,7 +458,7 @@ const OnboardingPage: FC = () => {
                       id={`goal-${goal}`} 
                       checked={healthGoals.includes(goal)} 
                       onCheckedChange={() => toggleHealthGoal(goal)}
-                      className="data-[state=checked]:bg-purple-600"
+                      className="data-[state=checked]:bg-purple-600 h-4 w-4 sm:h-5 sm:w-5"
                     />
                     <Label 
                       htmlFor={`goal-${goal}`} 
@@ -516,7 +516,7 @@ const OnboardingPage: FC = () => {
                       id={`condition-${condition}`} 
                       checked={healthConditions.includes(condition)} 
                       onCheckedChange={() => toggleHealthCondition(condition)}
-                      className="data-[state=checked]:bg-purple-600"
+                      className="data-[state=checked]:bg-purple-600 h-4 w-4 sm:h-5 sm:w-5"
                     />
                     <Label 
                       htmlFor={`condition-${condition}`} 
@@ -550,7 +550,7 @@ const OnboardingPage: FC = () => {
                         setHealthConditions([]);
                       }
                     }}
-                    className="data-[state=checked]:bg-purple-600"
+                    className="data-[state=checked]:bg-purple-600 h-4 w-4 sm:h-5 sm:w-5"
                   />
                   <Label 
                     htmlFor="condition-none" 
