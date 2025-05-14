@@ -515,15 +515,15 @@ const HomePage: FC = () => {
           <p>&copy; {new Date().getFullYear()} HerFitness. All rights reserved.</p>
           <p className="text-sm mt-1">Built by Women for Women</p>
           <Button
-            variant="ghost"
-            className="text-white/80 hover:bg-white/20 mx-auto mt-4 flex items-center gap-2"
+            variant="outline"
+            className="text-white hover:bg-white/30 mx-auto mt-4 mb-12 flex items-center gap-2 border border-white/40 font-medium"
             onClick={handleLogout}
             disabled={logoutMutation.isPending}
           >
             {logoutMutation.isPending ? (
-              <Loader2 className="h-4 w-4 animate-spin" />
+              <Loader2 className="h-5 w-5 animate-spin" />
             ) : (
-              <LogOut className="h-4 w-4" />
+              <LogOut className="h-5 w-5" />
             )}
             Logout
           </Button>

@@ -328,6 +328,14 @@ const OnboardingPage: FC = () => {
                       Selected: {format(dateInput, "MMMM d, yyyy")}
                     </p>
                   )}
+                  
+                  <Button
+                    variant="ghost"
+                    className="w-full mt-3 text-sm py-2 text-purple-800 hover:text-purple-900 hover:bg-purple-50/50 border border-purple-100"
+                    onClick={() => setDontKnowDate(true)}
+                  >
+                    I don't know my last period date
+                  </Button>
                 </div>
               </div>
             ) : (
