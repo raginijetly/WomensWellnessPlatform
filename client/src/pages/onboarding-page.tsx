@@ -447,7 +447,7 @@ const OnboardingPage: FC = () => {
                 {HEALTH_GOALS.map((goal) => (
                   <div 
                     key={goal}
-                    className={`flex items-center space-x-2 rounded-md py-3 px-4 cursor-pointer transition-colors ${
+                    className={`flex items-center space-x-2 rounded-md py-2 sm:py-3 px-3 sm:px-4 cursor-pointer transition-colors ${
                       healthGoals.includes(goal) 
                         ? "bg-purple-100 border-2 border-purple-500" 
                         : "bg-white border-2 border-white"
@@ -505,7 +505,7 @@ const OnboardingPage: FC = () => {
                 {HEALTH_CONDITIONS.map((condition) => (
                   <div 
                     key={condition}
-                    className={`flex items-center space-x-2 rounded-md py-3 px-4 cursor-pointer transition-colors ${
+                    className={`flex items-center space-x-2 rounded-md py-2 sm:py-3 px-3 sm:px-4 cursor-pointer transition-colors ${
                       healthConditions.includes(condition) 
                         ? "bg-purple-100 border-2 border-purple-500" 
                         : "bg-white border-2 border-white"
@@ -529,7 +529,7 @@ const OnboardingPage: FC = () => {
                 
                 {/* None of these apply option */}
                 <div 
-                  className={`flex items-center space-x-2 rounded-md py-3 px-4 cursor-pointer transition-colors ${
+                  className={`flex items-center space-x-2 rounded-md py-2 sm:py-3 px-3 sm:px-4 cursor-pointer transition-colors ${
                     noneHealthCondition
                       ? "bg-purple-100 border-2 border-purple-500" 
                       : "bg-white border-2 border-white"
@@ -666,7 +666,7 @@ const OnboardingPage: FC = () => {
                 {SYMPTOMS.map((symptom) => (
                   <div 
                     key={symptom}
-                    className={`flex items-center space-x-2 rounded-md py-3 px-4 cursor-pointer transition-colors ${
+                    className={`flex items-center space-x-2 rounded-md py-2 sm:py-3 px-3 sm:px-4 cursor-pointer transition-colors ${
                       symptoms.includes(symptom) 
                         ? "bg-purple-100 border-2 border-purple-500" 
                         : "bg-white border-2 border-white"
@@ -677,7 +677,7 @@ const OnboardingPage: FC = () => {
                       id={`symptom-${symptom}`} 
                       checked={symptoms.includes(symptom)} 
                       onCheckedChange={() => toggleSymptom(symptom)}
-                      className="data-[state=checked]:bg-purple-600"
+                      className="data-[state=checked]:bg-purple-600 h-4 w-4 sm:h-5 sm:w-5"
                     />
                     <Label 
                       htmlFor={`symptom-${symptom}`} 
@@ -690,7 +690,7 @@ const OnboardingPage: FC = () => {
                 
                 {/* None of these apply option */}
                 <div 
-                  className={`flex items-center space-x-2 rounded-md py-3 px-4 cursor-pointer transition-colors ${
+                  className={`flex items-center space-x-2 rounded-md py-2 sm:py-3 px-3 sm:px-4 cursor-pointer transition-colors ${
                     noneSymptoms
                       ? "bg-purple-100 border-2 border-purple-500" 
                       : "bg-white border-2 border-white"
@@ -711,7 +711,7 @@ const OnboardingPage: FC = () => {
                         setSymptoms([]);
                       }
                     }}
-                    className="data-[state=checked]:bg-purple-600"
+                    className="data-[state=checked]:bg-purple-600 h-4 w-4 sm:h-5 sm:w-5"
                   />
                   <Label 
                     htmlFor="symptom-none" 
