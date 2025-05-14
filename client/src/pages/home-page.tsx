@@ -588,6 +588,22 @@ const HomePage: FC = () => {
             <span className="text-xs mt-1">Info Hub</span>
           </div>
         </Button>
+        
+        <Button 
+          variant="ghost" 
+          className="text-gray-500 flex flex-col items-center p-1 h-auto w-1/5"
+          onClick={handleLogout}
+          disabled={logoutMutation.isPending}
+        >
+          <div className="flex flex-col items-center justify-center">
+            {logoutMutation.isPending ? (
+              <Loader2 className="h-6 w-6 animate-spin" />
+            ) : (
+              <User className="h-6 w-6" />
+            )}
+            <span className="text-xs mt-1">Account</span>
+          </div>
+        </Button>
       </div>
     </div>
   );
