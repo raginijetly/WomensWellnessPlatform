@@ -252,16 +252,10 @@ const HomePage: FC = () => {
           <div className="flex items-center gap-2">
             <Button
               variant="ghost"
-              className="text-white hover:bg-white/20"
-              onClick={handleLogout}
-              disabled={logoutMutation.isPending}
+              className="text-white hover:bg-white/20 p-2"
+              onClick={() => {}} // Profile action
             >
-              {logoutMutation.isPending ? (
-                <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-              ) : (
-                <LogOut className="h-4 w-4 mr-2" />
-              )}
-              Logout
+              <User className="h-5 w-5" />
             </Button>
           </div>
         </div>
@@ -501,7 +495,6 @@ const HomePage: FC = () => {
             {[
               { title: "Log Symptoms", icon: <Activity className="h-5 w-5" /> },
               { title: "View Insights", icon: <Activity className="h-5 w-5" /> },
-              { title: "My Account", icon: <User className="h-5 w-5" /> },
             ].map((item, i) => (
               <Button 
                 key={i}
