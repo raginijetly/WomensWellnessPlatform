@@ -262,7 +262,7 @@ const HomePage: FC = () => {
       </header>
 
       {/* Main content */}
-      <main className="container mx-auto px-4 py-8">
+      <main className="container mx-auto px-4 py-8 pb-20 sm:pb-8">
         {/* User greeting */}
         <div className="mb-8">
           <div className="flex items-center gap-4 mb-2">
@@ -335,7 +335,7 @@ const HomePage: FC = () => {
                     <h4 className="text-sm font-medium text-gray-700 mb-3">HORMONE LEVELS</h4>
                     <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                       {/* Estrogen */}
-                      <div>
+                      <div className="max-h-28 min-h-[5rem]">
                         <div className="flex justify-between items-center mb-1">
                           <span className="text-sm font-medium text-pink-500">Estrogen</span>
                           <span className="text-xs text-pink-400">rising</span>
@@ -346,11 +346,11 @@ const HomePage: FC = () => {
                             style={{ width: '60%' }}
                           ></div>
                         </div>
-                        <p className="text-xs text-gray-500 mt-1">Peaks during ovulation, boosting energy and mood</p>
+                        <p className="text-xs text-gray-500 mt-1">Peaks during ovulation, boosting energy</p>
                       </div>
                       
                       {/* Progesterone */}
-                      <div>
+                      <div className="max-h-28 min-h-[5rem]">
                         <div className="flex justify-between items-center mb-1">
                           <span className="text-sm font-medium text-blue-400">Progesterone</span>
                           <span className="text-xs text-gray-500">stable</span>
@@ -361,11 +361,11 @@ const HomePage: FC = () => {
                             style={{ width: '40%' }}
                           ></div>
                         </div>
-                        <p className="text-xs text-gray-500 mt-1">Low during ovulation, will rise in luteal phase</p>
+                        <p className="text-xs text-gray-500 mt-1">Low during ovulation, rises in luteal phase</p>
                       </div>
                       
                       {/* Testosterone */}
-                      <div>
+                      <div className="max-h-28 min-h-[5rem]">
                         <div className="flex justify-between items-center mb-1">
                           <span className="text-sm font-medium text-amber-500">Testosterone</span>
                           <span className="text-xs text-amber-400">rising</span>
@@ -376,7 +376,7 @@ const HomePage: FC = () => {
                             style={{ width: '70%' }}
                           ></div>
                         </div>
-                        <p className="text-xs text-gray-500 mt-1">Increases during ovulation, boosting libido</p>
+                        <p className="text-xs text-gray-500 mt-1">Increases during ovulation, boosts libido</p>
                       </div>
                     </div>
                   </div>
@@ -510,11 +510,69 @@ const HomePage: FC = () => {
       </main>
 
       {/* Footer */}
-      <footer className="bg-white/10 backdrop-blur-sm py-6 mt-auto">
+      <footer className="bg-white/10 backdrop-blur-sm py-6 pb-16 sm:pb-6 mt-auto">
         <div className="container mx-auto px-4 text-center text-white/80">
           <p>&copy; {new Date().getFullYear()} HerFitness. All rights reserved.</p>
+          <p className="text-sm mt-1">Built by Women for Women</p>
+          <Button
+            variant="ghost"
+            className="text-white/80 hover:bg-white/20 mx-auto mt-4 flex items-center gap-2"
+            onClick={handleLogout}
+            disabled={logoutMutation.isPending}
+          >
+            {logoutMutation.isPending ? (
+              <Loader2 className="h-4 w-4 animate-spin" />
+            ) : (
+              <LogOut className="h-4 w-4" />
+            )}
+            Logout
+          </Button>
         </div>
       </footer>
+      
+      {/* Bottom Navigation Bar - Mobile Only */}
+      <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 flex justify-between items-center px-2 py-2 sm:hidden z-10">
+        <Button variant="ghost" className="text-purple-600 flex flex-col items-center p-1 h-auto w-1/5">
+          <div className="flex flex-col items-center justify-center">
+            <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 20 20">
+              <path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z"></path>
+            </svg>
+            <span className="text-xs mt-1">Home</span>
+          </div>
+        </Button>
+        
+        <Button variant="ghost" className="text-gray-500 flex flex-col items-center p-1 h-auto w-1/5">
+          <div className="flex flex-col items-center justify-center">
+            <Dumbbell className="h-6 w-6" />
+            <span className="text-xs mt-1">Workout</span>
+          </div>
+        </Button>
+        
+        <Button variant="ghost" className="text-gray-500 flex flex-col items-center p-1 h-auto w-1/5">
+          <div className="flex flex-col items-center justify-center">
+            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"></path>
+            </svg>
+            <span className="text-xs mt-1">Nutrition</span>
+          </div>
+        </Button>
+        
+        <Button variant="ghost" className="text-gray-500 flex flex-col items-center p-1 h-auto w-1/5">
+          <div className="flex flex-col items-center justify-center">
+            <Calendar className="h-6 w-6" />
+            <span className="text-xs mt-1">Cycle</span>
+          </div>
+        </Button>
+        
+        <Button variant="ghost" className="text-gray-500 flex flex-col items-center p-1 h-auto w-1/5">
+          <div className="flex flex-col items-center justify-center">
+            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path>
+            </svg>
+            <span className="text-xs mt-1">Info Hub</span>
+          </div>
+        </Button>
+      </div>
     </div>
   );
 };
