@@ -362,15 +362,8 @@ const OnboardingPage: FC = () => {
               >
                 Continue
               </Button>
-              {!dontKnowDate ? (
-                <Button
-                  variant="ghost"
-                  className="w-full py-2.5 text-purple-800 hover:text-purple-900 hover:bg-purple-50/50"
-                  onClick={() => setDontKnowDate(true)}
-                >
-                  I don't know
-                </Button>
-              ) : (
+              {/* Skip button shown only if not on the period date selection screen or if Don't Know is selected */}
+              {(currentStep !== 'period' || dontKnowDate) && (
                 <Button
                   variant="ghost"
                   className="w-full py-2.5 text-purple-800 hover:text-purple-900 hover:bg-purple-50/50"
