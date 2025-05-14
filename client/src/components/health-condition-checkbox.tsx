@@ -16,17 +16,16 @@ const HealthConditionCheckbox: FC<HealthConditionCheckboxProps> = ({
   return (
     <div className="flex items-center space-x-3 mb-2 border rounded-md p-2.5 sm:p-3 cursor-pointer transition-colors 
       hover:bg-gray-50">
-      <div className="flex-none">
+      <div className="flex-none flex items-center">
         <Checkbox
           id={`condition-${condition}`}
           checked={checked}
           onCheckedChange={onCheckedChange}
-          className="mt-0.5"
         />
       </div>
       <Label
         htmlFor={`condition-${condition}`}
-        className="text-xs sm:text-sm font-medium leading-tight cursor-pointer peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+        className="text-xs sm:text-sm font-medium leading-normal flex items-center min-h-[2rem] cursor-pointer peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
       >
         {condition}
       </Label>
