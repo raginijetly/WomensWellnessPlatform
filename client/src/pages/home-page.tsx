@@ -284,7 +284,7 @@ const HomePage: FC = () => {
               </svg>
             </button>
 
-            <h3 className="text-2xl font-semibold text-purple-600 text-center mb-8">How are you feeling today?</h3>
+            <h3 className="text-2xl font-semibold text-purple-800 text-center mb-8">How are you feeling today?</h3>
             
             <div className="grid grid-cols-2 gap-4 mb-8">
               <button 
@@ -320,7 +320,7 @@ const HomePage: FC = () => {
               </button>
             </div>
             
-            <p className="text-md text-purple-500 text-center">
+            <p className="text-md text-purple-700 text-center">
               This helps us personalize your workout and nutrition recommendations based on how you feel.
             </p>
           </div>
