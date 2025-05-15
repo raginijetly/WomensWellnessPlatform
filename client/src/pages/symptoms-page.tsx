@@ -276,7 +276,14 @@ const SymptomsPage: FC = () => {
                       </div>
                       <div className="flex items-center">
                         {answers[q.id] && (
-                          <div className="flex items-center mr-3 px-3 py-1 bg-purple-100 text-purple-700 rounded-full">
+                          <div className={`flex items-center mr-3 px-3 py-1 rounded-full
+                            ${q.options.find(o => o.value === answers[q.id])?.color || 'bg-purple-100'}
+                            ${q.options.find(o => o.value === answers[q.id])?.color?.includes('purple') ? 'text-purple-700' : 
+                              q.options.find(o => o.value === answers[q.id])?.color?.includes('blue') ? 'text-blue-700' : 
+                              q.options.find(o => o.value === answers[q.id])?.color?.includes('yellow') ? 'text-amber-700' : 
+                              q.options.find(o => o.value === answers[q.id])?.color?.includes('red') ? 'text-red-700' : 
+                              'text-purple-700'}`}
+                          >
                             <span className="text-lg mr-1">
                               {q.options.find(o => o.value === answers[q.id])?.emoji}
                             </span>
@@ -301,7 +308,11 @@ const SymptomsPage: FC = () => {
                               onClick={() => selectAnswer(q.id, option.value)}
                               className={`${option.color} rounded-lg p-4 flex flex-col items-center justify-center cursor-pointer transition-all shadow-sm
                                 ${answers[q.id] === option.value 
-                                  ? 'ring-2 ring-purple-500 shadow-md transform scale-105' 
+                                  ? option.color === 'bg-purple-100' ? 'ring-2 ring-purple-500 shadow-md transform scale-105' :
+                                    option.color === 'bg-blue-100' ? 'ring-2 ring-blue-500 shadow-md transform scale-105' :
+                                    option.color === 'bg-yellow-100' ? 'ring-2 ring-amber-500 shadow-md transform scale-105' :
+                                    option.color === 'bg-red-100' ? 'ring-2 ring-red-500 shadow-md transform scale-105' :
+                                    'ring-2 ring-purple-500 shadow-md transform scale-105'
                                   : 'hover:shadow-md hover:brightness-95'
                                 }`}
                             >
