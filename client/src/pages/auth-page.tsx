@@ -19,10 +19,9 @@ const loginSchema = z.object({
 
 // Schema for registration form validation
 const registerSchema = z.object({
-  username: z.string().min(3, { message: "Username must be at least 3 characters" }),
+  name: z.string().min(1, { message: "Name is required" }),
+  email: z.string().email({ message: "Invalid email address" }),
   password: z.string().min(6, { message: "Password must be at least 6 characters" }),
-  name: z.string().optional(),
-  email: z.string().email({ message: "Invalid email address" }).optional(),
 });
 
 type LoginFormValues = z.infer<typeof loginSchema>;
