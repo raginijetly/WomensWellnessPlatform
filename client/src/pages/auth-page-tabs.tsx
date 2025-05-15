@@ -119,14 +119,16 @@ export default function AuthPage() {
           </div>
 
           <Tabs defaultValue="login" value={activeTab} onValueChange={setActiveTab} className="w-full">
-            <TabsList className="flex mb-8 bg-transparent p-0 overflow-hidden border-b border-white/30 w-full justify-start gap-24 px-2">
+            <TabsList className="flex mb-8 bg-transparent p-0 overflow-hidden border-b border-white/30 w-full justify-center gap-24 px-2">
               <TabsTrigger 
                 value="login" 
                 className="text-lg font-medium border-0 px-0 pb-2 rounded-none transition-colors data-[state=active]:bg-transparent data-[state=active]:shadow-none hover:text-white/90"
                 style={{
-                  color: activeTab === 'login' ? 'rgb(233, 213, 255)' : 'rgba(255, 255, 255, 0.6)',
+                  color: activeTab === 'login' ? 'rgb(255, 255, 255)' : 'rgba(255, 255, 255, 0.6)',
                   borderBottom: activeTab === 'login' ? '3px solid rgb(233, 213, 255)' : 'none',
-                  marginBottom: activeTab === 'login' ? '-1px' : '0'
+                  marginBottom: activeTab === 'login' ? '-1px' : '0',
+                  fontWeight: activeTab === 'login' ? '500' : '400',
+                  fontSize: activeTab === 'login' ? '1.2rem' : '1rem'
                 }}
               >
                 Login
@@ -135,9 +137,11 @@ export default function AuthPage() {
                 value="signup" 
                 className="text-lg font-medium border-0 px-0 pb-2 rounded-none transition-colors data-[state=active]:bg-transparent data-[state=active]:shadow-none hover:text-white/90"
                 style={{
-                  color: activeTab === 'signup' ? 'rgb(233, 213, 255)' : 'rgba(255, 255, 255, 0.6)',
+                  color: activeTab === 'signup' ? 'rgb(255, 255, 255)' : 'rgba(255, 255, 255, 0.6)',
                   borderBottom: activeTab === 'signup' ? '3px solid rgb(233, 213, 255)' : 'none',
-                  marginBottom: activeTab === 'signup' ? '-1px' : '0'
+                  marginBottom: activeTab === 'signup' ? '-1px' : '0',
+                  fontWeight: activeTab === 'signup' ? '500' : '400',
+                  fontSize: activeTab === 'signup' ? '1.2rem' : '1rem'
                 }}
               >
                 Sign Up
