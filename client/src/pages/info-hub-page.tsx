@@ -90,27 +90,10 @@ const InfoHubPage: FC = () => {
             <p className="text-purple-700 mt-2">Articles and resources for women's health</p>
           </div>
 
-          {/* Category filters - 2 rows */}
+          {/* Category filters - single row, left-aligned */}
           <div className="px-6 pt-6">
-            {/* First row: All, Fitness, Nutrition */}
-            <div className="flex gap-2 mb-2 justify-center flex-wrap">
-              {(["All", "Fitness", "Nutrition"] as ArticleCategory[]).map((category) => (
-                <button
-                  key={category}
-                  onClick={() => setActiveCategory(category)}
-                  className={`px-5 py-2 rounded-full text-sm font-medium transition-colors whitespace-nowrap
-                    ${activeCategory === category 
-                      ? 'bg-purple-600 text-white' 
-                      : 'bg-gray-100 text-gray-700 hover:bg-gray-200'}`}
-                >
-                  {category}
-                </button>
-              ))}
-            </div>
-            
-            {/* Second row: Cycle Insights, Wellness */}
-            <div className="flex gap-2 pb-2 justify-center flex-wrap">
-              {(["Cycle Insights", "Wellness"] as ArticleCategory[]).map((category) => (
+            <div className="flex gap-2 pb-2 justify-start flex-wrap">
+              {(["All", "Fitness", "Nutrition", "Cycle Insights", "Wellness"] as ArticleCategory[]).map((category) => (
                 <button
                   key={category}
                   onClick={() => setActiveCategory(category)}

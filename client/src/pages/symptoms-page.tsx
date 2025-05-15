@@ -349,81 +349,66 @@ const SymptomsPage: FC = () => {
                 </div>
                 
                 {/* Filter tabs at the top */}
-                <div className="flex flex-wrap gap-2 mb-4 justify-center">
-                  <Button
+                <div className="flex flex-wrap gap-2 mb-4 justify-start px-1">
+                  <button
                     key="mood"
-                    variant={activeMetric === "mood" ? "default" : "outline"}
-                    size="sm"
-                    className={`flex items-center py-1 px-3 ${
-                      activeMetric === "mood" ? 
-                        'bg-purple-600 text-white' : 
-                        'border-gray-300 text-gray-700 hover:bg-gray-50'
-                    }`}
                     onClick={() => changeMetric("mood")}
+                    className={`flex items-center px-5 py-2 rounded-full text-sm font-medium transition-colors
+                      ${activeMetric === "mood" 
+                        ? 'bg-purple-600 text-white' 
+                        : 'bg-gray-100 text-gray-700 hover:bg-gray-200'}`}
                   >
                     <span className="mr-1.5">😊</span>
-                    <span className="font-medium">Mood</span>
-                  </Button>
+                    <span>Mood</span>
+                  </button>
                   
-                  <Button
+                  <button
                     key="energy"
-                    variant={activeMetric === "energy" ? "default" : "outline"}
-                    size="sm"
-                    className={`flex items-center py-1 px-3 ${
-                      activeMetric === "energy" ? 
-                        'bg-purple-600 text-white' : 
-                        'border-gray-300 text-gray-700 hover:bg-gray-50'
-                    }`}
                     onClick={() => changeMetric("energy")}
+                    className={`flex items-center px-5 py-2 rounded-full text-sm font-medium transition-colors
+                      ${activeMetric === "energy" 
+                        ? 'bg-purple-600 text-white' 
+                        : 'bg-gray-100 text-gray-700 hover:bg-gray-200'}`}
                   >
                     <span className="mr-1.5">⚡</span>
-                    <span className="font-medium">Energy</span>
-                  </Button>
+                    <span>Energy</span>
+                  </button>
                   
-                  <Button
+                  <button
                     key="sleep"
-                    variant={activeMetric === "sleep" ? "default" : "outline"}
-                    size="sm"
-                    className={`flex items-center py-1 px-3 ${
-                      activeMetric === "sleep" ? 
-                        'bg-purple-600 text-white' : 
-                        'border-gray-300 text-gray-700 hover:bg-gray-50'
-                    }`}
                     onClick={() => changeMetric("sleep")}
+                    className={`flex items-center px-5 py-2 rounded-full text-sm font-medium transition-colors
+                      ${activeMetric === "sleep" 
+                        ? 'bg-purple-600 text-white' 
+                        : 'bg-gray-100 text-gray-700 hover:bg-gray-200'}`}
                   >
                     <span className="mr-1.5">😴</span>
-                    <span className="font-medium">Sleep</span>
-                  </Button>
+                    <span>Sleep</span>
+                  </button>
                   
-                  <Button
+                  <button
                     key="pain"
-                    variant={activeMetric === "pain" ? "default" : "outline"}
-                    size="sm"
-                    className={`flex items-center py-1 px-3 ${
-                      activeMetric === "pain" ? 
-                        'bg-purple-600 text-white' : 
-                        'border-gray-300 text-gray-700 hover:bg-gray-50'
-                    }`}
                     onClick={() => changeMetric("pain")}
+                    className={`flex items-center px-5 py-2 rounded-full text-sm font-medium transition-colors
+                      ${activeMetric === "pain" 
+                        ? 'bg-purple-600 text-white' 
+                        : 'bg-gray-100 text-gray-700 hover:bg-gray-200'}`}
                   >
                     <span className="mr-1.5">🩹</span>
-                    <span className="font-medium">Pain</span>
-                  </Button>
+                    <span>Pain</span>
+                  </button>
                   
-                  <Button
+                  <button
                     key="bloating"
-                    variant={activeMetric === "bloating" ? "default" : "outline"}
-                    size="sm"
-                    className={`flex items-center py-1 px-3 ${
-                      activeMetric === "bloating" ? 
-                        'bg-purple-600 text-white' : 
-                        'border-gray-300 text-gray-700 hover:bg-gray-50'
-                    }`}
                     onClick={() => changeMetric("bloating")}
+                    className={`flex items-center px-5 py-2 rounded-full text-sm font-medium transition-colors
+                      ${activeMetric === "bloating" 
+                        ? 'bg-purple-600 text-white' 
+                        : 'bg-gray-100 text-gray-700 hover:bg-gray-200'}`}
                   >
                     <span className="mr-1.5">🫃</span>
-                    <span className="font-medium">Bloating</span>
-                  </Button>
+                    <span>Bloating</span>
+                  </button>
                 </div>
                 
                 {/* Calendar view */}
