@@ -3,74 +3,98 @@ import { useAuth } from "@/hooks/use-auth";
 import { Button } from "@/components/ui/button";
 import { useLocation } from "wouter";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { ChevronDown, ChevronUp, History, BarChart } from "lucide-react";
+import { Calendar } from "@/components/ui/calendar";
+import { ChevronDown, ChevronUp, History, BarChart, CalendarDays } from "lucide-react";
 
-// Types for our symptom logging
-type SymptomIntensity = 'None' | 'Mild' | 'Moderate' | 'Severe';
-type MoodType = 'Happy' | 'Neutral' | 'Sad' | 'Irritable' | 'Anxious';
-type EnergyLevel = 'Low' | 'Moderate' | 'High';
-type SleepQuality = 'Poor' | 'Fair' | 'Good' | 'Excellent';
+// Expanded interface for more detailed symptom options
+interface SymptomOption {
+  value: string;
+  label: string;
+  emoji: string;
+  color: string;
+}
 
 interface SymptomQuestion {
   id: string;
   question: string;
-  options: string[];
-  emoji?: string;
+  options: SymptomOption[];
+  emoji: string;
+}
+
+// Calendar entry type for history tracking
+interface CalendarEntry {
+  date: Date;
+  value: string;
 }
 
 const SymptomsPage: FC = () => {
   const { user } = useAuth();
   const [_, setLocation] = useLocation();
   const [activeTab, setActiveTab] = useState<string>("log");
-  
-  // State to track which questions are expanded
-  const [expandedQuestions, setExpandedQuestions] = useState<string[]>([]);
+  const [activeQuestion, setActiveQuestion] = useState<string | null>("mood");
+  const [expandedCalendars, setExpandedCalendars] = useState<string[]>([]);
   
   // State to track answers
   const [answers, setAnswers] = useState<Record<string, string>>({});
 
-  // Define our symptom questions
+  // Define our symptom questions with rich UI options
   const symptomQuestions: SymptomQuestion[] = [
     {
       id: "mood",
       question: "How's your mood today?",
-      options: ["Happy", "Neutral", "Sad", "Irritable", "Anxious"],
-      emoji: "😊"
+      emoji: "😊",
+      options: [
+        { value: "Energetic", label: "Energetic", emoji: "😄", color: "bg-purple-100" },
+        { value: "Balanced", label: "Balanced", emoji: "😊", color: "bg-blue-100" },
+        { value: "Tired", label: "Tired", emoji: "😴", color: "bg-blue-100" },
+        { value: "Stressed", label: "Stressed", emoji: "😓", color: "bg-red-100" }
+      ]
     },
     {
       id: "energy",
       question: "What's your energy level?",
-      options: ["Low", "Moderate", "High"],
-      emoji: "⚡"
+      emoji: "⚡",
+      options: [
+        { value: "High", label: "High", emoji: "⚡", color: "bg-yellow-100" },
+        { value: "Medium", label: "Medium", emoji: "✨", color: "bg-green-100" },
+        { value: "Low", label: "Low", emoji: "🔋", color: "bg-blue-100" },
+        { value: "Exhausted", label: "Exhausted", emoji: "🛌", color: "bg-gray-100" }
+      ]
     },
     {
       id: "sleep",
       question: "How was your sleep last night?",
-      options: ["Poor", "Fair", "Good", "Excellent"],
-      emoji: "😴"
+      emoji: "😴",
+      options: [
+        { value: "Excellent", label: "Excellent", emoji: "💤", color: "bg-indigo-100" },
+        { value: "Good", label: "Good", emoji: "😴", color: "bg-blue-100" },
+        { value: "Fair", label: "Fair", emoji: "😐", color: "bg-yellow-100" },
+        { value: "Poor", label: "Poor", emoji: "😫", color: "bg-red-100" }
+      ]
     },
     {
       id: "pain",
       question: "Are you experiencing any pain?",
-      options: ["None", "Mild", "Moderate", "Severe"],
-      emoji: "🩹"
+      emoji: "🩹",
+      options: [
+        { value: "None", label: "None", emoji: "👍", color: "bg-green-100" },
+        { value: "Mild", label: "Mild", emoji: "🤏", color: "bg-yellow-100" },
+        { value: "Moderate", label: "Moderate", emoji: "😣", color: "bg-orange-100" },
+        { value: "Severe", label: "Severe", emoji: "😖", color: "bg-red-100" }
+      ]
     },
     {
       id: "bloating",
       question: "How's your bloating today?",
-      options: ["None", "Mild", "Moderate", "Severe"],
-      emoji: "🫃"
+      emoji: "🫃",
+      options: [
+        { value: "None", label: "None", emoji: "👌", color: "bg-green-100" },
+        { value: "Mild", label: "Mild", emoji: "🤏", color: "bg-yellow-100" },
+        { value: "Moderate", label: "Moderate", emoji: "😔", color: "bg-orange-100" },
+        { value: "Severe", label: "Severe", emoji: "😩", color: "bg-red-100" }
+      ]
     }
   ];
-  
-  // Toggle question expansion
-  const toggleQuestion = (questionId: string) => {
-    setExpandedQuestions(prev => 
-      prev.includes(questionId) 
-        ? prev.filter(id => id !== questionId) 
-        : [...prev, questionId]
-    );
-  };
   
   // Handle selecting an answer
   const selectAnswer = (questionId: string, answer: string) => {
@@ -80,12 +104,34 @@ const SymptomsPage: FC = () => {
     }));
   };
   
-  // Mock historical data for the history tab
-  const mockHistoryData = [
-    { date: "May 15, 2025", mood: "Happy", energy: "High", pain: "None" },
-    { date: "May 14, 2025", mood: "Neutral", energy: "Moderate", pain: "Mild" },
-    { date: "May 13, 2025", mood: "Irritable", energy: "Low", pain: "Moderate" },
-  ];
+  // Toggle calendar expansion for history view
+  const toggleCalendar = (questionId: string) => {
+    setExpandedCalendars(prev => 
+      prev.includes(questionId) 
+        ? prev.filter(id => id !== questionId) 
+        : [...prev, questionId]
+    );
+  };
+
+  // Mock historical data for calendars (one month of data)
+  const getMockCalendarData = (questionId: string): CalendarEntry[] => {
+    const options = symptomQuestions.find(q => q.id === questionId)?.options || [];
+    const result: CalendarEntry[] = [];
+    
+    // Generate some random historical data for demo purposes
+    for (let i = 1; i <= 15; i++) {
+      const date = new Date();
+      date.setDate(date.getDate() - i);
+      
+      const randomOption = options[Math.floor(Math.random() * options.length)];
+      result.push({
+        date,
+        value: randomOption.value
+      });
+    }
+    
+    return result;
+  };
 
   return (
     <div className="min-h-screen gradient-primary">
@@ -128,56 +174,38 @@ const SymptomsPage: FC = () => {
               </TabsTrigger>
             </TabsList>
 
+            {/* Log Today Tab - Grid Layout with Emojis and Colors */}
             <TabsContent value="log" className="p-4">
-              <div className="max-w-md mx-auto space-y-4">
+              <div className="max-w-lg mx-auto space-y-6">
                 {symptomQuestions.map((q) => (
-                  <div 
-                    key={q.id} 
-                    className="border border-gray-200 rounded-lg overflow-hidden shadow-sm"
-                  >
-                    {/* Question header - always visible, clickable to expand */}
-                    <div 
-                      className="flex items-center justify-between p-4 bg-white cursor-pointer"
-                      onClick={() => toggleQuestion(q.id)}
-                    >
-                      <div className="flex items-center space-x-2">
-                        {q.emoji && <span className="text-xl">{q.emoji}</span>}
-                        <h3 className="font-medium text-gray-800">{q.question}</h3>
-                      </div>
-                      <div className="flex items-center">
-                        {answers[q.id] && (
-                          <span className="mr-2 text-sm px-2 py-1 bg-purple-100 text-purple-700 rounded-full">
-                            {answers[q.id]}
-                          </span>
-                        )}
-                        {expandedQuestions.includes(q.id) ? (
-                          <ChevronUp className="h-5 w-5 text-gray-500" />
-                        ) : (
-                          <ChevronDown className="h-5 w-5 text-gray-500" />
-                        )}
-                      </div>
+                  <div key={q.id} className="space-y-3">
+                    <div className="flex items-center space-x-2 mb-2">
+                      <span className="text-xl">{q.emoji}</span>
+                      <h3 className="font-medium text-gray-800">{q.question}</h3>
+                      {answers[q.id] && (
+                        <span className="ml-auto text-sm px-3 py-1 bg-purple-100 text-purple-700 rounded-full">
+                          {answers[q.id]}
+                        </span>
+                      )}
                     </div>
-                    
-                    {/* Options - only visible when expanded */}
-                    {expandedQuestions.includes(q.id) && (
-                      <div className="p-4 bg-gray-50 border-t border-gray-200">
-                        <div className="space-y-2">
-                          {q.options.map((option) => (
-                            <div 
-                              key={option}
-                              onClick={() => selectAnswer(q.id, option)}
-                              className={`p-3 rounded-md cursor-pointer transition-colors
-                                ${answers[q.id] === option 
-                                  ? 'bg-purple-100 border-purple-300 border text-purple-700' 
-                                  : 'bg-white border border-gray-200 hover:bg-gray-100 text-gray-700'
-                                }`}
-                            >
-                              {option}
-                            </div>
-                          ))}
+
+                    {/* Grid layout for options */}
+                    <div className="grid grid-cols-2 gap-3">
+                      {q.options.map((option) => (
+                        <div 
+                          key={option.value}
+                          onClick={() => selectAnswer(q.id, option.value)}
+                          className={`${option.color} rounded-lg p-4 flex flex-col items-center justify-center cursor-pointer transition-all shadow-sm
+                            ${answers[q.id] === option.value 
+                              ? 'ring-2 ring-purple-500 shadow-md transform scale-105' 
+                              : 'hover:shadow-md hover:scale-102'
+                            }`}
+                        >
+                          <span className="text-3xl mb-2">{option.emoji}</span>
+                          <span className="font-medium text-gray-700">{option.label}</span>
                         </div>
-                      </div>
-                    )}
+                      ))}
+                    </div>
                   </div>
                 ))}
                 
@@ -192,8 +220,9 @@ const SymptomsPage: FC = () => {
               </div>
             </TabsContent>
 
+            {/* History Tab - Calendar View By Symptom Type */}
             <TabsContent value="history" className="p-4">
-              <div className="max-w-md mx-auto">
+              <div className="max-w-lg mx-auto space-y-6">
                 <div className="flex items-center justify-between mb-4">
                   <h3 className="text-lg font-medium text-gray-800">Symptom History</h3>
                   <Button variant="outline" size="sm" className="flex items-center">
@@ -202,36 +231,68 @@ const SymptomsPage: FC = () => {
                   </Button>
                 </div>
                 
+                {/* Symptom-specific calendars */}
                 <div className="space-y-4">
-                  {mockHistoryData.map((entry, index) => (
-                    <div key={index} className="border border-gray-200 rounded-lg p-4 bg-white">
-                      <div className="flex justify-between items-center mb-2">
-                        <span className="font-medium text-purple-700">{entry.date}</span>
-                        <Button variant="ghost" size="sm" className="h-8 text-gray-500 hover:text-purple-700">
-                          Details
-                        </Button>
-                      </div>
-                      <div className="grid grid-cols-3 gap-2">
-                        <div className="text-center p-2 bg-purple-50 rounded-md">
-                          <div className="text-xs text-gray-500">Mood</div>
-                          <div className="font-medium text-purple-700">{entry.mood}</div>
+                  {symptomQuestions.map((q) => (
+                    <div key={q.id} className="border border-gray-200 rounded-lg overflow-hidden">
+                      {/* Calendar header */}
+                      <div 
+                        className="flex items-center justify-between p-4 cursor-pointer bg-white border-b"
+                        onClick={() => toggleCalendar(q.id)}
+                      >
+                        <div className="flex items-center">
+                          <span className="text-xl mr-2">{q.emoji}</span>
+                          <h4 className="font-medium text-gray-800">{q.question}</h4>
                         </div>
-                        <div className="text-center p-2 bg-purple-50 rounded-md">
-                          <div className="text-xs text-gray-500">Energy</div>
-                          <div className="font-medium text-purple-700">{entry.energy}</div>
-                        </div>
-                        <div className="text-center p-2 bg-purple-50 rounded-md">
-                          <div className="text-xs text-gray-500">Pain</div>
-                          <div className="font-medium text-purple-700">{entry.pain}</div>
+                        <div>
+                          {expandedCalendars.includes(q.id) ? (
+                            <ChevronUp className="h-5 w-5 text-gray-500" />
+                          ) : (
+                            <ChevronDown className="h-5 w-5 text-gray-500" />
+                          )}
                         </div>
                       </div>
+                      
+                      {/* Calendar body */}
+                      {expandedCalendars.includes(q.id) && (
+                        <div className="p-4 bg-white">
+                          <div className="flex justify-between items-center mb-4">
+                            <div className="flex space-x-4">
+                              {q.options.map(option => (
+                                <div key={option.value} className="flex items-center space-x-1">
+                                  <div className={`w-3 h-3 rounded-full ${option.color}`}></div>
+                                  <span className="text-xs text-gray-600">{option.label}</span>
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+                          
+                          <Calendar
+                            mode="single"
+                            selected={new Date()}
+                            className="mx-auto"
+                            modifiers={{
+                              highlighted: getMockCalendarData(q.id).map(entry => entry.date)
+                            }}
+                            modifiersStyles={{
+                              highlighted: {
+                                fontWeight: 'bold',
+                                backgroundColor: '#F3E8FF',
+                                color: '#6D28D9'
+                              }
+                            }}
+                          />
+                          
+                          <div className="mt-4">
+                            <Button variant="outline" className="w-full text-sm text-purple-700 border-purple-200">
+                              <CalendarDays className="h-4 w-4 mr-2" />
+                              View Full Calendar
+                            </Button>
+                          </div>
+                        </div>
+                      )}
                     </div>
                   ))}
-                  
-                  <Button variant="outline" className="w-full mt-4 text-purple-700 border-purple-200">
-                    <History className="h-4 w-4 mr-2" />
-                    Load More History
-                  </Button>
                 </div>
               </div>
             </TabsContent>
