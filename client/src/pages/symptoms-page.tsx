@@ -1,4 +1,4 @@
-import { FC, useState } from "react";
+import React, { FC, useState } from "react";
 import { useAuth } from "@/hooks/use-auth";
 import { Button } from "@/components/ui/button";
 import { useLocation } from "wouter";
@@ -126,20 +126,88 @@ const SymptomsPage: FC = () => {
   };
 
   // Mock historical data for calendars
-  const getMockCalendarData = (questionId: string): CalendarEntry[] => {
-    const options = symptomQuestions.find(q => q.id === questionId)?.options || [];
-    const result: CalendarEntry[] = [];
+  const getMockCalendarData = (questionId: string): Record<string, CalendarEntry[]> => {
+    const question = symptomQuestions.find(q => q.id === questionId);
+    const options = question?.options || [];
     
-    // Generate some random historical data for demo purposes
+    // Organize entries by option value
+    const result: Record<string, CalendarEntry[]> = {};
+    
+    // Initialize empty arrays for each option
+    options.forEach(option => {
+      result[option.value] = [];
+    });
+    
+    // Generate some consistent mock data for demo
+    const moodPatternByDay: Record<number, string> = {
+      1: "Energetic", 2: "Balanced", 3: "Balanced", 4: "Energetic", 
+      5: "Tired", 6: "Tired", 7: "Stressed", 8: "Stressed", 
+      9: "Tired", 10: "Balanced", 11: "Balanced", 12: "Energetic", 
+      13: "Balanced", 14: "Tired", 15: "Stressed"
+    };
+    
+    const energyPatternByDay: Record<number, string> = {
+      1: "High", 2: "High", 3: "Medium", 4: "Medium", 
+      5: "Medium", 6: "Low", 7: "Low", 8: "Exhausted", 
+      9: "Low", 10: "Medium", 11: "High", 12: "High", 
+      13: "Medium", 14: "Low", 15: "Exhausted"
+    };
+    
+    const sleepPatternByDay: Record<number, string> = {
+      1: "Excellent", 2: "Good", 3: "Good", 4: "Excellent", 
+      5: "Fair", 6: "Poor", 7: "Poor", 8: "Fair", 
+      9: "Fair", 10: "Good", 11: "Excellent", 12: "Good", 
+      13: "Fair", 14: "Poor", 15: "Poor"
+    };
+    
+    const painPatternByDay: Record<number, string> = {
+      1: "None", 2: "None", 3: "None", 4: "None", 
+      5: "Mild", 6: "Mild", 7: "Moderate", 8: "Severe", 
+      9: "Moderate", 10: "Mild", 11: "None", 12: "None", 
+      13: "None", 14: "Mild", 15: "Moderate"
+    };
+    
+    const bloatingPatternByDay: Record<number, string> = {
+      1: "None", 2: "None", 3: "None", 4: "Mild", 
+      5: "Mild", 6: "Moderate", 7: "Severe", 8: "Severe", 
+      9: "Moderate", 10: "Mild", 11: "None", 12: "None", 
+      13: "None", 14: "Mild", 15: "Moderate"
+    };
+    
+    // Select the right pattern based on question type
+    let pattern: Record<number, string>;
+    switch(questionId) {
+      case "mood": 
+        pattern = moodPatternByDay;
+        break;
+      case "energy":
+        pattern = energyPatternByDay;
+        break;
+      case "sleep":
+        pattern = sleepPatternByDay;
+        break;
+      case "pain":
+        pattern = painPatternByDay;
+        break;
+      case "bloating":
+        pattern = bloatingPatternByDay;
+        break;
+      default:
+        pattern = moodPatternByDay;
+    }
+    
+    // Generate the entries based on the selected pattern
     for (let i = 1; i <= 15; i++) {
       const date = new Date();
       date.setDate(date.getDate() - i);
       
-      const randomOption = options[Math.floor(Math.random() * options.length)];
-      result.push({
-        date,
-        value: randomOption.value
-      });
+      const value = pattern[i];
+      if (value && result[value]) {
+        result[value].push({
+          date,
+          value
+        });
+      }
     }
     
     return result;
@@ -292,35 +360,66 @@ const SymptomsPage: FC = () => {
                 {/* Calendar view */}
                 <div className="border border-gray-200 rounded-lg overflow-hidden bg-white p-4">
                   <div className="flex flex-wrap items-center justify-between mb-4">
-                    <div className="flex space-x-1 flex-wrap gap-2">
+                    <div className="flex flex-wrap gap-2">
                       {activeQuestion?.options.map(option => (
-                        <div key={option.value} className="flex items-center space-x-1 px-2 py-1 rounded-full bg-gray-50">
+                        <div key={option.value} className={`flex items-center space-x-1 px-2 py-1 rounded-lg ${option.color}`}>
                           <span className="text-sm">{option.emoji}</span>
-                          <div className={`w-2 h-2 rounded-full ${option.color.replace('bg-', 'bg-')}`}></div>
-                          <span className="text-xs text-gray-600">{option.label}</span>
+                          <span className="text-xs font-medium text-gray-700">{option.label}</span>
                         </div>
                       ))}
                     </div>
                   </div>
                   
-                  <Calendar
-                    mode="single"
-                    selected={new Date()}
-                    className="mx-auto rounded border"
-                    modifiers={{
-                      highlighted: getMockCalendarData(activeMetric).map(entry => entry.date)
-                    }}
-                    modifiersStyles={{
-                      highlighted: {
-                        fontWeight: 'bold',
-                        backgroundColor: '#F3E8FF',
-                        color: '#6D28D9'
+                  {activeQuestion && (
+                    <Calendar
+                      mode="single"
+                      selected={new Date()}
+                      className="mx-auto rounded border"
+                      modifiers={{
+                        ...activeQuestion.options.reduce<Record<string, Date[]>>((acc, option) => {
+                          const calendarData = getMockCalendarData(activeMetric);
+                          return {
+                            ...acc,
+                            [option.value]: calendarData[option.value]?.map((entry: CalendarEntry) => entry.date) || []
+                          };
+                        }, {})
+                      }}
+                      modifiersStyles={
+                        activeQuestion.options.reduce<Record<string, React.CSSProperties>>((acc, option) => {
+                          // Remove 'bg-' prefix to get the color name
+                          const colorName = option.color.replace('bg-', '');
+                          // Create a style based on the option's value
+                          return {
+                            ...acc,
+                            [option.value]: {
+                              fontWeight: 'bold',
+                              // For example, if colorName is 'purple-100', use a more vibrant 'purple-500' for text
+                              color: colorName.includes('purple') ? '#9333EA' : 
+                                     colorName.includes('blue') ? '#3B82F6' : 
+                                     colorName.includes('yellow') ? '#D97706' : 
+                                     colorName.includes('green') ? '#22C55E' : 
+                                     colorName.includes('red') ? '#EF4444' : 
+                                     colorName.includes('orange') ? '#F97316' : 
+                                     colorName.includes('gray') ? '#6B7280' : 
+                                     colorName.includes('indigo') ? '#6366F1' : '#9333EA',
+                              backgroundColor: colorName.includes('purple') ? 'rgba(233, 213, 255, 0.8)' : 
+                                     colorName.includes('blue') ? 'rgba(219, 234, 254, 0.8)' : 
+                                     colorName.includes('yellow') ? 'rgba(254, 240, 138, 0.8)' : 
+                                     colorName.includes('green') ? 'rgba(220, 252, 231, 0.8)' : 
+                                     colorName.includes('red') ? 'rgba(254, 226, 226, 0.8)' : 
+                                     colorName.includes('orange') ? 'rgba(255, 237, 213, 0.8)' : 
+                                     colorName.includes('gray') ? 'rgba(243, 244, 246, 0.8)' : 
+                                     colorName.includes('indigo') ? 'rgba(224, 231, 255, 0.8)' : 'rgba(233, 213, 255, 0.8)',
+                              borderRadius: '50%'
+                            }
+                          };
+                        }, {})
                       }
-                    }}
-                  />
+                    />
+                  )}
                   
                   <div className="mt-4 text-center text-sm text-gray-500">
-                    <p>Select a date to see detailed symptoms for that day</p>
+                    <p>Dates are color-coded based on your recorded symptoms</p>
                   </div>
                 </div>
               </div>
