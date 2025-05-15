@@ -112,18 +112,41 @@ export default function AuthPage() {
   return (
     <div className="min-h-screen flex flex-col md:flex-row">
       {/* Auth form container */}
-      <div className="w-full md:w-1/2 p-4 sm:p-6 md:p-10 flex items-center justify-center">
-        <div className="w-full max-w-md px-4 py-6 sm:p-8">
-          <div className="text-center mb-6 md:mb-8">
+      <div className="w-full md:w-1/2 p-4 sm:p-6 md:p-10 flex items-center justify-center gradient-primary">
+        <div className="w-full max-w-md px-4 py-6 sm:p-8 bg-white/10 backdrop-blur-sm rounded-2xl">
+          <div className="text-center mb-6 md:mb-6">
             <h1 className="text-3xl sm:text-4xl font-bold text-white mb-2">
-              HerFitness
+              FemFit
             </h1>
-            <p className="text-white text-base sm:text-lg opacity-90 mb-1">
-              Cycle-Smart Fitness for Every Stage of Womanhood
-            </p>
-            <p className="text-white text-sm sm:text-base opacity-80">
-              Built by Women for Women
-            </p>
+            <div className="text-white text-sm sm:text-base opacity-90 space-y-1">
+              <p>Your personalized fitness journey for every stage of womenhood</p>
+              <p>Designed for womens unique health needs</p>
+              <p>Built by Women For Women</p>
+            </div>
+          </div>
+
+          {/* Horizontal Tab Toggle */}
+          <div className="flex rounded-lg bg-white/20 p-1 mb-6">
+            <button
+              onClick={() => setIsLogin(true)}
+              className={`flex-1 py-2 text-sm font-medium rounded-md transition-all ${
+                isLogin 
+                  ? "bg-white text-purple-700 shadow-sm" 
+                  : "text-white hover:bg-white/10"
+              }`}
+            >
+              Login
+            </button>
+            <button
+              onClick={() => setIsLogin(false)}
+              className={`flex-1 py-2 text-sm font-medium rounded-md transition-all ${
+                !isLogin 
+                  ? "bg-white text-purple-700 shadow-sm" 
+                  : "text-white hover:bg-white/10"
+              }`}
+            >
+              Sign Up
+            </button>
           </div>
 
           {isLogin ? (
@@ -173,7 +196,7 @@ export default function AuthPage() {
 
               <Button
                 type="submit"
-                className="w-full bg-white text-purple-700 hover:bg-purple-50 transition-colors border-2 border-white shadow-md font-bold"
+                className="w-full bg-white text-purple-700 hover:bg-purple-50 transition-colors shadow-md font-bold"
                 disabled={loginMutation.isPending}
               >
                 {loginMutation.isPending ? (
@@ -264,7 +287,7 @@ export default function AuthPage() {
 
               <Button
                 type="submit"
-                className="w-full bg-white text-purple-700 hover:bg-purple-50 transition-colors border-2 border-white shadow-md font-bold"
+                className="w-full bg-white text-purple-700 hover:bg-purple-50 transition-colors shadow-md font-bold"
                 disabled={registerMutation.isPending}
               >
                 {registerMutation.isPending ? (
