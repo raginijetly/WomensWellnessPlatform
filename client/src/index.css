@@ -70,6 +70,62 @@ body {
   cursor: pointer;
 }
 
+/* Custom calendar styles for softer pastel look */
+.custom-calendar {
+  font-family: 'Poppins', sans-serif;
+}
+
+.custom-calendar .rdp-head_cell {
+  color: #828896 !important;
+  font-weight: 400 !important;
+  font-size: 0.9rem;
+}
+
+.custom-calendar .rdp-caption {
+  font-weight: 500 !important;
+  color: #5a5f69 !important;
+}
+
+.custom-calendar .rdp-nav_button {
+  color: #aeb5c0 !important;
+}
+
+.custom-calendar .rdp-day {
+  border-radius: 50%;
+  width: 36px;
+  height: 36px;
+  font-weight: 400 !important;
+  color: #808594 !important;
+  transition: all 0.2s ease;
+}
+
+.custom-calendar .rdp-day_outside {
+  color: #c3c9d3 !important;
+  opacity: 0.5;
+}
+
+.custom-calendar .rdp-day_today {
+  color: #4a4d56 !important;
+  font-weight: 500 !important;
+}
+
+/* No background for today's date */
+.custom-calendar .rdp-day_today:not([aria-selected="true"]) {
+  background: none !important;
+}
+
+/* Hoverable non-selected days */
+.custom-calendar .rdp-day:not([aria-selected="true"]):hover {
+  background-color: rgba(0, 0, 0, 0.03) !important;
+}
+
+/* Specific styles for date cells */
+.custom-calendar table {
+  margin: 0 auto;
+  border-collapse: separate;
+  border-spacing: 2px;
+}
+
 /* Mobile optimizations */
 @media (max-width: 640px) {
   /* Optimized for iPhone and similar devices */

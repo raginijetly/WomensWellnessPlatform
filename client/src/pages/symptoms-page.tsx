@@ -430,8 +430,12 @@ const SymptomsPage: FC = () => {
                       selected={undefined}
                       className="mx-auto rounded border custom-calendar"
                       classNames={{
-                        day_today: "font-medium text-black border-0",
-                        day_outside: "text-gray-300"
+                        day: "h-9 w-9 p-0 font-normal text-gray-600 aria-selected:opacity-100",
+                        day_today: "text-gray-900 border-0 font-normal",
+                        day_outside: "text-gray-300 opacity-50",
+                        head_cell: "text-gray-500 font-normal",
+                        nav_button: "text-gray-400 hover:text-gray-600", 
+                        caption: "font-normal text-gray-700"
                       }}
                       modifiers={{
                         ...activeQuestion.options.reduce<Record<string, Date[]>>((acc, option) => {
@@ -446,28 +450,33 @@ const SymptomsPage: FC = () => {
                         activeQuestion.options.reduce<Record<string, React.CSSProperties>>((acc, option) => {
                           // Remove 'bg-' prefix to get the color name
                           const colorName = option.color.replace('bg-', '');
-                          // Create a style based on the option's value
+                          
+                          // Get color based on option value - softer pastel colors
+                          const getColor = () => {
+                            if (colorName.includes('purple')) return '#BF7FF5';
+                            if (colorName.includes('blue')) return '#7FB3F5';
+                            if (colorName.includes('yellow')) return '#F5CA7F';
+                            if (colorName.includes('green')) return '#7FE5AA';
+                            if (colorName.includes('red')) return '#F59A9A';
+                            if (colorName.includes('orange')) return '#F5B07F';
+                            if (colorName.includes('gray')) return '#9CA3AF';
+                            if (colorName.includes('indigo')) return '#A5B4FC';
+                            return '#BF7FF5';
+                          };
+                          
                           return {
                             ...acc,
                             [option.value]: {
-                              fontWeight: 'bold',
-                              // For example, if colorName is 'purple-100', use a more vibrant 'purple-500' for text
-                              color: colorName.includes('purple') ? '#9333EA' : 
-                                     colorName.includes('blue') ? '#3B82F6' : 
-                                     colorName.includes('yellow') ? '#D97706' : 
-                                     colorName.includes('green') ? '#22C55E' : 
-                                     colorName.includes('red') ? '#EF4444' : 
-                                     colorName.includes('orange') ? '#F97316' : 
-                                     colorName.includes('gray') ? '#6B7280' : 
-                                     colorName.includes('indigo') ? '#6366F1' : '#9333EA',
-                              backgroundColor: colorName.includes('purple') ? 'rgba(243, 232, 255, 0.5)' : 
-                                     colorName.includes('blue') ? 'rgba(235, 244, 255, 0.5)' : 
-                                     colorName.includes('yellow') ? 'rgba(254, 249, 195, 0.5)' : 
-                                     colorName.includes('green') ? 'rgba(236, 253, 240, 0.5)' : 
-                                     colorName.includes('red') ? 'rgba(254, 240, 240, 0.5)' : 
-                                     colorName.includes('orange') ? 'rgba(255, 247, 237, 0.5)' : 
-                                     colorName.includes('gray') ? 'rgba(243, 244, 246, 0.5)' : 
-                                     colorName.includes('indigo') ? 'rgba(238, 242, 255, 0.5)' : 'rgba(243, 232, 255, 0.5)',
+                              fontWeight: 'normal',
+                              color: getColor(),
+                              backgroundColor: colorName.includes('purple') ? 'rgba(243, 232, 255, 0.6)' : 
+                                     colorName.includes('blue') ? 'rgba(235, 244, 255, 0.6)' : 
+                                     colorName.includes('yellow') ? 'rgba(254, 249, 195, 0.6)' : 
+                                     colorName.includes('green') ? 'rgba(236, 253, 240, 0.6)' : 
+                                     colorName.includes('red') ? 'rgba(254, 240, 240, 0.6)' : 
+                                     colorName.includes('orange') ? 'rgba(255, 247, 237, 0.6)' : 
+                                     colorName.includes('gray') ? 'rgba(243, 244, 246, 0.6)' : 
+                                     colorName.includes('indigo') ? 'rgba(238, 242, 255, 0.6)' : 'rgba(243, 232, 255, 0.6)',
                               borderRadius: '50%'
                             }
                           };
