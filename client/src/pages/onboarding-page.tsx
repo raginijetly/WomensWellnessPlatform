@@ -357,8 +357,18 @@ const OnboardingPage: FC = () => {
             
             <div className="mt-auto pt-6 space-y-3">
               <Button
-                className="w-full py-3 gradient-primary hover:opacity-90 shadow-lg text-lg font-medium border border-white"
+                className="w-full py-3 gradient-primary hover:opacity-90 shadow-lg text-lg font-medium border border-white disabled:opacity-50 disabled:cursor-not-allowed"
                 onClick={goToNextStep}
+                disabled={
+                  // Add validation for each step
+                  (currentStep === 'age' && (!ageInput || isNaN(parseInt(ageInput)))) ||
+                  (currentStep === 'period' && !dateInput && !dontKnowDate) ||
+                  (currentStep === 'regularity' && !regularity) ||
+                  (currentStep === 'goals' && (!selectedGoals || selectedGoals.length === 0)) ||
+                  (currentStep === 'conditions' && (!selectedConditions || selectedConditions.length === 0)) ||
+                  (currentStep === 'lifestage' && !selectedLifeStage) ||
+                  (currentStep === 'symptoms' && (!selectedSymptoms || selectedSymptoms.length === 0))
+                }
               >
                 Continue
               </Button>

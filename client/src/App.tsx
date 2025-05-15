@@ -3,7 +3,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { AuthProvider } from "@/hooks/use-auth";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { queryClient } from "@/lib/queryClient";
-import AuthPage from "@/pages/auth-page-fixed";
+import AuthPage from "@/pages/auth-page-tabs";
 import HomePage from "@/pages/home-page";
 import OnboardingPage from "@/pages/onboarding-page";
 import NotFound from "@/pages/not-found";
