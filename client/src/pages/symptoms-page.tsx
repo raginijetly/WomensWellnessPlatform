@@ -373,8 +373,12 @@ const SymptomsPage: FC = () => {
                   {activeQuestion && (
                     <Calendar
                       mode="single"
-                      selected={new Date()}
-                      className="mx-auto rounded border"
+                      selected={undefined}
+                      className="mx-auto rounded border custom-calendar"
+                      classNames={{
+                        day_today: "font-medium text-black border-0",
+                        day_outside: "text-gray-300"
+                      }}
                       modifiers={{
                         ...activeQuestion.options.reduce<Record<string, Date[]>>((acc, option) => {
                           const calendarData = getMockCalendarData(activeMetric);
@@ -402,14 +406,14 @@ const SymptomsPage: FC = () => {
                                      colorName.includes('orange') ? '#F97316' : 
                                      colorName.includes('gray') ? '#6B7280' : 
                                      colorName.includes('indigo') ? '#6366F1' : '#9333EA',
-                              backgroundColor: colorName.includes('purple') ? 'rgba(233, 213, 255, 0.8)' : 
-                                     colorName.includes('blue') ? 'rgba(219, 234, 254, 0.8)' : 
-                                     colorName.includes('yellow') ? 'rgba(254, 240, 138, 0.8)' : 
-                                     colorName.includes('green') ? 'rgba(220, 252, 231, 0.8)' : 
-                                     colorName.includes('red') ? 'rgba(254, 226, 226, 0.8)' : 
-                                     colorName.includes('orange') ? 'rgba(255, 237, 213, 0.8)' : 
-                                     colorName.includes('gray') ? 'rgba(243, 244, 246, 0.8)' : 
-                                     colorName.includes('indigo') ? 'rgba(224, 231, 255, 0.8)' : 'rgba(233, 213, 255, 0.8)',
+                              backgroundColor: colorName.includes('purple') ? 'rgba(243, 232, 255, 0.5)' : 
+                                     colorName.includes('blue') ? 'rgba(235, 244, 255, 0.5)' : 
+                                     colorName.includes('yellow') ? 'rgba(254, 249, 195, 0.5)' : 
+                                     colorName.includes('green') ? 'rgba(236, 253, 240, 0.5)' : 
+                                     colorName.includes('red') ? 'rgba(254, 240, 240, 0.5)' : 
+                                     colorName.includes('orange') ? 'rgba(255, 247, 237, 0.5)' : 
+                                     colorName.includes('gray') ? 'rgba(243, 244, 246, 0.5)' : 
+                                     colorName.includes('indigo') ? 'rgba(238, 242, 255, 0.5)' : 'rgba(243, 232, 255, 0.5)',
                               borderRadius: '50%'
                             }
                           };
