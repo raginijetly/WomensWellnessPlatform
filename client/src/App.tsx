@@ -23,13 +23,13 @@ const asComponent = (Component: React.FC): (() => React.JSX.Element) => {
 function Router() {
   return (
     <Switch>
-      <ProtectedRoute path="/" component={HomePage} />
+      <ProtectedRoute path="/" component={asComponent(HomePage)} />
       <Route path="/auth" component={AuthPage} />
       <Route path="/onboarding" component={OnboardingPage} />
-      <ProtectedRoute path="/symptoms" component={SymptomsPage} />
-      <ProtectedRoute path="/workout" component={WorkoutPage} />
-      <ProtectedRoute path="/nutrition" component={NutritionPage} />
-      <ProtectedRoute path="/info-hub" component={InfoHubPage} />
+      <ProtectedRoute path="/symptoms" component={asComponent(SymptomsPage)} />
+      <ProtectedRoute path="/workout" component={asComponent(WorkoutPage)} />
+      <ProtectedRoute path="/nutrition" component={asComponent(NutritionPage)} />
+      <ProtectedRoute path="/info-hub" component={asComponent(InfoHubPage)} />
       <Route component={NotFound} />
     </Switch>
   );
