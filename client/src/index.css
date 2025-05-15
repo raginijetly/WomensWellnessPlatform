@@ -77,8 +77,12 @@ body {
 
 .custom-calendar .rdp-head_cell {
   color: #828896 !important;
-  font-weight: 400 !important;
+  font-weight: 500 !important;
   font-size: 0.9rem;
+  padding: 8px 0;
+  width: 36px !important;
+  text-align: center !important;
+  letter-spacing: 0.5px;
 }
 
 .custom-calendar .rdp-caption {
@@ -124,6 +128,27 @@ body {
   margin: 0 auto;
   border-collapse: separate;
   border-spacing: 2px;
+  width: 100%;
+}
+
+.custom-calendar .rdp-head {
+  margin-bottom: 8px;
+}
+
+.custom-calendar .rdp-tbody {
+  width: 100%;
+}
+
+.custom-calendar .rdp-row {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 4px;
+}
+
+.custom-calendar .rdp-cell {
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 /* Mobile optimizations */

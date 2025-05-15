@@ -437,6 +437,11 @@ const SymptomsPage: FC = () => {
                         nav_button: "text-gray-400 hover:text-gray-600", 
                         caption: "font-normal text-gray-700"
                       }}
+                      formatters={{
+                        formatWeekdayName: (date) => {
+                          return new Intl.DateTimeFormat('en-US', { weekday: 'narrow' }).format(date);
+                        }
+                      }}
                       modifiers={{
                         ...activeQuestion.options.reduce<Record<string, Date[]>>((acc, option) => {
                           const calendarData = getMockCalendarData(activeMetric);
