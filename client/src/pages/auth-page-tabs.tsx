@@ -104,10 +104,10 @@ export default function AuthPage() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col md:flex-row">
+    <div className="min-h-screen gradient-primary">
       {/* Auth form container */}
-      <div className="w-full md:w-1/2 p-4 sm:p-6 md:p-10 flex items-center justify-center gradient-primary">
-        <div className="w-full max-w-md px-6 py-8">
+      <div className="w-full h-full max-w-md mx-auto p-4 sm:p-6 md:p-10 flex flex-col items-center justify-center">
+        <div className="w-full px-6 py-8">
           <div className="text-center mb-6 md:mb-8">
             <h1 className="text-3xl sm:text-4xl font-bold text-white mb-2">
               FemFit
@@ -277,36 +277,6 @@ export default function AuthPage() {
               </form>
             </TabsContent>
           </Tabs>
-        </div>
-      </div>
-
-      {/* Hero section - clean and minimal */}
-      <div className="hidden md:flex md:w-1/2 gradient-primary items-center justify-center">
-        <div className="p-8 text-white text-center max-w-md">
-          <h2 className="text-3xl font-bold mb-4">Welcome to FemFit</h2>
-          <p className="text-lg mb-6">
-            Your personalized fitness journey for every stage of womenhood. Built by Women For Women.
-          </p>
-          <ul className="text-left space-y-3 text-lg">
-            <li className="flex items-center">
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 mr-2 text-white/80" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-              </svg>
-              Cycle-based workout recommendations
-            </li>
-            <li className="flex items-center">
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 mr-2 text-white/80" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-              </svg>
-              Personalized nutrition plans
-            </li>
-            <li className="flex items-center">
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 mr-2 text-white/80" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-              </svg>
-              Symptom and mood tracking
-            </li>
-          </ul>
         </div>
       </div>
     </div>
