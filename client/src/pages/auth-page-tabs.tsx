@@ -133,7 +133,7 @@ export default function AuthPage() {
               </TabsTrigger>
               <TabsTrigger 
                 value="signup" 
-                className="text-lg font-medium border-0 px-0 pb-2 rounded-none transition-colors data-[state=active]:bg-transparent data-[state=active]:shadow-none"
+                className="text-lg font-medium border-0 px-0 pb-2 rounded-none transition-colors data-[state=active]:bg-transparent data-[state=active]:shadow-none hover:text-white/90"
                 style={{
                   color: activeTab === 'signup' ? 'rgb(233, 213, 255)' : 'rgba(255, 255, 255, 0.6)',
                   borderBottom: activeTab === 'signup' ? '3px solid rgb(233, 213, 255)' : 'none',
