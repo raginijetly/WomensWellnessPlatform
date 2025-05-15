@@ -23,8 +23,8 @@ const AppLayout: FC<AppLayoutProps> = ({ children }) => {
       <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 flex justify-between items-center px-2 py-2 z-10">
         {/* Home */}
         <Button 
-          variant="ghost" 
-          className={`text-${location === '/' ? 'purple-600' : 'gray-500'} flex flex-col items-center p-1 h-auto w-1/5`}
+          variant={location === '/' ? 'ghost' : 'link'} 
+          className={`${location === '/' ? 'text-purple-600' : 'text-gray-500'} flex flex-col items-center p-1 h-auto w-1/5 hover:bg-transparent`}
           onClick={() => setLocation('/')}
         >
           <div className="flex flex-col items-center justify-center">
@@ -37,8 +37,8 @@ const AppLayout: FC<AppLayoutProps> = ({ children }) => {
         
         {/* Log Symptoms */}
         <Button 
-          variant="ghost" 
-          className={`text-${location === '/symptoms' ? 'purple-600' : 'gray-500'} flex flex-col items-center p-1 h-auto w-1/5`}
+          variant={location === '/symptoms' ? 'ghost' : 'link'} 
+          className={`${location === '/symptoms' ? 'text-purple-600' : 'text-gray-500'} flex flex-col items-center p-1 h-auto w-1/5 hover:bg-transparent`}
           onClick={() => setLocation('/symptoms')}
         >
           <div className="flex flex-col items-center justify-center">
@@ -49,8 +49,8 @@ const AppLayout: FC<AppLayoutProps> = ({ children }) => {
         
         {/* Workout */}
         <Button 
-          variant="ghost" 
-          className={`text-${location === '/workout' ? 'purple-600' : 'gray-500'} flex flex-col items-center p-1 h-auto w-1/5`}
+          variant={location === '/workout' ? 'ghost' : 'link'} 
+          className={`${location === '/workout' ? 'text-purple-600' : 'text-gray-500'} flex flex-col items-center p-1 h-auto w-1/5 hover:bg-transparent`}
           onClick={() => setLocation('/workout')}
         >
           <div className="flex flex-col items-center justify-center">
@@ -61,8 +61,8 @@ const AppLayout: FC<AppLayoutProps> = ({ children }) => {
         
         {/* Nutrition */}
         <Button 
-          variant="ghost" 
-          className={`text-${location === '/nutrition' ? 'purple-600' : 'gray-500'} flex flex-col items-center p-1 h-auto w-1/5`}
+          variant={location === '/nutrition' ? 'ghost' : 'link'} 
+          className={`${location === '/nutrition' ? 'text-purple-600' : 'text-gray-500'} flex flex-col items-center p-1 h-auto w-1/5 hover:bg-transparent`}
           onClick={() => setLocation('/nutrition')}
         >
           <div className="flex flex-col items-center justify-center">
@@ -73,8 +73,8 @@ const AppLayout: FC<AppLayoutProps> = ({ children }) => {
         
         {/* Info Hub */}
         <Button 
-          variant="ghost" 
-          className={`text-${location === '/info-hub' ? 'purple-600' : 'gray-500'} flex flex-col items-center p-1 h-auto w-1/5`}
+          variant={location === '/info-hub' ? 'ghost' : 'link'} 
+          className={`${location === '/info-hub' ? 'text-purple-600' : 'text-gray-500'} flex flex-col items-center p-1 h-auto w-1/5 hover:bg-transparent`}
           onClick={() => setLocation('/info-hub')}
         >
           <div className="flex flex-col items-center justify-center">
