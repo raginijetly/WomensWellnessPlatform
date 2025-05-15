@@ -125,12 +125,12 @@ export default function AuthPage() {
           </div>
 
           {/* Horizontal Tab Toggle */}
-          <div className="flex rounded-lg bg-white/20 p-1 mb-6">
+          <div className="flex rounded-lg bg-white/20 p-1 mb-6 overflow-hidden">
             <button
               onClick={() => setIsLogin(true)}
-              className={`flex-1 py-2 text-sm font-medium rounded-md transition-all ${
+              className={`flex-1 py-2 text-sm font-medium transition-all ${
                 isLogin 
-                  ? "bg-white text-purple-700 shadow-sm" 
+                  ? "bg-white text-purple-700" 
                   : "text-white hover:bg-white/10"
               }`}
             >
@@ -138,9 +138,9 @@ export default function AuthPage() {
             </button>
             <button
               onClick={() => setIsLogin(false)}
-              className={`flex-1 py-2 text-sm font-medium rounded-md transition-all ${
+              className={`flex-1 py-2 text-sm font-medium transition-all ${
                 !isLogin 
-                  ? "bg-white text-purple-700 shadow-sm" 
+                  ? "bg-white text-purple-700" 
                   : "text-white hover:bg-white/10"
               }`}
             >

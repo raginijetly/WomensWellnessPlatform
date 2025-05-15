@@ -112,25 +112,23 @@ export default function AuthPage() {
             <h1 className="text-3xl sm:text-4xl font-bold text-white mb-2">
               FemFit
             </h1>
-            <p className="text-white text-base sm:text-lg opacity-90 mb-1">
-              Your personalized fitness journey
-            </p>
-            <p className="text-white text-sm sm:text-base opacity-80">
-              Designed for women's unique health needs
-            </p>
+            <div className="text-white text-sm sm:text-base opacity-90 space-y-1">
+              <p>Your personalized fitness journey for every stage of womenhood</p>
+              <p>Built by Women For Women</p>
+            </div>
           </div>
 
           <Tabs defaultValue="login" value={activeTab} onValueChange={setActiveTab} className="w-full">
-            <TabsList className="grid grid-cols-2 mb-6 rounded-lg bg-white/20 p-1">
+            <TabsList className="grid grid-cols-2 mb-6 rounded-lg bg-white/20 p-1 overflow-hidden">
               <TabsTrigger 
                 value="login" 
-                className={`text-lg font-medium rounded-md ${activeTab === 'login' ? 'bg-white text-purple-700' : 'text-white hover:bg-white/10'}`}
+                className={`text-lg font-medium ${activeTab === 'login' ? 'bg-white text-purple-700' : 'text-white hover:bg-white/10'}`}
               >
                 Log In
               </TabsTrigger>
               <TabsTrigger 
                 value="signup" 
-                className={`text-lg font-medium rounded-md ${activeTab === 'signup' ? 'bg-white text-purple-700' : 'text-white hover:bg-white/10'}`}
+                className={`text-lg font-medium ${activeTab === 'signup' ? 'bg-white text-purple-700' : 'text-white hover:bg-white/10'}`}
               >
                 Sign Up
               </TabsTrigger>
