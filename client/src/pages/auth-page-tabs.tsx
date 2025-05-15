@@ -119,23 +119,23 @@ export default function AuthPage() {
           </div>
 
           <Tabs defaultValue="login" value={activeTab} onValueChange={setActiveTab} className="w-full">
-            <TabsList className="flex mb-8 bg-transparent p-0 overflow-hidden border-b border-white/30 w-full">
+            <TabsList className="flex mb-8 bg-transparent p-0 overflow-hidden border-b border-white/30 w-full justify-start gap-24 px-2">
               <TabsTrigger 
                 value="login" 
-                className={`text-xl font-medium border-0 px-6 pb-2 rounded-none transition-colors ${
+                className={`text-2xl font-light border-0 px-0 pb-2 rounded-none transition-colors ${
                   activeTab === 'login' 
                     ? 'text-white border-b-3 border-white relative -mb-[1px]' 
-                    : 'text-white/70 hover:text-white'
+                    : 'text-white/60 hover:text-white/90'
                 }`}
               >
                 Login
               </TabsTrigger>
               <TabsTrigger 
                 value="signup" 
-                className={`text-xl font-medium border-0 px-6 pb-2 rounded-none transition-colors ${
+                className={`text-2xl font-light border-0 px-0 pb-2 rounded-none transition-colors ${
                   activeTab === 'signup' 
                     ? 'text-white border-b-3 border-white relative -mb-[1px]' 
-                    : 'text-white/70 hover:text-white'
+                    : 'text-white/60 hover:text-white/90'
                 }`}
               >
                 Register
