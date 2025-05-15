@@ -85,7 +85,13 @@ export default function AuthPage() {
 
   // Handle registration form submission
   const onRegisterSubmit = (values: RegisterFormValues) => {
-    registerMutation.mutate(values, {
+    // Set username to email for compatibility with backend
+    const submitData = {
+      ...values,
+      username: values.email // Use email as username
+    };
+    
+    registerMutation.mutate(submitData, {
       onSuccess: () => {
         toast({
           title: "Account created",
@@ -96,7 +102,7 @@ export default function AuthPage() {
       onError: (error: Error) => {
         toast({
           title: "Registration failed",
-          description: error.message || "Username may already be taken",
+          description: error.message || "Email may already be registered",
           variant: "destructive",
         });
       },
@@ -191,22 +197,46 @@ export default function AuthPage() {
             // Registration Form
             <form onSubmit={registerForm.handleSubmit(onRegisterSubmit)} className="space-y-4">
               <div className="space-y-2">
-                <Label htmlFor="register-username" className="text-white">Username</Label>
+                <Label htmlFor="register-name" className="text-white">Full Name</Label>
                 <div className="relative">
                   <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
                     <UserIcon className="h-5 w-5 text-gray-400" />
                   </div>
                   <Input
-                    id="register-username"
+                    id="register-name"
                     type="text"
-                    placeholder="Username"
-                    className="pl-10 h-11 text-base"
-                    {...registerForm.register("username")}
+                    placeholder="Enter your name"
+                    className="pl-10 h-11 text-base w-full"
+                    {...registerForm.register("name")}
                   />
                 </div>
-                {registerForm.formState.errors.username && (
+                {registerForm.formState.errors.name && (
                   <p className="text-sm text-red-500">
-                    {registerForm.formState.errors.username.message}
+                    {registerForm.formState.errors.name.message}
+                  </p>
+                )}
+              </div>
+              
+              <div className="space-y-2">
+                <Label htmlFor="register-email" className="text-white">Email</Label>
+                <div className="relative">
+                  <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-gray-400" viewBox="0 0 20 20" fill="currentColor">
+                      <path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z" />
+                      <path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z" />
+                    </svg>
+                  </div>
+                  <Input
+                    id="register-email"
+                    type="email"
+                    placeholder="Enter your email"
+                    className="pl-10 h-11 text-base w-full"
+                    {...registerForm.register("email")}
+                  />
+                </div>
+                {registerForm.formState.errors.email && (
+                  <p className="text-sm text-red-500">
+                    {registerForm.formState.errors.email.message}
                   </p>
                 )}
               </div>
@@ -220,41 +250,14 @@ export default function AuthPage() {
                   <Input
                     id="register-password"
                     type="password"
-                    placeholder="Password"
-                    className="pl-10 h-11 text-base"
+                    placeholder="Password (min. 6 characters)"
+                    className="pl-10 h-11 text-base w-full"
                     {...registerForm.register("password")}
                   />
                 </div>
                 {registerForm.formState.errors.password && (
                   <p className="text-sm text-red-500">
                     {registerForm.formState.errors.password.message}
-                  </p>
-                )}
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="name" className="text-white">Name (optional)</Label>
-                <Input
-                  id="name"
-                  type="text"
-                  placeholder="Your name"
-                  className="h-11 text-base"
-                  {...registerForm.register("name")}
-                />
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="email" className="text-white">Email (optional)</Label>
-                <Input
-                  id="email"
-                  type="email"
-                  placeholder="Your email"
-                  className="h-11 text-base"
-                  {...registerForm.register("email")}
-                />
-                {registerForm.formState.errors.email && (
-                  <p className="text-sm text-red-500">
-                    {registerForm.formState.errors.email.message}
                   </p>
                 )}
               </div>
