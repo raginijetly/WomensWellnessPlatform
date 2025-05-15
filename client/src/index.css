@@ -79,10 +79,21 @@ body {
   color: #828896 !important;
   font-weight: 500 !important;
   font-size: 0.9rem;
-  padding: 8px 0;
   width: 36px !important;
+  height: 24px !important;
   text-align: center !important;
-  letter-spacing: 0.5px;
+  padding: 0 !important;
+  margin: 0 !important;
+  position: relative;
+}
+
+.custom-calendar .rdp-head_cell abbr {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  text-decoration: none;
+  margin: 0;
 }
 
 .custom-calendar .rdp-caption {
@@ -126,29 +137,30 @@ body {
 /* Specific styles for date cells */
 .custom-calendar table {
   margin: 0 auto;
-  border-collapse: separate;
-  border-spacing: 2px;
+  table-layout: fixed;
   width: 100%;
+  border-spacing: 0;
+  border-collapse: collapse;
 }
 
 .custom-calendar .rdp-head {
-  margin-bottom: 8px;
-}
-
-.custom-calendar .rdp-tbody {
-  width: 100%;
-}
-
-.custom-calendar .rdp-row {
-  display: flex;
-  justify-content: space-between;
-  margin-bottom: 4px;
+  margin-bottom: 0;
 }
 
 .custom-calendar .rdp-cell {
-  display: flex;
-  justify-content: center;
-  align-items: center;
+  padding: 0 !important;
+  width: 36px !important;
+  height: 36px !important;
+  position: relative;
+}
+
+.custom-calendar .rdp-button {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 36px !important;
+  height: 36px !important;
 }
 
 /* Mobile optimizations */
