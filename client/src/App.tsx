@@ -7,6 +7,13 @@ import AuthPage from "@/pages/auth-page-tabs";
 import HomePage from "@/pages/home-page";
 import OnboardingPage from "@/pages/onboarding-page";
 import NotFound from "@/pages/not-found";
+import { ProtectedRoute } from "@/lib/protected-route";
+
+// Placeholder Pages
+import SymptomsPage from "@/pages/symptoms-page";
+import WorkoutPage from "@/pages/workout-page";
+import NutritionPage from "@/pages/nutrition-page";
+import InfoHubPage from "@/pages/info-hub-page";
 
 function Router() {
   return (
@@ -14,6 +21,10 @@ function Router() {
       <Route path="/" component={HomePage} />
       <Route path="/auth" component={AuthPage} />
       <Route path="/onboarding" component={OnboardingPage} />
+      <ProtectedRoute path="/symptoms" component={SymptomsPage} />
+      <ProtectedRoute path="/workout" component={WorkoutPage} />
+      <ProtectedRoute path="/nutrition" component={NutritionPage} />
+      <ProtectedRoute path="/info-hub" component={InfoHubPage} />
       <Route component={NotFound} />
     </Switch>
   );
