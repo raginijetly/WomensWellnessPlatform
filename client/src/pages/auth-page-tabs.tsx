@@ -106,8 +106,8 @@ export default function AuthPage() {
   return (
     <div className="min-h-screen flex flex-col md:flex-row">
       {/* Auth form container */}
-      <div className="w-full md:w-1/2 p-4 sm:p-6 md:p-10 flex items-center justify-center">
-        <div className="w-full max-w-md px-4 py-6 sm:p-8">
+      <div className="w-full md:w-1/2 p-4 sm:p-6 md:p-10 flex items-center justify-center gradient-primary">
+        <div className="w-full max-w-md px-6 py-8">
           <div className="text-center mb-6 md:mb-8">
             <h1 className="text-3xl sm:text-4xl font-bold text-white mb-2">
               FemFit
@@ -119,36 +119,44 @@ export default function AuthPage() {
           </div>
 
           <Tabs defaultValue="login" value={activeTab} onValueChange={setActiveTab} className="w-full">
-            <TabsList className="grid grid-cols-2 mb-6 rounded-lg bg-white/20 p-1 overflow-hidden">
+            <TabsList className="flex mb-6 border-b border-white/20 bg-transparent p-0 overflow-hidden gap-6">
               <TabsTrigger 
                 value="login" 
-                className={`text-base font-medium ${activeTab === 'login' ? 'bg-purple-200/80 text-purple-800' : 'text-white hover:bg-white/10'}`}
+                className={`text-base font-medium border-0 px-2 pb-2 rounded-none transition-colors ${
+                  activeTab === 'login' 
+                    ? 'text-white border-b-2 border-white' 
+                    : 'text-white/70 hover:text-white'
+                }`}
               >
-                Log In
+                Login
               </TabsTrigger>
               <TabsTrigger 
                 value="signup" 
-                className={`text-base font-medium ${activeTab === 'signup' ? 'bg-purple-200/80 text-purple-800' : 'text-white hover:bg-white/10'}`}
+                className={`text-base font-medium border-0 px-2 pb-2 rounded-none transition-colors ${
+                  activeTab === 'signup' 
+                    ? 'text-white border-b-2 border-white' 
+                    : 'text-white/70 hover:text-white'
+                }`}
               >
-                Sign Up
+                Register
               </TabsTrigger>
             </TabsList>
 
             <TabsContent value="login">
               <form onSubmit={loginForm.handleSubmit(onLoginSubmit)} className="space-y-4">
-                <div className="space-y-2">
-                  <Label htmlFor="username" className="text-white">Email or Username</Label>
+                <div className="space-y-1 mb-6">
+                  <Label htmlFor="username" className="text-white font-normal mb-2">Username</Label>
                   <div className="relative">
-                    <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-                      <Mail className="h-5 w-5 text-gray-400" />
-                    </div>
                     <Input
                       id="username"
                       type="text"
-                      placeholder="Enter email or username"
-                      className="pl-10 h-12 text-base w-full rounded-lg"
+                      placeholder="Username"
+                      className="pl-10 h-12 text-base w-full rounded-xl bg-white text-gray-700"
                       {...loginForm.register("username")}
                     />
+                    <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                      <UserIcon className="h-5 w-5 text-gray-400" />
+                    </div>
                   </div>
                   {loginForm.formState.errors.username && (
                     <p className="text-sm text-red-300">
@@ -157,19 +165,19 @@ export default function AuthPage() {
                   )}
                 </div>
 
-                <div className="space-y-2">
-                  <Label htmlFor="password" className="text-white">Password</Label>
+                <div className="space-y-1 mb-6">
+                  <Label htmlFor="password" className="text-white font-normal mb-2">Password</Label>
                   <div className="relative">
-                    <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-                      <Lock className="h-5 w-5 text-gray-400" />
-                    </div>
                     <Input
                       id="password"
                       type="password"
-                      placeholder="Enter password"
-                      className="pl-10 h-12 text-base w-full rounded-lg"
+                      placeholder="Password"
+                      className="pl-10 h-12 text-base w-full rounded-xl bg-white text-gray-700"
                       {...loginForm.register("password")}
                     />
+                    <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                      <Lock className="h-5 w-5 text-gray-400" />
+                    </div>
                   </div>
                   {loginForm.formState.errors.password && (
                     <p className="text-sm text-red-300">
@@ -180,11 +188,11 @@ export default function AuthPage() {
 
                 <Button
                   type="submit"
-                  className="w-full h-11 mt-3 bg-purple-200/80 text-purple-800 hover:bg-purple-300/80 transition-colors border-0 font-medium rounded-lg"
+                  className="w-full h-12 mt-3 bg-white text-purple-600 hover:bg-gray-50 transition-colors border-0 font-medium rounded-xl"
                   disabled={loginMutation.isPending}
                 >
                   {loginMutation.isPending ? (
-                    <Loader2 className="mr-2 h-4 w-4 animate-spin text-purple-800" />
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin text-purple-600" />
                   ) : null}
                   Log In
                 </Button>
