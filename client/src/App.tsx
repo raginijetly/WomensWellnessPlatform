@@ -18,7 +18,7 @@ import InfoHubPage from "@/pages/info-hub-page";
 function Router() {
   return (
     <Switch>
-      <Route path="/" component={HomePage} />
+      <ProtectedRoute path="/" component={HomePage} />
       <Route path="/auth" component={AuthPage} />
       <Route path="/onboarding" component={OnboardingPage} />
       <ProtectedRoute path="/symptoms" component={SymptomsPage} />
