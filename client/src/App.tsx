@@ -15,6 +15,11 @@ import WorkoutPage from "@/pages/workout-page";
 import NutritionPage from "@/pages/nutrition-page";
 import InfoHubPage from "@/pages/info-hub-page";
 
+// Helper function to convert FC components to be compatible with Route/ProtectedRoute
+const asComponent = (Component: React.FC): (() => React.JSX.Element) => {
+  return () => <Component />;
+};
+
 function Router() {
   return (
     <Switch>

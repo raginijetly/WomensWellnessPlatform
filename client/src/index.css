@@ -35,10 +35,6 @@ body {
   font-family: 'Poppins', sans-serif;
   color: rgb(var(--foreground));
   background: linear-gradient(135deg, hsl(var(--brand-purple-light)), hsl(var(--brand-purple)));
-  background-image: 
-    radial-gradient(rgba(255, 255, 255, 0.3) 1px, transparent 1px),
-    linear-gradient(135deg, hsl(var(--brand-purple-light)), hsl(var(--brand-purple)));
-  background-size: 20px 20px, 100% 100%;
   min-height: 100vh;
 }
 
