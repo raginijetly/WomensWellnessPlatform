@@ -4,7 +4,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { useLocation } from "wouter";
 import { useAuth } from "@/hooks/use-auth";
-import { User } from "@shared/schema";
+import { User, emailRegisterSchema } from "@shared/schema";
 import { useToast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -17,15 +17,9 @@ const loginSchema = z.object({
   password: z.string().min(1, { message: "Password is required" }),
 });
 
-// Schema for registration form validation
-const registerSchema = z.object({
-  name: z.string().min(1, { message: "Name is required" }),
-  email: z.string().email({ message: "Invalid email address" }),
-  password: z.string().min(6, { message: "Password must be at least 6 characters" }),
-});
-
+// Type definitions
 type LoginFormValues = z.infer<typeof loginSchema>;
-type RegisterFormValues = z.infer<typeof registerSchema>;
+type RegisterFormValues = z.infer<typeof emailRegisterSchema>;
 
 export default function AuthPage() {
   const [isLogin, setIsLogin] = useState(true);
@@ -60,12 +54,12 @@ export default function AuthPage() {
 
   // Register form setup
   const registerForm = useForm<RegisterFormValues>({
-    resolver: zodResolver(registerSchema),
+    resolver: zodResolver(emailRegisterSchema),
     defaultValues: {
-      username: "",
-      password: "",
       name: "",
       email: "",
+      password: "",
+      username: "", // Will be auto-filled from email before submission
     },
   });
 

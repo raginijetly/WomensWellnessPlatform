@@ -57,8 +57,8 @@ export const users = pgTable("users", {
   id: serial("id").primaryKey(),
   username: text("username").notNull().unique(),
   password: text("password").notNull(),
-  name: text("name"),
-  email: text("email"),
+  name: text("name").notNull(),
+  email: text("email").notNull().unique(),
   // Onboarding fields
   lastPeriodDate: date("last_period_date"),
   dontKnowPeriodDate: boolean("dont_know_period_date").default(false),
@@ -86,6 +86,14 @@ export const insertUserSchema = createInsertSchema(users).pick({
   email: true,
 });
 
+// Alternate schema for email-based registration
+export const emailRegisterSchema = z.object({
+  name: z.string().min(1, { message: "Name is required" }),
+  email: z.string().email({ message: "Valid email is required" }),
+  password: z.string().min(6, { message: "Password must be at least 6 characters" }),
+  username: z.string().optional(), // We'll derive this from email
+});
+
 // Create login schema
 export const loginSchema = z.object({
   username: z.string().min(1, { message: "Username is required" }),
@@ -107,6 +115,7 @@ export const onboardingSchema = z.object({
 
 // Define types
 export type InsertUser = z.infer<typeof insertUserSchema>;
+export type EmailRegisterData = z.infer<typeof emailRegisterSchema>;
 export type User = typeof users.$inferSelect;
 export type LoginData = z.infer<typeof loginSchema>;
 export type Onboarding = z.infer<typeof onboardingSchema>;
