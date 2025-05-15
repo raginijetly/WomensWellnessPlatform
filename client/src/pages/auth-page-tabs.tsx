@@ -122,21 +122,23 @@ export default function AuthPage() {
             <TabsList className="flex mb-8 bg-transparent p-0 overflow-hidden border-b border-white/30 w-full justify-start gap-24 px-2">
               <TabsTrigger 
                 value="login" 
-                className={`text-lg font-medium border-0 px-0 pb-2 rounded-none transition-colors ${
-                  activeTab === 'login' 
-                    ? 'text-purple-200 border-b-3 border-purple-200 relative -mb-[1px]' 
-                    : 'text-white/60 hover:text-white/90'
-                }`}
+                className="text-lg font-medium border-0 px-0 pb-2 rounded-none transition-colors data-[state=active]:bg-transparent data-[state=active]:shadow-none hover:text-white/90"
+                style={{
+                  color: activeTab === 'login' ? 'rgb(233, 213, 255)' : 'rgba(255, 255, 255, 0.6)',
+                  borderBottom: activeTab === 'login' ? '3px solid rgb(233, 213, 255)' : 'none',
+                  marginBottom: activeTab === 'login' ? '-1px' : '0'
+                }}
               >
                 Login
               </TabsTrigger>
               <TabsTrigger 
                 value="signup" 
-                className={`text-lg font-medium border-0 px-0 pb-2 rounded-none transition-colors ${
-                  activeTab === 'signup' 
-                    ? 'text-purple-200 border-b-3 border-purple-200 relative -mb-[1px]' 
-                    : 'text-white/60 hover:text-white/90'
-                }`}
+                className="text-lg font-medium border-0 px-0 pb-2 rounded-none transition-colors data-[state=active]:bg-transparent data-[state=active]:shadow-none"
+                style={{
+                  color: activeTab === 'signup' ? 'rgb(233, 213, 255)' : 'rgba(255, 255, 255, 0.6)',
+                  borderBottom: activeTab === 'signup' ? '3px solid rgb(233, 213, 255)' : 'none',
+                  marginBottom: activeTab === 'signup' ? '-1px' : '0'
+                }}
               >
                 Sign Up
               </TabsTrigger>
