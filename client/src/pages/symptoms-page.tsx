@@ -348,65 +348,65 @@ const SymptomsPage: FC = () => {
                   </Button>
                 </div>
                 
-                {/* Filter tabs at the top */}
-                <div className="flex flex-wrap gap-2 mb-4 justify-start px-1">
+                {/* Filter tabs at the top - more compact */}
+                <div className="flex flex-wrap gap-1.5 mb-4 justify-start px-1">
                   <button
                     key="mood"
                     onClick={() => changeMetric("mood")}
-                    className={`flex items-center px-5 py-2 rounded-full text-sm font-medium transition-colors
+                    className={`flex items-center px-3 py-1.5 rounded-full text-xs font-medium transition-colors
                       ${activeMetric === "mood" 
                         ? 'bg-purple-600 text-white' 
                         : 'bg-gray-100 text-gray-700 hover:bg-gray-200'}`}
                   >
-                    <span className="mr-1.5">😊</span>
+                    <span className="mr-1">😊</span>
                     <span>Mood</span>
                   </button>
                   
                   <button
                     key="energy"
                     onClick={() => changeMetric("energy")}
-                    className={`flex items-center px-5 py-2 rounded-full text-sm font-medium transition-colors
+                    className={`flex items-center px-3 py-1.5 rounded-full text-xs font-medium transition-colors
                       ${activeMetric === "energy" 
                         ? 'bg-purple-600 text-white' 
                         : 'bg-gray-100 text-gray-700 hover:bg-gray-200'}`}
                   >
-                    <span className="mr-1.5">⚡</span>
+                    <span className="mr-1">⚡</span>
                     <span>Energy</span>
                   </button>
                   
                   <button
                     key="sleep"
                     onClick={() => changeMetric("sleep")}
-                    className={`flex items-center px-5 py-2 rounded-full text-sm font-medium transition-colors
+                    className={`flex items-center px-3 py-1.5 rounded-full text-xs font-medium transition-colors
                       ${activeMetric === "sleep" 
                         ? 'bg-purple-600 text-white' 
                         : 'bg-gray-100 text-gray-700 hover:bg-gray-200'}`}
                   >
-                    <span className="mr-1.5">😴</span>
+                    <span className="mr-1">😴</span>
                     <span>Sleep</span>
                   </button>
                   
                   <button
                     key="pain"
                     onClick={() => changeMetric("pain")}
-                    className={`flex items-center px-5 py-2 rounded-full text-sm font-medium transition-colors
+                    className={`flex items-center px-3 py-1.5 rounded-full text-xs font-medium transition-colors
                       ${activeMetric === "pain" 
                         ? 'bg-purple-600 text-white' 
                         : 'bg-gray-100 text-gray-700 hover:bg-gray-200'}`}
                   >
-                    <span className="mr-1.5">🩹</span>
+                    <span className="mr-1">🩹</span>
                     <span>Pain</span>
                   </button>
                   
                   <button
                     key="bloating"
                     onClick={() => changeMetric("bloating")}
-                    className={`flex items-center px-5 py-2 rounded-full text-sm font-medium transition-colors
+                    className={`flex items-center px-3 py-1.5 rounded-full text-xs font-medium transition-colors
                       ${activeMetric === "bloating" 
                         ? 'bg-purple-600 text-white' 
                         : 'bg-gray-100 text-gray-700 hover:bg-gray-200'}`}
                   >
-                    <span className="mr-1.5">🫃</span>
+                    <span className="mr-1">🫃</span>
                     <span>Bloating</span>
                   </button>
                 </div>
