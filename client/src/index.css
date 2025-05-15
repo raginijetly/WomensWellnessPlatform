@@ -76,11 +76,11 @@ body {
 }
 
 .custom-calendar .rdp-head_cell {
-  color: #828896 !important;
-  font-weight: 500 !important;
-  font-size: 0.9rem;
+  color: #7a7f89 !important;
+  font-weight: 400 !important;
+  font-size: 0.95rem;
   width: 36px !important;
-  height: 24px !important;
+  height: 28px !important;
   text-align: center !important;
   padding: 0 !important;
   margin: 0 !important;
@@ -98,11 +98,22 @@ body {
 
 .custom-calendar .rdp-caption {
   font-weight: 500 !important;
-  color: #5a5f69 !important;
+  color: #EAB308 !important; /* Golden/yellow color */
+  font-size: 1.25rem;
+  margin-bottom: 12px;
 }
 
 .custom-calendar .rdp-nav_button {
-  color: #aeb5c0 !important;
+  color: #EAB308 !important; /* Golden/yellow color */
+  font-size: 1.25rem;
+  width: 32px !important;
+  height: 32px !important;
+  background-color: transparent !important;
+}
+
+.custom-calendar .rdp-nav_button:hover {
+  color: #F59E0B !important;
+  background-color: rgba(251, 246, 219, 0.2) !important;
 }
 
 .custom-calendar .rdp-day {
@@ -144,13 +155,14 @@ body {
 }
 
 .custom-calendar .rdp-head {
-  margin-bottom: 0;
+  margin-bottom: 8px;
+  margin-top: 8px;
 }
 
 .custom-calendar .rdp-cell {
   padding: 0 !important;
-  width: 36px !important;
-  height: 36px !important;
+  width: 38px !important;
+  height: 38px !important;
   position: relative;
 }
 
@@ -161,6 +173,21 @@ body {
   transform: translate(-50%, -50%);
   width: 36px !important;
   height: 36px !important;
+  font-size: 0.95rem;
+}
+
+/* Better spacing for months navigation */
+.custom-calendar .rdp-nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 8px;
+}
+
+/* Make the month larger and centered */
+.custom-calendar .rdp-caption_label {
+  font-size: 1.25rem;
+  padding: 0 16px;
 }
 
 /* Mobile optimizations */

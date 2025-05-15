@@ -439,7 +439,8 @@ const SymptomsPage: FC = () => {
                       }}
                       formatters={{
                         formatWeekdayName: (date) => {
-                          return new Intl.DateTimeFormat('en-US', { weekday: 'narrow' }).format(date);
+                          const weekdays = ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'];
+                          return weekdays[date.getDay()];
                         }
                       }}
                       modifiers={{
