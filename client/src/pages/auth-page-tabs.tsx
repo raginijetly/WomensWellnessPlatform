@@ -119,12 +119,12 @@ export default function AuthPage() {
           </div>
 
           <Tabs defaultValue="login" value={activeTab} onValueChange={setActiveTab} className="w-full">
-            <TabsList className="flex mb-6 border-b border-white/20 bg-transparent p-0 overflow-hidden gap-6">
+            <TabsList className="flex mb-8 bg-transparent p-0 overflow-hidden border-b border-white/30 w-full">
               <TabsTrigger 
                 value="login" 
-                className={`text-base font-medium border-0 px-2 pb-2 rounded-none transition-colors ${
+                className={`text-xl font-medium border-0 px-6 pb-2 rounded-none transition-colors ${
                   activeTab === 'login' 
-                    ? 'text-white border-b-2 border-white' 
+                    ? 'text-white border-b-3 border-white relative -mb-[1px]' 
                     : 'text-white/70 hover:text-white'
                 }`}
               >
@@ -132,9 +132,9 @@ export default function AuthPage() {
               </TabsTrigger>
               <TabsTrigger 
                 value="signup" 
-                className={`text-base font-medium border-0 px-2 pb-2 rounded-none transition-colors ${
+                className={`text-xl font-medium border-0 px-6 pb-2 rounded-none transition-colors ${
                   activeTab === 'signup' 
-                    ? 'text-white border-b-2 border-white' 
+                    ? 'text-white border-b-3 border-white relative -mb-[1px]' 
                     : 'text-white/70 hover:text-white'
                 }`}
               >
@@ -266,11 +266,11 @@ export default function AuthPage() {
 
                 <Button
                   type="submit"
-                  className="w-full h-11 mt-3 bg-purple-200/80 text-purple-800 hover:bg-purple-300/80 transition-colors border-0 font-medium rounded-lg"
+                  className="w-full h-12 mt-3 bg-white text-purple-600 hover:bg-gray-50 transition-colors border-0 font-medium rounded-xl"
                   disabled={registerMutation.isPending}
                 >
                   {registerMutation.isPending ? (
-                    <Loader2 className="mr-2 h-4 w-4 animate-spin text-purple-800" />
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin text-purple-600" />
                   ) : null}
                   Sign Up
                 </Button>

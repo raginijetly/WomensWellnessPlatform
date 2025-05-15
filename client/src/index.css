@@ -94,6 +94,11 @@ body {
     font-size: 16px; /* Prevents iOS zoom on focus */
   }
   
+  /* Custom border for tab indicators */
+  .border-b-3 {
+    border-bottom-width: 3px;
+  }
+  
   /* Improve spacing for stackable elements */
   .space-y-2 > * + * {
     margin-top: 0.6rem;
