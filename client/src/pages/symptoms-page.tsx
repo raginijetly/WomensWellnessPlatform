@@ -48,7 +48,7 @@ const SymptomsPage: FC = () => {
       options: [
         { value: "Energetic", label: "Energetic", emoji: "😄", color: "bg-purple-100" },
         { value: "Balanced", label: "Balanced", emoji: "😊", color: "bg-blue-100" },
-        { value: "Tired", label: "Tired", emoji: "😴", color: "bg-blue-100" },
+        { value: "Tired", label: "Tired", emoji: "😴", color: "bg-yellow-100" },
         { value: "Stressed", label: "Stressed", emoji: "😓", color: "bg-red-100" }
       ]
     },
@@ -57,10 +57,10 @@ const SymptomsPage: FC = () => {
       question: "What's your energy level?",
       emoji: "⚡",
       options: [
-        { value: "High", label: "High", emoji: "⚡", color: "bg-yellow-100" },
-        { value: "Medium", label: "Medium", emoji: "✨", color: "bg-green-100" },
-        { value: "Low", label: "Low", emoji: "🔋", color: "bg-blue-100" },
-        { value: "Exhausted", label: "Exhausted", emoji: "🛌", color: "bg-gray-100" }
+        { value: "High", label: "High", emoji: "⚡", color: "bg-purple-100" },
+        { value: "Medium", label: "Medium", emoji: "✨", color: "bg-blue-100" },
+        { value: "Low", label: "Low", emoji: "🔋", color: "bg-yellow-100" },
+        { value: "Exhausted", label: "Exhausted", emoji: "🛌", color: "bg-red-100" }
       ]
     },
     {
@@ -68,7 +68,7 @@ const SymptomsPage: FC = () => {
       question: "How was your sleep last night?",
       emoji: "😴",
       options: [
-        { value: "Excellent", label: "Excellent", emoji: "💤", color: "bg-indigo-100" },
+        { value: "Excellent", label: "Excellent", emoji: "💤", color: "bg-purple-100" },
         { value: "Good", label: "Good", emoji: "😴", color: "bg-blue-100" },
         { value: "Fair", label: "Fair", emoji: "😐", color: "bg-yellow-100" },
         { value: "Poor", label: "Poor", emoji: "😫", color: "bg-red-100" }
@@ -79,9 +79,9 @@ const SymptomsPage: FC = () => {
       question: "Are you experiencing any pain?",
       emoji: "🩹",
       options: [
-        { value: "None", label: "None", emoji: "👍", color: "bg-green-100" },
-        { value: "Mild", label: "Mild", emoji: "🤏", color: "bg-yellow-100" },
-        { value: "Moderate", label: "Moderate", emoji: "😣", color: "bg-orange-100" },
+        { value: "None", label: "None", emoji: "👍", color: "bg-purple-100" },
+        { value: "Mild", label: "Mild", emoji: "🤏", color: "bg-blue-100" },
+        { value: "Moderate", label: "Moderate", emoji: "😣", color: "bg-yellow-100" },
         { value: "Severe", label: "Severe", emoji: "😖", color: "bg-red-100" }
       ]
     },
@@ -90,9 +90,9 @@ const SymptomsPage: FC = () => {
       question: "How's your bloating today?",
       emoji: "🫃",
       options: [
-        { value: "None", label: "None", emoji: "👌", color: "bg-green-100" },
-        { value: "Mild", label: "Mild", emoji: "🤏", color: "bg-yellow-100" },
-        { value: "Moderate", label: "Moderate", emoji: "😔", color: "bg-orange-100" },
+        { value: "None", label: "None", emoji: "👌", color: "bg-purple-100" },
+        { value: "Mild", label: "Mild", emoji: "🤏", color: "bg-blue-100" },
+        { value: "Moderate", label: "Moderate", emoji: "😔", color: "bg-yellow-100" },
         { value: "Severe", label: "Severe", emoji: "😩", color: "bg-red-100" }
       ]
     }
@@ -339,22 +339,80 @@ const SymptomsPage: FC = () => {
                 
                 {/* Filter tabs at the top */}
                 <div className="flex flex-wrap gap-2 mb-4 justify-center">
-                  {symptomQuestions.map((q) => (
-                    <Button
-                      key={q.id}
-                      variant={activeMetric === q.id ? "default" : "outline"}
-                      size="sm"
-                      className={`flex items-center py-1 px-3 ${
-                        activeMetric === q.id ? 
-                          'bg-purple-600 text-white' : 
-                          'border-gray-300 text-gray-700 hover:bg-gray-50'
-                      }`}
-                      onClick={() => changeMetric(q.id)}
-                    >
-                      <span className="mr-1">{q.emoji}</span>
-                      {q.question.split('?')[0].replace("How's your ", "").replace("What's your ", "")}
-                    </Button>
-                  ))}
+                  <Button
+                    key="mood"
+                    variant={activeMetric === "mood" ? "default" : "outline"}
+                    size="sm"
+                    className={`flex items-center py-1 px-3 ${
+                      activeMetric === "mood" ? 
+                        'bg-purple-600 text-white' : 
+                        'border-gray-300 text-gray-700 hover:bg-gray-50'
+                    }`}
+                    onClick={() => changeMetric("mood")}
+                  >
+                    <span className="mr-1.5">😊</span>
+                    <span className="font-medium">Mood</span>
+                  </Button>
+                  
+                  <Button
+                    key="energy"
+                    variant={activeMetric === "energy" ? "default" : "outline"}
+                    size="sm"
+                    className={`flex items-center py-1 px-3 ${
+                      activeMetric === "energy" ? 
+                        'bg-purple-600 text-white' : 
+                        'border-gray-300 text-gray-700 hover:bg-gray-50'
+                    }`}
+                    onClick={() => changeMetric("energy")}
+                  >
+                    <span className="mr-1.5">⚡</span>
+                    <span className="font-medium">Energy</span>
+                  </Button>
+                  
+                  <Button
+                    key="sleep"
+                    variant={activeMetric === "sleep" ? "default" : "outline"}
+                    size="sm"
+                    className={`flex items-center py-1 px-3 ${
+                      activeMetric === "sleep" ? 
+                        'bg-purple-600 text-white' : 
+                        'border-gray-300 text-gray-700 hover:bg-gray-50'
+                    }`}
+                    onClick={() => changeMetric("sleep")}
+                  >
+                    <span className="mr-1.5">😴</span>
+                    <span className="font-medium">Sleep</span>
+                  </Button>
+                  
+                  <Button
+                    key="pain"
+                    variant={activeMetric === "pain" ? "default" : "outline"}
+                    size="sm"
+                    className={`flex items-center py-1 px-3 ${
+                      activeMetric === "pain" ? 
+                        'bg-purple-600 text-white' : 
+                        'border-gray-300 text-gray-700 hover:bg-gray-50'
+                    }`}
+                    onClick={() => changeMetric("pain")}
+                  >
+                    <span className="mr-1.5">🩹</span>
+                    <span className="font-medium">Pain</span>
+                  </Button>
+                  
+                  <Button
+                    key="bloating"
+                    variant={activeMetric === "bloating" ? "default" : "outline"}
+                    size="sm"
+                    className={`flex items-center py-1 px-3 ${
+                      activeMetric === "bloating" ? 
+                        'bg-purple-600 text-white' : 
+                        'border-gray-300 text-gray-700 hover:bg-gray-50'
+                    }`}
+                    onClick={() => changeMetric("bloating")}
+                  >
+                    <span className="mr-1.5">🫃</span>
+                    <span className="font-medium">Bloating</span>
+                  </Button>
                 </div>
                 
                 {/* Calendar view */}
