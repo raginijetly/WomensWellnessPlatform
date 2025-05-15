@@ -122,13 +122,13 @@ export default function AuthPage() {
             <TabsList className="grid grid-cols-2 mb-6 rounded-lg bg-white/20 p-1 overflow-hidden">
               <TabsTrigger 
                 value="login" 
-                className={`text-lg font-medium ${activeTab === 'login' ? 'bg-white text-purple-700' : 'text-white hover:bg-white/10'}`}
+                className={`text-base font-medium ${activeTab === 'login' ? 'bg-purple-200/80 text-purple-800' : 'text-white hover:bg-white/10'}`}
               >
                 Log In
               </TabsTrigger>
               <TabsTrigger 
                 value="signup" 
-                className={`text-lg font-medium ${activeTab === 'signup' ? 'bg-white text-purple-700' : 'text-white hover:bg-white/10'}`}
+                className={`text-base font-medium ${activeTab === 'signup' ? 'bg-purple-200/80 text-purple-800' : 'text-white hover:bg-white/10'}`}
               >
                 Sign Up
               </TabsTrigger>
@@ -180,11 +180,11 @@ export default function AuthPage() {
 
                 <Button
                   type="submit"
-                  className="w-full h-12 mt-3 bg-white text-purple-700 hover:bg-purple-50 transition-colors border-2 border-white shadow-md font-bold rounded-lg"
+                  className="w-full h-11 mt-3 bg-purple-200/80 text-purple-800 hover:bg-purple-300/80 transition-colors border-0 font-medium rounded-lg"
                   disabled={loginMutation.isPending}
                 >
                   {loginMutation.isPending ? (
-                    <Loader2 className="mr-2 h-5 w-5 animate-spin text-purple-700" />
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin text-purple-800" />
                   ) : null}
                   Log In
                 </Button>
@@ -258,11 +258,11 @@ export default function AuthPage() {
 
                 <Button
                   type="submit"
-                  className="w-full h-12 mt-3 bg-white text-purple-700 hover:bg-purple-50 transition-colors border-2 border-white shadow-md font-bold rounded-lg"
+                  className="w-full h-11 mt-3 bg-purple-200/80 text-purple-800 hover:bg-purple-300/80 transition-colors border-0 font-medium rounded-lg"
                   disabled={registerMutation.isPending}
                 >
                   {registerMutation.isPending ? (
-                    <Loader2 className="mr-2 h-5 w-5 animate-spin text-purple-700" />
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin text-purple-800" />
                   ) : null}
                   Sign Up
                 </Button>
@@ -277,7 +277,7 @@ export default function AuthPage() {
         <div className="p-8 text-white text-center max-w-md">
           <h2 className="text-3xl font-bold mb-4">Welcome to FemFit</h2>
           <p className="text-lg mb-6">
-            Your personalized fitness journey designed specifically for women's unique health needs.
+            Your personalized fitness journey for every stage of womenhood. Built by Women For Women.
           </p>
           <ul className="text-left space-y-3 text-lg">
             <li className="flex items-center">
