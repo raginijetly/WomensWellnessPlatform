@@ -201,19 +201,19 @@ export default function AuthPage() {
 
             <TabsContent value="signup">
               <form onSubmit={registerForm.handleSubmit(onRegisterSubmit)} className="space-y-4">
-                <div className="space-y-2">
-                  <Label htmlFor="register-name" className="text-white">Full Name</Label>
+                <div className="space-y-1 mb-6">
+                  <Label htmlFor="register-name" className="text-white font-normal mb-2">Full Name</Label>
                   <div className="relative">
-                    <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-                      <UserIcon className="h-5 w-5 text-gray-400" />
-                    </div>
                     <Input
                       id="register-name"
                       type="text"
                       placeholder="Enter your name"
-                      className="pl-10 h-12 text-base w-full rounded-lg"
+                      className="pl-10 h-12 text-base w-full rounded-xl bg-white text-gray-700"
                       {...registerForm.register("name")}
                     />
+                    <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                      <UserIcon className="h-5 w-5 text-gray-400" />
+                    </div>
                   </div>
                   {registerForm.formState.errors.name && (
                     <p className="text-sm text-red-300">
@@ -222,19 +222,19 @@ export default function AuthPage() {
                   )}
                 </div>
                 
-                <div className="space-y-2">
-                  <Label htmlFor="register-email" className="text-white">Email</Label>
+                <div className="space-y-1 mb-6">
+                  <Label htmlFor="register-email" className="text-white font-normal mb-2">Email</Label>
                   <div className="relative">
-                    <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-                      <Mail className="h-5 w-5 text-gray-400" />
-                    </div>
                     <Input
                       id="register-email"
                       type="email"
                       placeholder="Enter your email"
-                      className="pl-10 h-12 text-base w-full rounded-lg"
+                      className="pl-10 h-12 text-base w-full rounded-xl bg-white text-gray-700"
                       {...registerForm.register("email")}
                     />
+                    <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                      <Mail className="h-5 w-5 text-gray-400" />
+                    </div>
                   </div>
                   {registerForm.formState.errors.email && (
                     <p className="text-sm text-red-300">
@@ -243,19 +243,19 @@ export default function AuthPage() {
                   )}
                 </div>
 
-                <div className="space-y-2">
-                  <Label htmlFor="register-password" className="text-white">Password</Label>
+                <div className="space-y-1 mb-6">
+                  <Label htmlFor="register-password" className="text-white font-normal mb-2">Password</Label>
                   <div className="relative">
-                    <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-                      <Lock className="h-5 w-5 text-gray-400" />
-                    </div>
                     <Input
                       id="register-password"
                       type="password"
                       placeholder="Password (min. 6 characters)"
-                      className="pl-10 h-12 text-base w-full rounded-lg"
+                      className="pl-10 h-12 text-base w-full rounded-xl bg-white text-gray-700"
                       {...registerForm.register("password")}
                     />
+                    <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                      <Lock className="h-5 w-5 text-gray-400" />
+                    </div>
                   </div>
                   {registerForm.formState.errors.password && (
                     <p className="text-sm text-red-300">
