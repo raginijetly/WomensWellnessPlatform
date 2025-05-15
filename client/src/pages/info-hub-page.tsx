@@ -74,15 +74,8 @@ const InfoHubPage: FC = () => {
     <div className="min-h-screen gradient-primary">
       {/* Header */}
       <header className="bg-white/10 backdrop-blur-sm">
-        <div className="container mx-auto px-4 py-4 flex justify-between items-center">
+        <div className="container mx-auto px-4 py-4">
           <h1 className="text-2xl font-bold text-white">FemFit</h1>
-          <Button
-            variant="ghost"
-            className="text-white hover:bg-white/20"
-            onClick={() => setLocation('/')}
-          >
-            Back Home
-          </Button>
         </div>
       </header>
 
