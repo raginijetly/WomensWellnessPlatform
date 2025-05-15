@@ -30,7 +30,7 @@ export default function AuthPage() {
     },
   });
 
-  // Register form setup
+  // Sign Up form setup
   const registerForm = useForm<RegisterFormValues>({
     resolver: zodResolver(emailRegisterSchema),
     defaultValues: {
@@ -77,7 +77,7 @@ export default function AuthPage() {
     });
   };
 
-  // Handle registration form submission
+  // Handle sign up form submission
   const onRegisterSubmit = (values: RegisterFormValues) => {
     // Set username to email for compatibility with backend
     const submitData = {
@@ -95,7 +95,7 @@ export default function AuthPage() {
       },
       onError: (error: Error) => {
         toast({
-          title: "Registration failed",
+          title: "Sign Up failed",
           description: error.message || "Email may already be registered",
           variant: "destructive",
         });
@@ -122,9 +122,9 @@ export default function AuthPage() {
             <TabsList className="flex mb-8 bg-transparent p-0 overflow-hidden border-b border-white/30 w-full justify-start gap-24 px-2">
               <TabsTrigger 
                 value="login" 
-                className={`text-2xl font-light border-0 px-0 pb-2 rounded-none transition-colors ${
+                className={`text-lg font-medium border-0 px-0 pb-2 rounded-none transition-colors ${
                   activeTab === 'login' 
-                    ? 'text-white border-b-3 border-white relative -mb-[1px]' 
+                    ? 'text-purple-200 border-b-3 border-purple-200 relative -mb-[1px]' 
                     : 'text-white/60 hover:text-white/90'
                 }`}
               >
@@ -132,13 +132,13 @@ export default function AuthPage() {
               </TabsTrigger>
               <TabsTrigger 
                 value="signup" 
-                className={`text-2xl font-light border-0 px-0 pb-2 rounded-none transition-colors ${
+                className={`text-lg font-medium border-0 px-0 pb-2 rounded-none transition-colors ${
                   activeTab === 'signup' 
-                    ? 'text-white border-b-3 border-white relative -mb-[1px]' 
+                    ? 'text-purple-200 border-b-3 border-purple-200 relative -mb-[1px]' 
                     : 'text-white/60 hover:text-white/90'
                 }`}
               >
-                Register
+                Sign Up
               </TabsTrigger>
             </TabsList>
 
