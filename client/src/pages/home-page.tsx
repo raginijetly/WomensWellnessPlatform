@@ -30,6 +30,21 @@ const HomePage: FC = () => {
   
   // We now initialize states with default values, so no need for a separate initialization effect
   
+  // State for mood popup
+  const [showMoodPopup, setShowMoodPopup] = useState<boolean>(false);
+  const [selectedMood, setSelectedMood] = useState<string | null>(null);
+
+  // Show the mood popup after 5 seconds on the home page
+  useEffect(() => {
+    if (user && user.completedOnboarding) {
+      const timer = setTimeout(() => {
+        setShowMoodPopup(true);
+      }, 5000); // 5 seconds
+      
+      return () => clearTimeout(timer);
+    }
+  }, [user]);
+
   // Calculate cycle information when user data is available
   useEffect(() => {
     console.log("User data in useEffect:", user);
@@ -242,13 +257,66 @@ const HomePage: FC = () => {
     }
   };
 
+  // Function to handle mood selection
+  const handleMoodSelect = (mood: string) => {
+    setSelectedMood(mood);
+    setShowMoodPopup(false);
+    // You could send this data to your API/backend here
+  };
+
   return (
     <div className="min-h-screen gradient-primary">
+      {/* Mood Popup */}
+      {showMoodPopup && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-xl shadow-lg max-w-md w-full p-6 animate-in fade-in zoom-in">
+            <h3 className="text-xl font-semibold text-center mb-6">How are you feeling today?</h3>
+            
+            <div className="grid grid-cols-2 gap-4 mb-6">
+              <button 
+                onClick={() => handleMoodSelect('high-energy')}
+                className="flex flex-col items-center justify-center p-4 border border-purple-100 rounded-lg hover:bg-purple-50 transition-colors"
+              >
+                <span className="text-4xl mb-2">😃</span>
+                <span className="font-medium">High energy</span>
+              </button>
+              
+              <button 
+                onClick={() => handleMoodSelect('average')}
+                className="flex flex-col items-center justify-center p-4 border border-purple-100 rounded-lg hover:bg-purple-50 transition-colors"
+              >
+                <span className="text-4xl mb-2">😊</span>
+                <span className="font-medium">Average</span>
+              </button>
+              
+              <button 
+                onClick={() => handleMoodSelect('tired')}
+                className="flex flex-col items-center justify-center p-4 border border-purple-100 rounded-lg hover:bg-purple-50 transition-colors"
+              >
+                <span className="text-4xl mb-2">😴</span>
+                <span className="font-medium">Low energy / Tired</span>
+              </button>
+              
+              <button 
+                onClick={() => handleMoodSelect('stressed')}
+                className="flex flex-col items-center justify-center p-4 border border-purple-100 rounded-lg hover:bg-purple-50 transition-colors"
+              >
+                <span className="text-4xl mb-2">😓</span>
+                <span className="font-medium">Stressed</span>
+              </button>
+            </div>
+            
+            <p className="text-sm text-gray-500 text-center">
+              This is for us to optimize and personalize our workout and food recommendations daily based on how you feel.
+            </p>
+          </div>
+        </div>
+      )}
 
       {/* Header */}
       <header className="bg-white/10 backdrop-blur-sm">
         <div className="container mx-auto px-4 py-4 flex justify-between items-center">
-          <h1 className="text-2xl font-bold text-white">HerFitness</h1>
+          <h1 className="text-2xl font-bold text-white">FemFit</h1>
           <div className="flex items-center gap-2">
             <div className="relative group">
               <Button
@@ -528,7 +596,7 @@ const HomePage: FC = () => {
       {/* Footer */}
       <footer className="bg-white/10 backdrop-blur-sm py-6 pb-16 sm:pb-6 mt-auto">
         <div className="container mx-auto px-4 text-center text-white/80">
-          <p>&copy; {new Date().getFullYear()} HerFitness. All rights reserved.</p>
+          <p>&copy; {new Date().getFullYear()} FemFit. All rights reserved.</p>
           <p className="text-sm mt-1">Built by Women for Women</p>
           <Button
             variant="outline"
@@ -548,6 +616,7 @@ const HomePage: FC = () => {
       
       {/* Bottom Navigation Bar - Visible on all devices */}
       <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 flex justify-between items-center px-2 py-2 z-10">
+        {/* Home */}
         <Button variant="ghost" className="text-purple-600 flex flex-col items-center p-1 h-auto w-1/5">
           <div className="flex flex-col items-center justify-center">
             <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 20 20">
@@ -557,6 +626,15 @@ const HomePage: FC = () => {
           </div>
         </Button>
         
+        {/* Log Symptoms */}
+        <Button variant="ghost" className="text-gray-500 flex flex-col items-center p-1 h-auto w-1/5">
+          <div className="flex flex-col items-center justify-center">
+            <Heart className="h-6 w-6" />
+            <span className="text-xs mt-1">Log Symptoms</span>
+          </div>
+        </Button>
+        
+        {/* Workout */}
         <Button variant="ghost" className="text-gray-500 flex flex-col items-center p-1 h-auto w-1/5">
           <div className="flex flex-col items-center justify-center">
             <Dumbbell className="h-6 w-6" />
@@ -564,6 +642,7 @@ const HomePage: FC = () => {
           </div>
         </Button>
         
+        {/* Nutrition */}
         <Button variant="ghost" className="text-gray-500 flex flex-col items-center p-1 h-auto w-1/5">
           <div className="flex flex-col items-center justify-center">
             <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -573,35 +652,13 @@ const HomePage: FC = () => {
           </div>
         </Button>
         
-        <Button variant="ghost" className="text-gray-500 flex flex-col items-center p-1 h-auto w-1/5">
-          <div className="flex flex-col items-center justify-center">
-            <Calendar className="h-6 w-6" />
-            <span className="text-xs mt-1">Cycle</span>
-          </div>
-        </Button>
-        
+        {/* Info Hub */}
         <Button variant="ghost" className="text-gray-500 flex flex-col items-center p-1 h-auto w-1/5">
           <div className="flex flex-col items-center justify-center">
             <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path>
             </svg>
             <span className="text-xs mt-1">Info Hub</span>
-          </div>
-        </Button>
-        
-        <Button 
-          variant="ghost" 
-          className="text-gray-500 flex flex-col items-center p-1 h-auto w-1/5"
-          onClick={handleLogout}
-          disabled={logoutMutation.isPending}
-        >
-          <div className="flex flex-col items-center justify-center">
-            {logoutMutation.isPending ? (
-              <Loader2 className="h-6 w-6 animate-spin" />
-            ) : (
-              <User className="h-6 w-6" />
-            )}
-            <span className="text-xs mt-1">Account</span>
           </div>
         </Button>
       </div>
