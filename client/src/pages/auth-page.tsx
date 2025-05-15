@@ -120,7 +120,6 @@ export default function AuthPage() {
             </h1>
             <div className="text-white text-sm sm:text-base opacity-90 space-y-1">
               <p>Your personalized fitness journey for every stage of womenhood</p>
-              <p>Designed for womens unique health needs</p>
               <p>Built by Women For Women</p>
             </div>
           </div>

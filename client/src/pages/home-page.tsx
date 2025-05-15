@@ -273,46 +273,54 @@ const HomePage: FC = () => {
     <div className="min-h-screen gradient-primary">
       {/* Mood Popup */}
       {showMoodPopup && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-xl shadow-lg max-w-md w-full p-6 animate-in fade-in zoom-in">
-            <h3 className="text-xl font-semibold text-center mb-6">How are you feeling today?</h3>
+        <div className="fixed inset-0 bg-black/30 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+          <div className="bg-white/95 rounded-xl shadow-lg max-w-md w-full p-6 animate-in fade-in zoom-in">
+            <h3 className="text-xl font-semibold text-gray-800 text-center mb-6">How are you feeling today?</h3>
             
             <div className="grid grid-cols-2 gap-4 mb-6">
               <button 
                 onClick={() => handleMoodSelect('high-energy')}
-                className="flex flex-col items-center justify-center p-4 border border-purple-100 rounded-lg hover:bg-purple-50 transition-colors"
+                className="flex flex-col items-center justify-center p-4 border border-purple-100 bg-purple-50/30 rounded-lg hover:bg-purple-50 transition-colors"
               >
-                <span className="text-4xl mb-2">😃</span>
-                <span className="font-medium">High energy</span>
+                <div className="w-12 h-12 rounded-full bg-purple-100 flex items-center justify-center mb-2">
+                  <span className="text-xl text-purple-700">★</span>
+                </div>
+                <span className="font-medium text-gray-700">High energy</span>
               </button>
               
               <button 
                 onClick={() => handleMoodSelect('average')}
-                className="flex flex-col items-center justify-center p-4 border border-purple-100 rounded-lg hover:bg-purple-50 transition-colors"
+                className="flex flex-col items-center justify-center p-4 border border-purple-100 bg-purple-50/30 rounded-lg hover:bg-purple-50 transition-colors"
               >
-                <span className="text-4xl mb-2">😊</span>
-                <span className="font-medium">Average</span>
+                <div className="w-12 h-12 rounded-full bg-purple-100 flex items-center justify-center mb-2">
+                  <span className="text-xl text-purple-700">✓</span>
+                </div>
+                <span className="font-medium text-gray-700">Average</span>
               </button>
               
               <button 
                 onClick={() => handleMoodSelect('tired')}
-                className="flex flex-col items-center justify-center p-4 border border-purple-100 rounded-lg hover:bg-purple-50 transition-colors"
+                className="flex flex-col items-center justify-center p-4 border border-purple-100 bg-purple-50/30 rounded-lg hover:bg-purple-50 transition-colors"
               >
-                <span className="text-4xl mb-2">😴</span>
-                <span className="font-medium">Low energy / Tired</span>
+                <div className="w-12 h-12 rounded-full bg-purple-100 flex items-center justify-center mb-2">
+                  <span className="text-xl text-purple-700">∿</span>
+                </div>
+                <span className="font-medium text-gray-700">Low energy</span>
               </button>
               
               <button 
                 onClick={() => handleMoodSelect('stressed')}
-                className="flex flex-col items-center justify-center p-4 border border-purple-100 rounded-lg hover:bg-purple-50 transition-colors"
+                className="flex flex-col items-center justify-center p-4 border border-purple-100 bg-purple-50/30 rounded-lg hover:bg-purple-50 transition-colors"
               >
-                <span className="text-4xl mb-2">😓</span>
-                <span className="font-medium">Stressed</span>
+                <div className="w-12 h-12 rounded-full bg-purple-100 flex items-center justify-center mb-2">
+                  <span className="text-xl text-purple-700">∞</span>
+                </div>
+                <span className="font-medium text-gray-700">Stressed</span>
               </button>
             </div>
             
             <p className="text-sm text-gray-500 text-center">
-              This is for us to optimize and personalize our workout and food recommendations daily based on how you feel.
+              This helps us personalize your workout and nutrition recommendations based on how you feel.
             </p>
           </div>
         </div>
