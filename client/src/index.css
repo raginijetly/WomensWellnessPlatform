@@ -85,6 +85,9 @@ body {
   border-collapse: separate !important;
   width: 100% !important;
   table-layout: fixed !important;
+  max-width: 100% !important;
+  margin: 0 auto !important;
+  padding: 0 8px !important;
 }
 
 .calendar-exact-match .rdp-head {
@@ -98,11 +101,12 @@ body {
 .calendar-exact-match .rdp-head_cell {
   display: table-cell !important;
   vertical-align: middle !important;
-  padding: 10px 0 !important;
+  padding: 12px 0 !important;
   color: #7a7f89 !important;
   font-weight: 400 !important;
   font-size: 0.95rem;
   text-align: center !important;
+  width: 14.28% !important; /* Exactly 1/7 of the width */
 }
 
 .calendar-exact-match .rdp-head_cell abbr {
@@ -121,17 +125,19 @@ body {
   display: table-cell !important;
   text-align: center !important;
   vertical-align: middle !important;
-  padding: 2px 0 !important;
+  padding: 4px 0 !important;
+  width: 14.28% !important; /* Exactly 1/7 of the width */
 }
 
 .calendar-exact-match .rdp-day {
   display: inline-flex !important;
   align-items: center !important;
   justify-content: center !important;
-  height: 38px !important;
-  width: 38px !important;
+  height: 40px !important;
+  width: 40px !important;
   margin: 0 auto !important;
   border-radius: 50% !important;
+  font-size: 0.95rem !important;
 }
 
 .calendar-exact-match .rdp-caption {
