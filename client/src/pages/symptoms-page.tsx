@@ -428,14 +428,14 @@ const SymptomsPage: FC = () => {
                     <Calendar
                       mode="single"
                       selected={undefined}
-                      className="mx-auto rounded border custom-calendar"
+                      className="mx-auto rounded border custom-calendar calendar-exact-match"
                       classNames={{
                         day: "h-9 w-9 p-0 font-normal text-gray-600 aria-selected:opacity-100",
                         day_today: "text-gray-900 border-0 font-normal",
                         day_outside: "text-gray-300 opacity-50",
                         head_cell: "text-gray-500 font-normal",
-                        nav_button: "text-gray-400 hover:text-gray-600", 
-                        caption: "font-normal text-gray-700"
+                        nav_button: "nav-yellow", 
+                        caption: "font-medium text-center"
                       }}
                       formatters={{
                         formatWeekdayName: (date) => {

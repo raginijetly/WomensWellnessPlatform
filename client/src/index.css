@@ -75,6 +75,81 @@ body {
   font-family: 'Poppins', sans-serif;
 }
 
+/* Exact match calendar styling based on the screenshot */
+.calendar-exact-match {
+  font-family: 'Poppins', sans-serif;
+}
+
+.calendar-exact-match table {
+  border-spacing: 0 !important;
+  border-collapse: separate !important;
+  width: 100% !important;
+  table-layout: fixed !important;
+}
+
+.calendar-exact-match .rdp-head {
+  display: table-header-group !important;
+}
+
+.calendar-exact-match .rdp-head_row {
+  display: table-row !important;
+}
+
+.calendar-exact-match .rdp-head_cell {
+  display: table-cell !important;
+  vertical-align: middle !important;
+  padding: 10px 0 !important;
+  color: #7a7f89 !important;
+  font-weight: 400 !important;
+  font-size: 0.95rem;
+  text-align: center !important;
+}
+
+.calendar-exact-match .rdp-head_cell abbr {
+  text-decoration: none;
+}
+
+.calendar-exact-match .rdp-tbody {
+  display: table-row-group !important;
+}
+
+.calendar-exact-match .rdp-row {
+  display: table-row !important;
+}
+
+.calendar-exact-match .rdp-cell {
+  display: table-cell !important;
+  text-align: center !important;
+  vertical-align: middle !important;
+  padding: 2px 0 !important;
+}
+
+.calendar-exact-match .rdp-day {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  height: 38px !important;
+  width: 38px !important;
+  margin: 0 auto !important;
+  border-radius: 50% !important;
+}
+
+.calendar-exact-match .rdp-caption {
+  text-align: center !important;
+  margin-bottom: 16px;
+}
+
+.calendar-exact-match .rdp-caption_label {
+  color: #EAB308 !important;
+  font-size: 1.5rem !important;
+  font-weight: 500 !important;
+}
+
+.calendar-exact-match .nav-yellow {
+  color: #EAB308 !important;
+  background-color: transparent !important;
+}
+
 .custom-calendar .rdp-head_cell {
   color: #7a7f89 !important;
   font-weight: 400 !important;
