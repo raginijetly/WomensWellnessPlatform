@@ -12,17 +12,32 @@ import {
   HEALTH_GOALS, 
   HEALTH_CONDITIONS, 
   LIFE_STAGES, 
-  SYMPTOMS, 
-  PERIOD_REGULARITY,
-  CYCLE_PHASES 
+  PERIOD_REGULARITY
 } from "@shared/schema";
-import { format, differenceInDays, addDays } from "date-fns";
+import { format } from "date-fns";
 
-// Define the different onboarding steps
-type OnboardingStep = 'age' | 'period' | 'regularity' | 'goals' | 'conditions' | 'lifestage' | 'symptoms' | 'completion';
+// Define the different onboarding steps in the new order
+type OnboardingStep = 'age' | 'period' | 'regularity' | 'fitness' | 'dietary' | 'goals' | 'conditions' | 'lifestage' | 'completion';
 
 // Number of total onboarding steps
-const TOTAL_STEPS = 7;
+const TOTAL_STEPS = 8;
+
+// Fitness level options
+const FITNESS_LEVELS = [
+  "Just starting out",
+  "Getting back into fitness", 
+  "Already active",
+  "Very experienced"
+];
+
+// Dietary preference options
+const DIETARY_PREFERENCES = [
+  "No restrictions",
+  "Vegetarian",
+  "Vegan", 
+  "Gluten-free",
+  "Other allergies/restrictions"
+];
 
 const OnboardingPage: FC = () => {
   const { user, isLoading, updateOnboarding } = useAuth();
@@ -33,12 +48,13 @@ const OnboardingPage: FC = () => {
   const [dontKnowDate, setDontKnowDate] = useState(false);
   const [ageInput, setAgeInput] = useState("");
   const [periodsRegular, setPeriodsRegular] = useState<string | null>(null);
+  const [fitnessLevel, setFitnessLevel] = useState<string | null>(null);
+  const [dietaryPreferences, setDietaryPreferences] = useState<string | null>(null);
+  const [otherDietaryText, setOtherDietaryText] = useState("");
   const [healthGoals, setHealthGoals] = useState<string[]>([]);
   const [healthConditions, setHealthConditions] = useState<string[]>([]);
   const [noneHealthCondition, setNoneHealthCondition] = useState<boolean>(false);
   const [lifeStage, setLifeStage] = useState<string | null>(null);
-  const [symptoms, setSymptoms] = useState<string[]>([]);
-  const [noneSymptoms, setNoneSymptoms] = useState<boolean>(false);
   const [isPending, setIsPending] = useState(false);
   
   // Current step in the onboarding process
@@ -50,11 +66,12 @@ const OnboardingPage: FC = () => {
       case 'age': return 1;
       case 'period': return 2;
       case 'regularity': return 3;
-      case 'goals': return 4;
-      case 'conditions': return 5;
-      case 'lifestage': return 6;
-      case 'symptoms': return 7;
-      case 'completion': return 8;
+      case 'fitness': return 4;
+      case 'dietary': return 5;
+      case 'goals': return 6;
+      case 'conditions': return 7;
+      case 'lifestage': return 8;
+      case 'completion': return 9;
       default: return 1;
     }
   };
@@ -65,6 +82,14 @@ const OnboardingPage: FC = () => {
   };
   
   // Toggle functions for multi-selects
+  const toggleHealthGoal = (goal: string) => {
+    setHealthGoals(prev => 
+      prev.includes(goal) 
+        ? prev.filter(g => g !== goal)
+        : [...prev, goal]
+    );
+  };
+  
   const toggleHealthCondition = (condition: string) => {
     setHealthConditions(prev => {
       const newConditions = prev.includes(condition)
@@ -80,29 +105,6 @@ const OnboardingPage: FC = () => {
     });
   };
   
-  const toggleHealthGoal = (goal: string) => {
-    setHealthGoals(prev => 
-      prev.includes(goal)
-        ? prev.filter(g => g !== goal)
-        : [...prev, goal]
-    );
-  };
-  
-  const toggleSymptom = (symptom: string) => {
-    setSymptoms(prev => {
-      const newSymptoms = prev.includes(symptom)
-        ? prev.filter(s => s !== symptom)
-        : [...prev, symptom];
-      
-      // If user selects any symptom, uncheck "None" option
-      if (newSymptoms.length > 0) {
-        setNoneSymptoms(false);
-      }
-      
-      return newSymptoms;
-    });
-  };
-  
   // Move to the next step
   const goToNextStep = () => {
     switch (currentStep) {
@@ -113,6 +115,12 @@ const OnboardingPage: FC = () => {
         setCurrentStep('regularity');
         break;
       case 'regularity':
+        setCurrentStep('fitness');
+        break;
+      case 'fitness':
+        setCurrentStep('dietary');
+        break;
+      case 'dietary':
         setCurrentStep('goals');
         break;
       case 'goals':
@@ -122,681 +130,465 @@ const OnboardingPage: FC = () => {
         setCurrentStep('lifestage');
         break;
       case 'lifestage':
-        setCurrentStep('symptoms');
-        break;
-      case 'symptoms':
         setCurrentStep('completion');
-        calculateCycleInfo();
+        break;
+    }
+  };
+  
+  // Go back to the previous step
+  const goToPreviousStep = () => {
+    switch (currentStep) {
+      case 'period':
+        setCurrentStep('age');
+        break;
+      case 'regularity':
+        setCurrentStep('period');
+        break;
+      case 'fitness':
+        setCurrentStep('regularity');
+        break;
+      case 'dietary':
+        setCurrentStep('fitness');
+        break;
+      case 'goals':
+        setCurrentStep('dietary');
+        break;
+      case 'conditions':
+        setCurrentStep('goals');
+        break;
+      case 'lifestage':
+        setCurrentStep('conditions');
         break;
       case 'completion':
-        handleSubmit();
+        setCurrentStep('lifestage');
         break;
     }
   };
   
-  // Skip the current step
-  const skipStep = () => {
-    goToNextStep();
-  };
-  
-  // Calculate cycle information for the completion screen
-  const [cycleDay, setCycleDay] = useState<number | null>(null);
-  const [cyclePhase, setCyclePhase] = useState<string | null>(null);
-  
-  const calculateCycleInfo = () => {
-    if (dateInput) {
-      // Calculate days since period started
-      const today = new Date();
-      const daysSincePeriod = differenceInDays(today, dateInput);
+  // Submit the onboarding data
+  const submitOnboardingData = async () => {
+    setIsPending(true);
+    try {
+      const finalDietaryPreference = dietaryPreferences === "Other allergies/restrictions" 
+        ? otherDietaryText 
+        : dietaryPreferences;
+
+      updateOnboarding({
+        age: parseInt(ageInput),
+        lastPeriodDate: dontKnowDate ? null : dateInput,
+        dontKnowPeriodDate: dontKnowDate,
+        periodsRegular: periodsRegular || "Unknown",
+        fitnessLevel: fitnessLevel || "",
+        dietaryPreferences: finalDietaryPreference || "",
+        healthGoals: healthGoals,
+        healthConditions: noneHealthCondition ? [] : healthConditions,
+        lifeStage: lifeStage || "None"
+      });
       
-      // Assume a 28-day cycle for demo purposes
-      const cycleDayNum = (daysSincePeriod % 28) + 1;
-      setCycleDay(cycleDayNum);
-      
-      // Determine cycle phase
-      if (cycleDayNum <= 5) {
-        setCyclePhase("Menstruation");
-      } else if (cycleDayNum <= 13) {
-        setCyclePhase("Follicular");
-      } else if (cycleDayNum <= 16) {
-        setCyclePhase("Ovulation");
-      } else {
-        setCyclePhase("Luteal");
-      }
-    } else {
-      // Default values if no date is selected
-      setCycleDay(1);
-      setCyclePhase("Menstruation");
+      // Navigate to home after completion
+      setLocation('/');
+    } catch (error) {
+      console.error('Error submitting onboarding data:', error);
+    } finally {
+      setIsPending(false);
     }
   };
-  
-  // Handle onboarding submission
-  const handleSubmit = () => {
-    if (!user) return;
-    
-    setIsPending(true);
-    
-    // Format date as ISO string if it exists
-    const dateString = dateInput ? dateInput.toISOString() : null;
-    
-    // Parse age to number
-    const age = ageInput ? parseInt(ageInput, 10) : null;
-    
-    // Create onboarding data
-    const onboardingData = {
-      lastPeriodDate: dateString,
-      dontKnowPeriodDate: dontKnowDate,
-      age: age || null,
-      periodsRegular: periodsRegular || undefined,
-      healthGoals: healthGoals,
-      healthConditions: healthConditions,
-      lifeStage: lifeStage || undefined,
-      symptoms: symptoms,
-      completedOnboarding: true,
-    };
-    
-    // Simulate a delay for API request
-    setTimeout(() => {
-      updateOnboarding(onboardingData);
-      setIsPending(false);
-      setLocation("/");
-    }, 800);
-  };
-  
-  // Show loading state while checking auth
+
+  // Redirect if user has already completed onboarding
+  useEffect(() => {
+    if (user?.completedOnboarding) {
+      setLocation('/');
+    }
+  }, [user, setLocation]);
+
+  // Show loading if user data is being fetched
   if (isLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center gradient-primary">
+      <div className="min-h-screen gradient-primary flex items-center justify-center">
         <Loader2 className="h-8 w-8 animate-spin text-white" />
       </div>
     );
   }
-  
-  // Navigation effects
-  useEffect(() => {
-    if (!isLoading) {
-      if (!user) {
-        setLocation("/auth");
-      } else if (user.completedOnboarding) {
-        setLocation("/");
-      }
+
+  // Helper function to check if current step is valid
+  const canProceed = (): boolean => {
+    switch (currentStep) {
+      case 'age':
+        return ageInput.trim() !== '' && parseInt(ageInput) > 0;
+      case 'period':
+        return dontKnowDate || dateInput !== undefined;
+      case 'regularity':
+        return periodsRegular !== null;
+      case 'fitness':
+        return fitnessLevel !== null;
+      case 'dietary':
+        return dietaryPreferences !== null && 
+               (dietaryPreferences !== "Other allergies/restrictions" || otherDietaryText.trim() !== '');
+      case 'goals':
+        return healthGoals.length > 0;
+      case 'conditions':
+        return noneHealthCondition || healthConditions.length > 0;
+      case 'lifestage':
+        return lifeStage !== null;
+      default:
+        return false;
     }
-  }, [user, isLoading, setLocation]);
-  
-  // Exit early if not authenticated or already completed onboarding
-  if (!user || user.completedOnboarding) {
-    return null;
-  }
-  
-  // Current progress percentage
-  const progressPercentage = getCompletionPercentage();
-  
+  };
+
   return (
-    <div className="min-h-screen gradient-primary flex flex-col p-6">
-      {currentStep !== 'completion' && (
-        /* Progress indicator - removing percentage and keeping just step count */
-        <div className="mb-6">
-          <div className="flex items-center mb-2">
-            <div className="text-purple-900 font-medium">
-              Step {getStepNumber(currentStep)} of {TOTAL_STEPS}
-            </div>
-          </div>
-          <Progress value={progressPercentage} className="h-2 bg-purple-200" />
+    <div className="min-h-screen gradient-primary">
+      {/* Header */}
+      <header className="bg-white/10 backdrop-blur-sm">
+        <div className="container mx-auto px-4 py-4">
+          <h1 className="text-2xl font-bold text-white">FemFit</h1>
         </div>
-      )}
-      
-      <div className="flex-1 flex flex-col">
-        {/* Age Step */}
-        {currentStep === 'age' && (
-          <div className="flex flex-col h-full">
-            <div className="mb-6 text-center">
-              <h2 className="text-2xl font-bold text-purple-900 mb-2">How old are you?</h2>
-              <p className="text-purple-800/80">
-                We'll tailor recommendations specific to your life stage
-              </p>
+      </header>
+
+      {/* Main onboarding content */}
+      <main className="container mx-auto px-4 py-8">
+        <div className="max-w-2xl mx-auto bg-white rounded-xl shadow-lg overflow-hidden">
+          {/* Progress header */}
+          <div className="bg-purple-100 p-6">
+            <div className="flex justify-between items-center mb-4">
+              <h2 className="text-xl font-bold text-purple-900">Let's personalize your experience</h2>
+              <span className="text-sm text-purple-700">
+                Step {getStepNumber(currentStep)} of {TOTAL_STEPS}
+              </span>
             </div>
-            
-            <div className="flex-1 flex items-center justify-center">
-              <div className="w-full max-w-md">
-                <Input
-                  type="number"
-                  value={ageInput}
-                  onChange={(e) => setAgeInput(e.target.value)}
-                  placeholder="Enter your age"
-                  className="text-lg py-6 bg-white border-2 border-white text-center"
-                  min="13"
-                  max="100"
-                />
-              </div>
-            </div>
-            
-            <div className="mt-auto pt-6 space-y-3">
-              <Button
-                className="w-full py-3 gradient-primary hover:opacity-90 shadow-lg text-lg font-medium border border-white"
-                onClick={goToNextStep}
-                disabled={!ageInput}
-              >
-                Continue
-              </Button>
-              <Button
-                variant="ghost"
-                className="w-full py-2.5 text-purple-800 hover:text-purple-900 hover:bg-purple-50/50"
-                onClick={skipStep}
-              >
-                Skip for now
-              </Button>
-            </div>
+            <Progress 
+              value={getCompletionPercentage()} 
+              className="h-2"
+            />
           </div>
-        )}
-        
-        {/* Period Date Step */}
-        {currentStep === 'period' && (
-          <div className="flex flex-col h-full">
-            <div className="mb-6 text-center">
-              <h2 className="text-2xl font-bold text-purple-900 mb-2">When was your last period?</h2>
-              <p className="text-purple-800/80">
-                This helps us personalize your fitness plan based on your cycle
-              </p>
-            </div>
-            
-            {!dontKnowDate ? (
-              <div className="flex-1 flex items-center justify-center">
-                <div className="bg-white rounded-lg p-4 w-full max-w-md">
-                  <div className="flex items-center mb-2">
-                    <CalendarIcon className="mr-2 h-5 w-5 text-purple-500" />
-                    <span className="text-gray-700">First day of last period</span>
-                  </div>
-                  
-                  {/* Fixed calendar layout to avoid blank space on right */}
-                  <div className="flex justify-center w-full">
-                    <Calendar
-                      mode="single"
-                      selected={dateInput}
-                      onSelect={setDateInput}
-                      className="w-full block"
-                      styles={{
-                        root: { width: '100%' },
-                        month: { width: '100%' },
-                        table: { width: '100%' }
-                      }}
-                      disabled={(date) => date > new Date()}
-                    />
-                  </div>
-                  
-                  {dateInput && (
-                    <p className="text-sm text-center text-gray-600 mt-2">
-                      Selected: {format(dateInput, "MMMM d, yyyy")}
-                    </p>
-                  )}
-                  
-                  <Button
-                    variant="ghost"
-                    className="w-full mt-3 text-sm py-2 text-purple-800 hover:text-purple-900 hover:bg-purple-50/50 border border-purple-100"
-                    onClick={() => setDontKnowDate(true)}
-                  >
-                    I don't know my last period date
-                  </Button>
+
+          {/* Step content */}
+          <div className="p-6">
+            {/* Age Step */}
+            {currentStep === 'age' && (
+              <div className="space-y-6">
+                <div className="text-center">
+                  <h2 className="text-2xl font-bold text-purple-900 mb-2">How old are you?</h2>
+                  <p className="text-gray-600">This helps us provide age-appropriate recommendations</p>
                 </div>
-              </div>
-            ) : (
-              <div className="flex-1 flex flex-col justify-center items-center">
-                <div className="bg-white rounded-lg p-6 w-full max-w-md text-center">
-                  <p className="text-gray-700 mb-4">
-                    You can log the first day of your last period later or log the beginning of your new one later.
-                  </p>
-                  <Button
-                    variant="outline"
-                    className="mt-2"
-                    onClick={() => setDontKnowDate(false)}
-                  >
-                    Back to calendar
-                  </Button>
+                <div className="max-w-md mx-auto">
+                  <Label htmlFor="age-input" className="text-lg font-medium">Age</Label>
+                  <Input
+                    id="age-input"
+                    type="number"
+                    min="13"
+                    max="100"
+                    placeholder="Enter your age"
+                    value={ageInput}
+                    onChange={(e) => setAgeInput(e.target.value)}
+                    className="mt-2 text-center text-lg"
+                  />
                 </div>
               </div>
             )}
-            
-            <div className="mt-auto pt-6 space-y-3">
-              <Button
-                className="w-full py-3 gradient-primary hover:opacity-90 shadow-lg text-lg font-medium border border-white disabled:opacity-50 disabled:cursor-not-allowed"
-                onClick={goToNextStep}
-                disabled={
-                  // Add validation for each step
-                  (currentStep === 'age' && (!ageInput || isNaN(parseInt(ageInput)))) ||
-                  (currentStep === 'period' && !dateInput && !dontKnowDate) ||
-                  (currentStep === 'regularity' && !regularity) ||
-                  (currentStep === 'goals' && (!selectedGoals || selectedGoals.length === 0)) ||
-                  (currentStep === 'conditions' && (!selectedConditions || selectedConditions.length === 0)) ||
-                  (currentStep === 'lifestage' && !selectedLifeStage) ||
-                  (currentStep === 'symptoms' && (!selectedSymptoms || selectedSymptoms.length === 0))
-                }
-              >
-                Continue
-              </Button>
-              {/* Skip button shown only if not on the period date selection screen or if on period screen but NOT in "don't know" mode */}
-              {(currentStep !== 'period' || (currentStep === 'period' && !dontKnowDate)) && (
-                <Button
-                  variant="ghost"
-                  className="w-full py-2.5 text-purple-800 hover:text-purple-900 hover:bg-purple-50/50"
-                  onClick={skipStep}
-                >
-                  Skip for now
-                </Button>
-              )}
-            </div>
-          </div>
-        )}
-        
-        {/* Period Regularity Step */}
-        {currentStep === 'regularity' && (
-          <div className="flex flex-col h-full">
-            <div className="mb-6 text-center">
-              <h2 className="text-2xl font-bold text-purple-900 mb-2">Are your periods regular?</h2>
-              <p className="text-purple-800/80">
-                This helps us better understand your cycle patterns
-              </p>
-            </div>
-            
-            <div className="flex-1 flex flex-col justify-center">
-              <div className="grid grid-cols-1 gap-4 w-full max-w-md mx-auto">
-                {PERIOD_REGULARITY.map((option) => (
-                  <div key={option}>
-                    <button
-                      className={`w-full py-3 px-4 text-left border-2 rounded-lg ${
-                        periodsRegular === option 
-                          ? "border-purple-500 bg-purple-100" 
-                          : "border-white bg-white"
+
+            {/* Period Date Step */}
+            {currentStep === 'period' && (
+              <div className="space-y-6">
+                <div className="text-center">
+                  <h2 className="text-2xl font-bold text-purple-900 mb-2">When was your last period?</h2>
+                  <p className="text-gray-600">This helps us track your cycle phase</p>
+                </div>
+                
+                <div className="space-y-4">
+                  <div className="flex items-center space-x-2">
+                    <Checkbox
+                      id="dont-know-date"
+                      checked={dontKnowDate}
+                      onCheckedChange={(checked) => {
+                        setDontKnowDate(checked === true);
+                        if (checked) setDateInput(undefined);
+                      }}
+                    />
+                    <Label htmlFor="dont-know-date" className="text-sm">
+                      I don't remember / I'd rather not say
+                    </Label>
+                  </div>
+                  
+                  {!dontKnowDate && (
+                    <div className="flex justify-center">
+                      <Calendar
+                        mode="single"
+                        selected={dateInput}
+                        onSelect={setDateInput}
+                        disabled={(date) => date > new Date() || date < new Date('1900-01-01')}
+                        className="rounded-md border"
+                      />
+                    </div>
+                  )}
+                  
+                  {dateInput && (
+                    <div className="text-center text-sm text-gray-600">
+                      Selected: {format(dateInput, 'PPP')}
+                    </div>
+                  )}
+                </div>
+              </div>
+            )}
+
+            {/* Period Regularity Step */}
+            {currentStep === 'regularity' && (
+              <div className="space-y-6">
+                <div className="text-center">
+                  <h2 className="text-2xl font-bold text-purple-900 mb-2">Are your periods regular?</h2>
+                  <p className="text-gray-600">This helps us predict your cycle phases</p>
+                </div>
+                <div className="grid grid-cols-1 gap-4 max-w-md mx-auto">
+                  {PERIOD_REGULARITY.map((option) => (
+                    <Button
+                      key={option}
+                      variant={periodsRegular === option ? "default" : "outline"}
+                      className={`p-4 h-auto text-left justify-start ${
+                        periodsRegular === option ? 'bg-purple-600 text-white' : ''
                       }`}
                       onClick={() => setPeriodsRegular(option)}
                     >
-                      <span className="text-gray-800 font-medium">{option}</span>
-                      
-                      {/* Integrated follow-up content within the same container */}
-                      {periodsRegular === option && (
-                        <div className="text-sm text-purple-700 mt-2">
-                          {option === "Yes" && "Great! We can provide insights to help you optimize your lifestyle and habits to better align with your cycle."}
-                          {option === "No" && "Okay, we can help you track your periods and better understand your body's signals, even if they're irregular."}
-                          {option === "I'm unsure" && "No problem. We'll help you learn more about your cycle and provide personalized insights."}
-                        </div>
-                      )}
-                    </button>
-                  </div>
-                ))}
+                      {option}
+                    </Button>
+                  ))}
+                </div>
               </div>
-            </div>
-            
-            <div className="mt-auto pt-6 space-y-3">
-              <Button
-                className="w-full py-3 gradient-primary hover:opacity-90 shadow-lg text-lg font-medium border border-white"
-                onClick={goToNextStep}
-                disabled={!periodsRegular}
-              >
-                Continue
-              </Button>
-              <Button
-                variant="ghost"
-                className="w-full py-2.5 text-purple-800 hover:text-purple-900 hover:bg-purple-50/50"
-                onClick={skipStep}
-              >
-                Skip for now
-              </Button>
-            </div>
-          </div>
-        )}
-        
-        {/* Health Goals Step */}
-        {currentStep === 'goals' && (
-          <div className="flex flex-col h-full">
-            <div className="mb-6 text-center">
-              <h2 className="text-2xl font-bold text-purple-900 mb-2">What are your primary health goals?</h2>
-              <p className="text-purple-800/80">
-                Select all that apply to personalize your journey
-              </p>
-            </div>
-            
-            <div className="flex-1 flex flex-col overflow-y-auto">
-              <div className="grid grid-cols-1 gap-3 w-full max-w-md mx-auto">
-                {HEALTH_GOALS.map((goal) => (
-                  <div 
-                    key={goal}
-                    className={`flex items-center space-x-2 rounded-md py-2 sm:py-3 px-3 sm:px-4 cursor-pointer transition-colors ${
-                      healthGoals.includes(goal) 
-                        ? "bg-purple-100 border-2 border-purple-500" 
-                        : "bg-white border-2 border-white"
-                    }`}
-                    onClick={() => toggleHealthGoal(goal)}
-                  >
-                    <Checkbox 
-                      id={`goal-${goal}`} 
-                      checked={healthGoals.includes(goal)} 
-                      onCheckedChange={() => toggleHealthGoal(goal)}
-                      className="data-[state=checked]:bg-purple-600 h-4 w-4 sm:h-5 sm:w-5"
-                    />
-                    <Label 
-                      htmlFor={`goal-${goal}`} 
-                      className="cursor-pointer w-full text-gray-700"
+            )}
+
+            {/* Fitness Level Step */}
+            {currentStep === 'fitness' && (
+              <div className="space-y-6">
+                <div className="text-center">
+                  <h2 className="text-2xl font-bold text-purple-900 mb-2">What's your current fitness level?</h2>
+                  <p className="text-gray-600">This helps us customize your workout recommendations</p>
+                </div>
+                <div className="grid grid-cols-1 gap-4 max-w-md mx-auto">
+                  {FITNESS_LEVELS.map((level) => (
+                    <Button
+                      key={level}
+                      variant={fitnessLevel === level ? "default" : "outline"}
+                      className={`p-4 h-auto text-left justify-start ${
+                        fitnessLevel === level ? 'bg-purple-600 text-white' : ''
+                      }`}
+                      onClick={() => setFitnessLevel(level)}
                     >
-                      {goal}
-                    </Label>
-                  </div>
-                ))}
+                      {level}
+                    </Button>
+                  ))}
+                </div>
               </div>
-            </div>
-            
-            <div className="mt-auto pt-6 space-y-3">
-              <Button
-                className="w-full py-3 gradient-primary hover:opacity-90 shadow-lg text-lg font-medium border border-white"
-                onClick={goToNextStep}
-                disabled={healthGoals.length === 0}
-              >
-                Continue
-              </Button>
-              <Button
-                variant="ghost"
-                className="w-full py-2.5 text-purple-800 hover:text-purple-900 hover:bg-purple-50/50"
-                onClick={skipStep}
-              >
-                Skip for now
-              </Button>
-            </div>
-          </div>
-        )}
-        
-        {/* Health Conditions Step */}
-        {currentStep === 'conditions' && (
-          <div className="flex flex-col h-full">
-            <div className="mb-6 text-center">
-              <h2 className="text-2xl font-bold text-purple-900 mb-2">Do you have any health conditions?</h2>
-              <p className="text-purple-800/80">
-                Select all that apply to help us provide safer recommendations
-              </p>
-            </div>
-            
-            <div className="flex-1 flex flex-col overflow-y-auto">
-              <div className="grid grid-cols-1 gap-3 w-full max-w-md mx-auto">
-                {HEALTH_CONDITIONS.map((condition) => (
-                  <div 
-                    key={condition}
-                    className={`flex items-center space-x-2 rounded-md py-2 sm:py-3 px-3 sm:px-4 cursor-pointer transition-colors ${
-                      healthConditions.includes(condition) 
-                        ? "bg-purple-100 border-2 border-purple-500" 
-                        : "bg-white border-2 border-white"
-                    }`}
-                    onClick={() => toggleHealthCondition(condition)}
-                  >
-                    <Checkbox 
-                      id={`condition-${condition}`} 
-                      checked={healthConditions.includes(condition)} 
-                      onCheckedChange={() => toggleHealthCondition(condition)}
-                      className="data-[state=checked]:bg-purple-600 h-4 w-4 sm:h-5 sm:w-5"
-                    />
-                    <Label 
-                      htmlFor={`condition-${condition}`} 
-                      className="cursor-pointer w-full text-gray-700"
+            )}
+
+            {/* Dietary Preferences Step */}
+            {currentStep === 'dietary' && (
+              <div className="space-y-6">
+                <div className="text-center">
+                  <h2 className="text-2xl font-bold text-purple-900 mb-2">Do you have any dietary preferences/restrictions?</h2>
+                  <p className="text-gray-600">This helps us tailor nutrition advice for you</p>
+                </div>
+                <div className="grid grid-cols-1 gap-4 max-w-md mx-auto">
+                  {DIETARY_PREFERENCES.map((preference) => (
+                    <Button
+                      key={preference}
+                      variant={dietaryPreferences === preference ? "default" : "outline"}
+                      className={`p-4 h-auto text-left justify-start ${
+                        dietaryPreferences === preference ? 'bg-purple-600 text-white' : ''
+                      }`}
+                      onClick={() => setDietaryPreferences(preference)}
                     >
-                      {condition}
-                    </Label>
-                  </div>
-                ))}
+                      {preference}
+                    </Button>
+                  ))}
+                </div>
                 
-                {/* None of these apply option */}
-                <div 
-                  className={`flex items-center space-x-2 rounded-md py-2 sm:py-3 px-3 sm:px-4 cursor-pointer transition-colors ${
-                    noneHealthCondition
-                      ? "bg-purple-100 border-2 border-purple-500" 
-                      : "bg-white border-2 border-white"
-                  }`}
-                  onClick={() => {
-                    setNoneHealthCondition(!noneHealthCondition);
-                    if (!noneHealthCondition) {
-                      setHealthConditions([]);
-                    }
-                  }}
-                >
-                  <Checkbox 
-                    id="condition-none" 
-                    checked={noneHealthCondition} 
-                    onCheckedChange={(checked) => {
-                      setNoneHealthCondition(checked === true);
-                      if (checked) {
+                {/* Show text input for "Other" option */}
+                {dietaryPreferences === "Other allergies/restrictions" && (
+                  <div className="max-w-md mx-auto mt-4">
+                    <Label htmlFor="other-dietary" className="text-sm font-medium">
+                      Please specify your dietary restrictions:
+                    </Label>
+                    <Input
+                      id="other-dietary"
+                      type="text"
+                      placeholder="e.g., dairy-free, nut allergy, etc."
+                      value={otherDietaryText}
+                      onChange={(e) => setOtherDietaryText(e.target.value)}
+                      className="mt-2"
+                    />
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* Health Goals Step */}
+            {currentStep === 'goals' && (
+              <div className="space-y-6">
+                <div className="text-center">
+                  <h2 className="text-2xl font-bold text-purple-900 mb-2">What are your primary health goals?</h2>
+                  <p className="text-gray-600">Select all that apply to personalize your experience</p>
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {HEALTH_GOALS.map((goal) => (
+                    <div 
+                      key={goal}
+                      className={`border-2 rounded-lg p-4 cursor-pointer transition-all ${
+                        healthGoals.includes(goal) 
+                          ? 'border-purple-500 bg-purple-50' 
+                          : 'border-gray-200 hover:border-purple-300'
+                      }`}
+                      onClick={() => toggleHealthGoal(goal)}
+                    >
+                      <div className="flex items-center space-x-3">
+                        <Checkbox
+                          checked={healthGoals.includes(goal)}
+                          onCheckedChange={() => toggleHealthGoal(goal)}
+                        />
+                        <span className="font-medium">{goal}</span>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Health Conditions Step */}
+            {currentStep === 'conditions' && (
+              <div className="space-y-6">
+                <div className="text-center">
+                  <h2 className="text-2xl font-bold text-purple-900 mb-2">Do you have any health conditions?</h2>
+                  <p className="text-gray-600">This helps us provide safe and appropriate recommendations</p>
+                </div>
+                
+                <div className="space-y-4">
+                  {/* None option */}
+                  <div 
+                    className={`border-2 rounded-lg p-4 cursor-pointer transition-all ${
+                      noneHealthCondition 
+                        ? 'border-purple-500 bg-purple-50' 
+                        : 'border-gray-200 hover:border-purple-300'
+                    }`}
+                    onClick={() => {
+                      setNoneHealthCondition(!noneHealthCondition);
+                      if (!noneHealthCondition) {
                         setHealthConditions([]);
                       }
                     }}
-                    className="data-[state=checked]:bg-purple-600 h-4 w-4 sm:h-5 sm:w-5"
-                  />
-                  <Label 
-                    htmlFor="condition-none" 
-                    className="cursor-pointer w-full text-gray-700 font-medium"
                   >
-                    None of these apply to me
-                  </Label>
+                    <div className="flex items-center space-x-3">
+                      <Checkbox
+                        checked={noneHealthCondition}
+                        onCheckedChange={(checked) => {
+                          setNoneHealthCondition(checked === true);
+                          if (checked) {
+                            setHealthConditions([]);
+                          }
+                        }}
+                      />
+                      <span className="font-medium">None of the above</span>
+                    </div>
+                  </div>
+                  
+                  {/* Condition options */}
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    {HEALTH_CONDITIONS.map((condition) => (
+                      <div 
+                        key={condition}
+                        className={`border-2 rounded-lg p-4 cursor-pointer transition-all ${
+                          healthConditions.includes(condition) 
+                            ? 'border-purple-500 bg-purple-50' 
+                            : 'border-gray-200 hover:border-purple-300'
+                        }`}
+                        onClick={() => toggleHealthCondition(condition)}
+                      >
+                        <div className="flex items-center space-x-3">
+                          <Checkbox
+                            checked={healthConditions.includes(condition)}
+                            onCheckedChange={() => toggleHealthCondition(condition)}
+                          />
+                          <span className="font-medium">{condition}</span>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
                 </div>
               </div>
-            </div>
-            
-            <div className="mt-auto pt-6 space-y-3">
-              <Button
-                className="w-full py-3 gradient-primary hover:opacity-90 shadow-lg text-lg font-medium border border-white"
-                onClick={goToNextStep}
-              >
-                Continue
-              </Button>
-              <Button
-                variant="ghost"
-                className="w-full py-2.5 text-purple-800 hover:text-purple-900 hover:bg-purple-50/50"
-                onClick={skipStep}
-              >
-                Skip for now
-              </Button>
-            </div>
-          </div>
-        )}
-        
-        {/* Life Stage Step */}
-        {currentStep === 'lifestage' && (
-          <div className="flex flex-col h-full">
-            <div className="mb-6 text-center">
-              <h2 className="text-2xl font-bold text-purple-900 mb-2">Are you in any of these life stages?</h2>
-              <p className="text-purple-800/80">
-                Select one option that applies to you
-              </p>
-            </div>
-            
-            <div className="flex-1 flex flex-col justify-center">
-              <div className="grid grid-cols-1 gap-4 w-full max-w-md mx-auto">
-                {/* Life stage options without None first */}
-                {LIFE_STAGES.filter(stage => stage !== "None").map((stage) => (
-                  <div key={stage} className="space-y-2">
-                    <button
-                      className={`w-full py-3 px-4 text-left border-2 rounded-lg ${
-                        lifeStage === stage 
-                          ? "border-purple-500 bg-purple-100" 
-                          : "border-white bg-white"
+            )}
+
+            {/* Life Stage Step */}
+            {currentStep === 'lifestage' && (
+              <div className="space-y-6">
+                <div className="text-center">
+                  <h2 className="text-2xl font-bold text-purple-900 mb-2">Are you in any of these life stages?</h2>
+                  <p className="text-gray-600">This helps us provide stage-appropriate guidance</p>
+                </div>
+                <div className="grid grid-cols-1 gap-4 max-w-md mx-auto">
+                  {LIFE_STAGES.map((stage) => (
+                    <Button
+                      key={stage}
+                      variant={lifeStage === stage ? "default" : "outline"}
+                      className={`p-4 h-auto text-left justify-start ${
+                        lifeStage === stage ? 'bg-purple-600 text-white' : ''
                       }`}
                       onClick={() => setLifeStage(stage)}
                     >
-                      <span className="text-gray-800 font-medium">{stage}</span>
-                      
-                      {/* Integrated follow-up content within the button */}
-                      {lifeStage === stage && (
-                        <div className="text-sm text-purple-700 mt-2">
-                          {stage === "Prenatal" && "Congratulations! We're here to support you and your changing needs during this journey."}
-                          {stage === "Postpartum" && "Congratulations! We're here to support your recovery and wellness after childbirth."}
-                          {stage === "Menopause" && "Changing bodies are hard. We are here to guide you through these changes and help adapt your lifestyle better."}
-                        </div>
-                      )}
-                    </button>
-                  </div>
-                ))}
-                
-                {/* Add "None" as the last option */}
-                <div key="None" className="space-y-2">
-                  <button
-                    className={`w-full py-3 px-4 text-left border-2 rounded-lg ${
-                      lifeStage === "None" 
-                        ? "border-purple-500 bg-purple-100" 
-                        : "border-white bg-white"
-                    }`}
-                    onClick={() => setLifeStage("None")}
-                  >
-                    <span className="text-gray-800 font-medium">None of these apply to me</span>
-                  </button>
+                      {stage}
+                    </Button>
+                  ))}
                 </div>
               </div>
-            </div>
-            
-            <div className="mt-auto pt-6 space-y-3">
-              <Button
-                className="w-full py-3 gradient-primary hover:opacity-90 shadow-lg text-lg font-medium border border-white"
-                onClick={goToNextStep}
-              >
-                Continue
-              </Button>
-              <Button
-                variant="ghost"
-                className="w-full py-2.5 text-purple-800 hover:text-purple-900 hover:bg-purple-50/50"
-                onClick={skipStep}
-              >
-                Skip for now
-              </Button>
-            </div>
-          </div>
-        )}
-        
-        {/* Symptoms Step */}
-        {currentStep === 'symptoms' && (
-          <div className="flex flex-col h-full">
-            <div className="mb-6 text-center">
-              <h2 className="text-2xl font-bold text-purple-900 mb-2">Have you experienced any of these symptoms?</h2>
-              <p className="text-purple-800/80">
-                In the past few months, select all that apply
-              </p>
-            </div>
-            
-            <div className="flex-1 flex flex-col overflow-y-auto">
-              <div className="grid grid-cols-1 gap-3 w-full max-w-md mx-auto">
-                {SYMPTOMS.map((symptom) => (
-                  <div 
-                    key={symptom}
-                    className={`flex items-center space-x-2 rounded-md py-2 sm:py-3 px-3 sm:px-4 cursor-pointer transition-colors ${
-                      symptoms.includes(symptom) 
-                        ? "bg-purple-100 border-2 border-purple-500" 
-                        : "bg-white border-2 border-white"
-                    }`}
-                    onClick={() => toggleSymptom(symptom)}
-                  >
-                    <Checkbox 
-                      id={`symptom-${symptom}`} 
-                      checked={symptoms.includes(symptom)} 
-                      onCheckedChange={() => toggleSymptom(symptom)}
-                      className="data-[state=checked]:bg-purple-600 h-4 w-4 sm:h-5 sm:w-5"
-                    />
-                    <Label 
-                      htmlFor={`symptom-${symptom}`} 
-                      className="cursor-pointer w-full text-gray-700"
-                    >
-                      {symptom}
-                    </Label>
-                  </div>
-                ))}
-                
-                {/* None of these apply option */}
-                <div 
-                  className={`flex items-center space-x-2 rounded-md py-2 sm:py-3 px-3 sm:px-4 cursor-pointer transition-colors ${
-                    noneSymptoms
-                      ? "bg-purple-100 border-2 border-purple-500" 
-                      : "bg-white border-2 border-white"
-                  }`}
-                  onClick={() => {
-                    setNoneSymptoms(!noneSymptoms);
-                    if (!noneSymptoms) {
-                      setSymptoms([]);
-                    }
-                  }}
-                >
-                  <Checkbox 
-                    id="symptom-none" 
-                    checked={noneSymptoms} 
-                    onCheckedChange={(checked) => {
-                      setNoneSymptoms(checked === true);
-                      if (checked) {
-                        setSymptoms([]);
-                      }
-                    }}
-                    className="data-[state=checked]:bg-purple-600 h-4 w-4 sm:h-5 sm:w-5"
-                  />
-                  <Label 
-                    htmlFor="symptom-none" 
-                    className="cursor-pointer w-full text-gray-700"
-                  >
-                    None of these apply to me
-                  </Label>
+            )}
+
+            {/* Completion Step */}
+            {currentStep === 'completion' && (
+              <div className="space-y-6 text-center">
+                <div className="flex justify-center">
+                  <CheckCircle className="h-16 w-16 text-green-500" />
                 </div>
+                <h2 className="text-2xl font-bold text-purple-900">You're all set!</h2>
+                <p className="text-gray-600">
+                  Thank you for completing your profile. We'll use this information to provide 
+                  personalized recommendations just for you.
+                </p>
               </div>
-            </div>
-            
-            <div className="mt-auto pt-6 space-y-3">
-              <Button
-                className="w-full py-3 gradient-primary hover:opacity-90 shadow-lg text-lg font-medium border border-white"
-                onClick={goToNextStep}
-              >
-                Continue
-              </Button>
-              <Button
-                variant="ghost"
-                className="w-full py-2.5 text-purple-800 hover:text-purple-900 hover:bg-purple-50/50"
-                onClick={skipStep}
-              >
-                Skip for now
-              </Button>
-            </div>
+            )}
           </div>
-        )}
-        
-        {/* Completion Step */}
-        {currentStep === 'completion' && (
-          <div className="flex flex-col h-full justify-center items-center space-y-8 py-6">
-            <div className="bg-purple-100 rounded-full p-6">
-              <CheckCircle className="h-16 w-16 text-purple-600" />
-            </div>
-            
-            <div className="text-center">
-              <h1 className="text-3xl font-bold text-purple-900 mb-3">You're all set!</h1>
-              <p className="text-purple-800/80 mb-8 max-w-md">
-                We've personalized your fitness journey based on your information
-              </p>
-            </div>
-            
-            <div className="bg-purple-50 w-full max-w-md rounded-lg p-6">
-              <h2 className="text-xl font-bold text-purple-900 mb-4">Your Cycle Information</h2>
-              
-              <div className="flex justify-between py-2 border-b border-purple-100">
-                <span className="text-gray-700">Current Cycle Day:</span>
-                <span className="text-purple-900 font-semibold">{cycleDay || "N/A"}</span>
-              </div>
-              
-              <div className="flex justify-between py-2">
-                <span className="text-gray-700">Current Phase:</span>
-                <span className="text-purple-900 font-semibold">{cyclePhase || "Unknown"}</span>
-              </div>
-            </div>
-            
+
+          {/* Navigation buttons */}
+          <div className="p-6 bg-gray-50 border-t flex justify-between">
             <Button
-              className="w-full max-w-md py-3 mt-6 gradient-primary hover:opacity-90 text-lg"
-              onClick={handleSubmit}
-              disabled={isPending}
+              variant="outline"
+              onClick={goToPreviousStep}
+              disabled={currentStep === 'age'}
             >
-              {isPending ? (
-                <>
-                  <Loader2 className="h-5 w-5 mr-2 animate-spin" />
-                  Saving...
-                </>
-              ) : (
-                "Start Your Journey"
-              )}
+              Back
             </Button>
+            
+            {currentStep === 'completion' ? (
+              <Button
+                onClick={submitOnboardingData}
+                disabled={isPending}
+                className="bg-purple-600 hover:bg-purple-700"
+              >
+                {isPending ? (
+                  <>
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    Saving...
+                  </>
+                ) : (
+                  'Complete Setup'
+                )}
+              </Button>
+            ) : (
+              <Button
+                onClick={goToNextStep}
+                disabled={!canProceed()}
+                className="bg-purple-600 hover:bg-purple-700"
+              >
+                Next
+              </Button>
+            )}
           </div>
-        )}
-      </div>
+        </div>
+      </main>
     </div>
   );
 };
