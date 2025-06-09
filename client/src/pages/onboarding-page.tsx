@@ -2,87 +2,105 @@ import { FC, useState, useEffect } from "react";
 import { useLocation } from "wouter";
 import { useAuth } from "@/hooks/use-auth";
 import { Button } from "@/components/ui/button";
-import { Loader2, Calendar as CalendarIcon } from "lucide-react";
+import { Loader2, Calendar as CalendarIcon, CheckCircle } from "lucide-react";
 import { Calendar } from "@/components/ui/calendar";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
+import { Progress } from "@/components/ui/progress";
 import { Input } from "@/components/ui/input";
 import { 
   HEALTH_GOALS, 
   HEALTH_CONDITIONS, 
   LIFE_STAGES, 
-  PERIOD_REGULARITY
+  SYMPTOMS, 
+  PERIOD_REGULARITY,
+  CYCLE_PHASES 
 } from "@shared/schema";
-import { format } from "date-fns";
+import { format, differenceInDays, addDays } from "date-fns";
 
-// Define the different onboarding steps in the new order
-type OnboardingStep = 'age' | 'period' | 'regularity' | 'fitness' | 'dietary' | 'goals' | 'conditions' | 'lifestage' | 'completion';
+// Define the different onboarding steps
+type OnboardingStep = 'age' | 'period' | 'regularity' | 'goals' | 'conditions' | 'lifestage' | 'symptoms' | 'completion';
 
-// Fitness level options
-const FITNESS_LEVELS = [
-  "Just starting out",
-  "Getting back into fitness", 
-  "Already active",
-  "Very experienced"
-];
-
-// Dietary preference options
-const DIETARY_PREFERENCES = [
-  "No restrictions",
-  "Vegetarian",
-  "Vegan", 
-  "Gluten-free",
-  "Other allergies/restrictions"
-];
+// Number of total onboarding steps
+const TOTAL_STEPS = 7;
 
 const OnboardingPage: FC = () => {
   const { user, isLoading, updateOnboarding } = useAuth();
   const [_, setLocation] = useLocation();
   
   // Form state
-  const [currentStep, setCurrentStep] = useState<OnboardingStep>('age');
   const [dateInput, setDateInput] = useState<Date | undefined>(undefined);
   const [dontKnowDate, setDontKnowDate] = useState(false);
   const [ageInput, setAgeInput] = useState("");
   const [periodsRegular, setPeriodsRegular] = useState<string | null>(null);
-  const [fitnessLevel, setFitnessLevel] = useState<string | null>(null);
-  const [dietaryPreferences, setDietaryPreferences] = useState<string | null>(null);
-  const [otherDietaryText, setOtherDietaryText] = useState("");
   const [healthGoals, setHealthGoals] = useState<string[]>([]);
   const [healthConditions, setHealthConditions] = useState<string[]>([]);
-  const [noneHealthCondition, setNoneHealthCondition] = useState(false);
+  const [noneHealthCondition, setNoneHealthCondition] = useState<boolean>(false);
   const [lifeStage, setLifeStage] = useState<string | null>(null);
+  const [symptoms, setSymptoms] = useState<string[]>([]);
+  const [noneSymptoms, setNoneSymptoms] = useState<boolean>(false);
   const [isPending, setIsPending] = useState(false);
-
-  // Handle health goal selection
+  
+  // Current step in the onboarding process
+  const [currentStep, setCurrentStep] = useState<OnboardingStep>('age');
+  
+  // Helper function to get step number
+  const getStepNumber = (step: OnboardingStep): number => {
+    switch (step) {
+      case 'age': return 1;
+      case 'period': return 2;
+      case 'regularity': return 3;
+      case 'goals': return 4;
+      case 'conditions': return 5;
+      case 'lifestage': return 6;
+      case 'symptoms': return 7;
+      case 'completion': return 8;
+      default: return 1;
+    }
+  };
+  
+  // Helper function to get completion percentage
+  const getCompletionPercentage = (): number => {
+    return Math.min(((getStepNumber(currentStep) - 1) * (100 / TOTAL_STEPS)), 100);
+  };
+  
+  // Toggle functions for multi-selects
+  const toggleHealthCondition = (condition: string) => {
+    setHealthConditions(prev => {
+      const newConditions = prev.includes(condition)
+        ? prev.filter(c => c !== condition)
+        : [...prev, condition];
+      
+      // If user selects any condition, uncheck "None" option
+      if (newConditions.length > 0) {
+        setNoneHealthCondition(false);
+      }
+      
+      return newConditions;
+    });
+  };
+  
   const toggleHealthGoal = (goal: string) => {
     setHealthGoals(prev => 
-      prev.includes(goal) 
+      prev.includes(goal)
         ? prev.filter(g => g !== goal)
         : [...prev, goal]
     );
   };
-
-  // Handle health condition selection
-  const toggleHealthCondition = (condition: string) => {
-    if (condition === "None of these apply to me") {
-      setNoneHealthCondition(!noneHealthCondition);
-      if (!noneHealthCondition) {
-        setHealthConditions([]);
+  
+  const toggleSymptom = (symptom: string) => {
+    setSymptoms(prev => {
+      const newSymptoms = prev.includes(symptom)
+        ? prev.filter(s => s !== symptom)
+        : [...prev, symptom];
+      
+      // If user selects any symptom, uncheck "None" option
+      if (newSymptoms.length > 0) {
+        setNoneSymptoms(false);
       }
-    } else {
-      setHealthConditions(prev => {
-        const newConditions = prev.includes(condition) 
-          ? prev.filter(c => c !== condition)
-          : [...prev, condition];
-        
-        if (newConditions.length > 0) {
-          setNoneHealthCondition(false);
-        }
-        
-        return newConditions;
-      });
-    }
+      
+      return newSymptoms;
+    });
   };
   
   // Move to the next step
@@ -95,12 +113,6 @@ const OnboardingPage: FC = () => {
         setCurrentStep('regularity');
         break;
       case 'regularity':
-        setCurrentStep('fitness');
-        break;
-      case 'fitness':
-        setCurrentStep('dietary');
-        break;
-      case 'dietary':
         setCurrentStep('goals');
         break;
       case 'goals':
@@ -110,422 +122,678 @@ const OnboardingPage: FC = () => {
         setCurrentStep('lifestage');
         break;
       case 'lifestage':
+        setCurrentStep('symptoms');
+        break;
+      case 'symptoms':
         setCurrentStep('completion');
+        calculateCycleInfo();
+        break;
+      case 'completion':
+        handleSubmit();
         break;
     }
   };
   
-  // Submit the onboarding data
-  const submitOnboardingData = async () => {
-    setIsPending(true);
-    try {
-      const finalDietaryPreference = dietaryPreferences === "Other allergies/restrictions" 
-        ? otherDietaryText 
-        : dietaryPreferences;
-
-      updateOnboarding({
-        age: parseInt(ageInput),
-        lastPeriodDate: dontKnowDate ? null : dateInput,
-        dontKnowPeriodDate: dontKnowDate,
-        periodsRegular: periodsRegular || "Unknown",
-        fitnessLevel: fitnessLevel || "",
-        dietaryPreferences: finalDietaryPreference || "",
-        healthGoals: healthGoals,
-        healthConditions: noneHealthCondition ? [] : healthConditions,
-        lifeStage: lifeStage || "None"
-      });
+  // Skip the current step
+  const skipStep = () => {
+    goToNextStep();
+  };
+  
+  // Calculate cycle information for the completion screen
+  const [cycleDay, setCycleDay] = useState<number | null>(null);
+  const [cyclePhase, setCyclePhase] = useState<string | null>(null);
+  
+  const calculateCycleInfo = () => {
+    if (dateInput) {
+      // Calculate days since period started
+      const today = new Date();
+      const daysSincePeriod = differenceInDays(today, dateInput);
       
-      // Navigate to home after completion
-      setLocation('/');
-    } catch (error) {
-      console.error('Error submitting onboarding data:', error);
-    } finally {
+      // Assume a 28-day cycle for demo purposes
+      const cycleDayNum = (daysSincePeriod % 28) + 1;
+      setCycleDay(cycleDayNum);
+      
+      // Determine cycle phase
+      if (cycleDayNum <= 5) {
+        setCyclePhase("Menstruation");
+      } else if (cycleDayNum <= 13) {
+        setCyclePhase("Follicular");
+      } else if (cycleDayNum <= 16) {
+        setCyclePhase("Ovulation");
+      } else {
+        setCyclePhase("Luteal");
+      }
+    } else {
+      // Default values if no date is selected
+      setCycleDay(1);
+      setCyclePhase("Menstruation");
+    }
+  };
+  
+  // Handle onboarding submission
+  const handleSubmit = () => {
+    if (!user) return;
+    
+    setIsPending(true);
+    
+    // Format date as ISO string if it exists
+    const dateString = dateInput ? dateInput.toISOString() : null;
+    
+    // Parse age to number
+    const age = ageInput ? parseInt(ageInput, 10) : null;
+    
+    // Create onboarding data
+    const onboardingData = {
+      lastPeriodDate: dateString,
+      dontKnowPeriodDate: dontKnowDate,
+      age: age || null,
+      periodsRegular: periodsRegular || undefined,
+      healthGoals: healthGoals,
+      healthConditions: healthConditions,
+      lifeStage: lifeStage || undefined,
+      symptoms: symptoms,
+      completedOnboarding: true,
+    };
+    
+    // Simulate a delay for API request
+    setTimeout(() => {
+      updateOnboarding(onboardingData);
       setIsPending(false);
-    }
+      setLocation("/");
+    }, 800);
   };
-
-  // Redirect if user has already completed onboarding
+  
+  // Show loading state while checking auth
+  if (isLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center gradient-primary">
+        <Loader2 className="h-8 w-8 animate-spin text-white" />
+      </div>
+    );
+  }
+  
+  // Navigation effects
   useEffect(() => {
-    if (user?.completedOnboarding) {
-      setLocation('/');
+    if (!isLoading) {
+      if (!user) {
+        setLocation("/auth");
+      } else if (user.completedOnboarding) {
+        setLocation("/");
+      }
     }
-  }, [user]);
-
-  // Helper function to get step number
-  const getStepNumber = (step: OnboardingStep): number => {
-    const stepOrder = ['age', 'period', 'regularity', 'fitness', 'dietary', 'goals', 'conditions', 'lifestage'];
-    return stepOrder.indexOf(step) + 1;
-  };
-
-  // Helper function to get completion percentage
-  const getCompletionPercentage = (): number => {
-    return (getStepNumber(currentStep) / 8) * 100;
-  };
-
-  // Helper function to check if current step is complete
-  const isStepComplete = (): boolean => {
-    switch (currentStep) {
-      case 'age':
-        return ageInput !== '' && parseInt(ageInput) >= 13;
-      case 'period':
-        return dontKnowDate || dateInput !== undefined;
-      case 'regularity':
-        return periodsRegular !== null;
-      case 'fitness':
-        return fitnessLevel !== null;
-      case 'dietary':
-        return dietaryPreferences !== null && 
-               (dietaryPreferences !== "Other allergies/restrictions" || otherDietaryText.trim() !== '');
-      case 'goals':
-        return healthGoals.length > 0;
-      case 'conditions':
-        return noneHealthCondition || healthConditions.length > 0;
-      case 'lifestage':
-        return lifeStage !== null;
-      default:
-        return false;
-    }
-  };
-
+  }, [user, isLoading, setLocation]);
+  
+  // Exit early if not authenticated or already completed onboarding
+  if (!user || user.completedOnboarding) {
+    return null;
+  }
+  
+  // Current progress percentage
+  const progressPercentage = getCompletionPercentage();
+  
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-400 via-purple-500 to-purple-600 relative">
-      {/* Main onboarding content */}
-      <div className="flex flex-col min-h-screen">
-        {/* Progress header */}
-        <div className="pt-12 pb-6 px-6">
-          <div className="text-white text-sm font-medium mb-4">
-            Step {getStepNumber(currentStep)} of 8
+    <div className="min-h-screen gradient-primary flex flex-col p-6">
+      {currentStep !== 'completion' && (
+        /* Progress indicator - removing percentage and keeping just step count */
+        <div className="mb-6">
+          <div className="flex items-center mb-2">
+            <div className="text-purple-900 font-medium">
+              Step {getStepNumber(currentStep)} of {TOTAL_STEPS}
+            </div>
           </div>
-          <div className="w-full bg-white/30 rounded-full h-2">
-            <div 
-              className="bg-white h-2 rounded-full transition-all duration-300 ease-out" 
-              style={{ width: `${getCompletionPercentage()}%` }}
-            />
-          </div>
+          <Progress value={progressPercentage} className="h-2 bg-purple-200" />
         </div>
-
-        {/* Step content */}
-        <div className="flex-1 px-6 pb-6">
-          {/* Age Step */}
-          {currentStep === 'age' && (
-            <div className="space-y-8">
-              <div className="text-center text-white">
-                <h2 className="text-3xl font-bold mb-4">How old are you?</h2>
-                <p className="text-lg opacity-90">We'll tailor recommendations specific to your life stage</p>
-              </div>
-              <div className="max-w-md mx-auto">
+      )}
+      
+      <div className="flex-1 flex flex-col">
+        {/* Age Step */}
+        {currentStep === 'age' && (
+          <div className="flex flex-col h-full">
+            <div className="mb-6 text-center">
+              <h2 className="text-2xl font-bold text-purple-900 mb-2">How old are you?</h2>
+              <p className="text-purple-800/80">
+                We'll tailor recommendations specific to your life stage
+              </p>
+            </div>
+            
+            <div className="flex-1 flex items-center justify-center">
+              <div className="w-full max-w-md">
                 <Input
                   type="number"
-                  min="13"
-                  max="100"
-                  placeholder="Enter your age"
                   value={ageInput}
                   onChange={(e) => setAgeInput(e.target.value)}
-                  className="text-center text-xl py-6 rounded-2xl border-0 bg-white/95 placeholder:text-gray-400"
+                  placeholder="Enter your age"
+                  className="text-lg py-6 bg-white border-2 border-white text-center"
+                  min="13"
+                  max="100"
                 />
               </div>
             </div>
-          )}
-
-          {/* Period Date Step */}
-          {currentStep === 'period' && (
-            <div className="space-y-8">
-              <div className="text-center text-white">
-                <h2 className="text-3xl font-bold mb-4">When was your last period?</h2>
-                <p className="text-lg opacity-90">This helps us personalize your fitness plan based on your cycle</p>
-              </div>
-              
-              <div className="bg-white/95 rounded-2xl p-6">
-                <div className="flex items-center gap-3 mb-6">
-                  <CalendarIcon className="h-5 w-5 text-gray-600" />
-                  <span className="text-gray-800 font-medium">First day of last period</span>
-                </div>
-                
-                <div className="flex justify-center mb-6">
-                  <Calendar
-                    mode="single"
-                    selected={dateInput}
-                    onSelect={setDateInput}
-                    disabled={(date) => date > new Date() || date < new Date('1900-01-01')}
-                    className="rounded-lg"
-                  />
-                </div>
-                
-                {dateInput && (
-                  <div className="text-center text-gray-700 mb-4">
-                    Selected: {format(dateInput, "MMMM d, yyyy")}
-                  </div>
-                )}
-                
-                <button
-                  onClick={() => {
-                    setDontKnowDate(!dontKnowDate);
-                    if (!dontKnowDate) setDateInput(undefined);
-                  }}
-                  className="w-full text-purple-600 font-medium py-3 text-center hover:bg-purple-50 rounded-lg transition-colors"
-                >
-                  I don't know my last period date
-                </button>
-              </div>
-            </div>
-          )}
-
-          {/* Regularity Step */}
-          {currentStep === 'regularity' && (
-            <div className="space-y-8">
-              <div className="text-center text-white">
-                <h2 className="text-3xl font-bold mb-4">Are your periods regular?</h2>
-                <p className="text-lg opacity-90">This helps us better understand your cycle patterns</p>
-              </div>
-              
-              <div className="space-y-4">
-                {PERIOD_REGULARITY.map((option) => (
-                  <button
-                    key={option}
-                    onClick={() => setPeriodsRegular(option)}
-                    className={`w-full text-left p-6 rounded-2xl transition-all ${
-                      periodsRegular === option
-                        ? 'bg-white text-gray-800 ring-4 ring-white/50'
-                        : 'bg-white/90 text-gray-800 hover:bg-white'
-                    }`}
-                  >
-                    <div className="font-medium text-lg">{option}</div>
-                    {periodsRegular === "Yes" && option === "Yes" && (
-                      <div className="mt-2 text-purple-600 text-sm">
-                        Great! We can provide insights to help you optimize your lifestyle and habits to better align with your cycle.
-                      </div>
-                    )}
-                  </button>
-                ))}
-              </div>
-            </div>
-          )}
-
-          {/* Fitness Level Step */}
-          {currentStep === 'fitness' && (
-            <div className="space-y-8">
-              <div className="text-center text-white">
-                <h2 className="text-3xl font-bold mb-4">What's your current fitness level?</h2>
-                <p className="text-lg opacity-90">This helps us customize workouts for your experience</p>
-              </div>
-              
-              <div className="space-y-4">
-                {FITNESS_LEVELS.map((level) => (
-                  <button
-                    key={level}
-                    onClick={() => setFitnessLevel(level)}
-                    className={`w-full text-left p-6 rounded-2xl transition-all ${
-                      fitnessLevel === level
-                        ? 'bg-white text-gray-800 ring-4 ring-white/50'
-                        : 'bg-white/90 text-gray-800 hover:bg-white'
-                    }`}
-                  >
-                    <div className="font-medium text-lg">{level}</div>
-                  </button>
-                ))}
-              </div>
-            </div>
-          )}
-
-          {/* Dietary Preferences Step */}
-          {currentStep === 'dietary' && (
-            <div className="space-y-8">
-              <div className="text-center text-white">
-                <h2 className="text-3xl font-bold mb-4">Do you have any dietary preferences/restrictions?</h2>
-                <p className="text-lg opacity-90">This helps us provide suitable nutrition recommendations</p>
-              </div>
-              
-              <div className="space-y-4">
-                {DIETARY_PREFERENCES.map((preference) => (
-                  <button
-                    key={preference}
-                    onClick={() => setDietaryPreferences(preference)}
-                    className={`w-full text-left p-6 rounded-2xl transition-all ${
-                      dietaryPreferences === preference
-                        ? 'bg-white text-gray-800 ring-4 ring-white/50'
-                        : 'bg-white/90 text-gray-800 hover:bg-white'
-                    }`}
-                  >
-                    <div className="font-medium text-lg">{preference}</div>
-                  </button>
-                ))}
-                
-                {dietaryPreferences === "Other allergies/restrictions" && (
-                  <div className="mt-4">
-                    <Input
-                      placeholder="Please specify your dietary restrictions..."
-                      value={otherDietaryText}
-                      onChange={(e) => setOtherDietaryText(e.target.value)}
-                      className="w-full p-4 rounded-2xl border-0 bg-white/95 placeholder:text-gray-400"
-                    />
-                  </div>
-                )}
-              </div>
-            </div>
-          )}
-
-          {/* Health Goals Step */}
-          {currentStep === 'goals' && (
-            <div className="space-y-8">
-              <div className="text-center text-white">
-                <h2 className="text-3xl font-bold mb-4">What are your primary health goals?</h2>
-                <p className="text-lg opacity-90">Select all that apply to personalize your journey</p>
-              </div>
-              
-              <div className="space-y-4">
-                {HEALTH_GOALS.map((goal) => (
-                  <button
-                    key={goal}
-                    onClick={() => toggleHealthGoal(goal)}
-                    className={`w-full text-left p-6 rounded-2xl transition-all flex items-center gap-4 ${
-                      healthGoals.includes(goal)
-                        ? 'bg-white text-gray-800 ring-4 ring-white/50'
-                        : 'bg-white/90 text-gray-800 hover:bg-white'
-                    }`}
-                  >
-                    <div className={`w-6 h-6 rounded border-2 flex items-center justify-center ${
-                      healthGoals.includes(goal) 
-                        ? 'bg-purple-600 border-purple-600' 
-                        : 'border-gray-300'
-                    }`}>
-                      {healthGoals.includes(goal) && (
-                        <svg className="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 20 20">
-                          <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                        </svg>
-                      )}
-                    </div>
-                    <div className="font-medium text-lg">{goal}</div>
-                  </button>
-                ))}
-              </div>
-            </div>
-          )}
-
-          {/* Health Conditions Step */}
-          {currentStep === 'conditions' && (
-            <div className="space-y-8">
-              <div className="text-center text-white">
-                <h2 className="text-3xl font-bold mb-4">Do you have any health conditions?</h2>
-                <p className="text-lg opacity-90">Select all that apply to help us provide safer recommendations</p>
-              </div>
-              
-              <div className="space-y-4">
-                {HEALTH_CONDITIONS.map((condition) => (
-                  <button
-                    key={condition}
-                    onClick={() => toggleHealthCondition(condition)}
-                    className={`w-full text-left p-6 rounded-2xl transition-all flex items-center gap-4 ${
-                      (condition === "None of these apply to me" && noneHealthCondition) ||
-                      (condition !== "None of these apply to me" && healthConditions.includes(condition))
-                        ? 'bg-white text-gray-800 ring-4 ring-white/50'
-                        : 'bg-white/90 text-gray-800 hover:bg-white'
-                    }`}
-                  >
-                    <div className={`w-6 h-6 rounded border-2 flex items-center justify-center ${
-                      ((condition === "None of these apply to me" && noneHealthCondition) ||
-                       (condition !== "None of these apply to me" && healthConditions.includes(condition)))
-                        ? 'bg-purple-600 border-purple-600' 
-                        : 'border-gray-300'
-                    }`}>
-                      {((condition === "None of these apply to me" && noneHealthCondition) ||
-                        (condition !== "None of these apply to me" && healthConditions.includes(condition))) && (
-                        <svg className="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 20 20">
-                          <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                        </svg>
-                      )}
-                    </div>
-                    <div className="font-medium text-lg">{condition}</div>
-                  </button>
-                ))}
-              </div>
-            </div>
-          )}
-
-          {/* Life Stage Step */}
-          {currentStep === 'lifestage' && (
-            <div className="space-y-8">
-              <div className="text-center text-white">
-                <h2 className="text-3xl font-bold mb-4">Are you in any of these life stages?</h2>
-                <p className="text-lg opacity-90">Select one option that applies to you</p>
-              </div>
-              
-              <div className="space-y-4">
-                {LIFE_STAGES.map((stage) => (
-                  <button
-                    key={stage}
-                    onClick={() => setLifeStage(stage)}
-                    className={`w-full text-left p-6 rounded-2xl transition-all ${
-                      lifeStage === stage
-                        ? 'bg-white text-gray-800 ring-4 ring-white/50'
-                        : 'bg-white/90 text-gray-800 hover:bg-white'
-                    }`}
-                  >
-                    <div className="font-medium text-lg">{stage}</div>
-                    {lifeStage === "Prenatal" && stage === "Prenatal" && (
-                      <div className="mt-2 text-purple-600 text-sm">
-                        Congratulations! We're here to support you and your changing needs during this journey.
-                      </div>
-                    )}
-                  </button>
-                ))}
-              </div>
-            </div>
-          )}
-
-          {/* Completion Step */}
-          {currentStep === 'completion' && (
-            <div className="space-y-8 text-center text-white">
-              <div>
-                <h2 className="text-3xl font-bold mb-4">Perfect! You're all set!</h2>
-                <p className="text-lg opacity-90">Your personalized wellness journey is ready to begin</p>
-              </div>
-              
-              <div className="bg-white/10 rounded-2xl p-6">
-                <h3 className="text-xl font-semibold mb-4">Your Profile Summary:</h3>
-                <div className="space-y-2 text-left">
-                  <p>• Age: {ageInput}</p>
-                  <p>• Fitness Level: {fitnessLevel}</p>
-                  <p>• Dietary Preferences: {dietaryPreferences === "Other allergies/restrictions" ? otherDietaryText : dietaryPreferences}</p>
-                  <p>• Health Goals: {healthGoals.join(", ")}</p>
-                  <p>• Life Stage: {lifeStage}</p>
-                </div>
-              </div>
-              
+            
+            <div className="mt-auto pt-6 space-y-3">
               <Button
-                onClick={submitOnboardingData}
-                disabled={isPending}
-                className="w-full py-6 rounded-2xl text-lg font-semibold bg-white text-purple-600 hover:bg-white/90"
+                className="w-full py-3 gradient-primary hover:opacity-90 shadow-lg text-lg font-medium border border-white"
+                onClick={goToNextStep}
+                disabled={!ageInput}
               >
-                {isPending ? (
-                  <>
-                    <Loader2 className="mr-2 h-5 w-5 animate-spin" />
-                    Setting up your profile...
-                  </>
-                ) : (
-                  'Complete Setup'
-                )}
+                Continue
+              </Button>
+              <Button
+                variant="ghost"
+                className="w-full py-2.5 text-purple-800 hover:text-purple-900 hover:bg-purple-50/50"
+                onClick={skipStep}
+              >
+                Skip for now
               </Button>
             </div>
-          )}
-        </div>
-
-        {/* Navigation buttons */}
-        {currentStep !== 'completion' && (
-          <div className="px-6 pb-8 space-y-4">
-            <Button
-              onClick={goToNextStep}
-              disabled={!isStepComplete()}
-              className="w-full py-6 rounded-2xl text-lg font-semibold bg-white text-purple-600 hover:bg-white/90 disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              Continue
-            </Button>
+          </div>
+        )}
+        
+        {/* Period Date Step */}
+        {currentStep === 'period' && (
+          <div className="flex flex-col h-full">
+            <div className="mb-6 text-center">
+              <h2 className="text-2xl font-bold text-purple-900 mb-2">When was your last period?</h2>
+              <p className="text-purple-800/80">
+                This helps us personalize your fitness plan based on your cycle
+              </p>
+            </div>
             
-            <button
-              onClick={() => setLocation('/')}
-              className="w-full text-white/80 hover:text-white text-center py-4 transition-colors"
+            {!dontKnowDate ? (
+              <div className="flex-1 flex items-center justify-center">
+                <div className="bg-white rounded-lg p-4 w-full max-w-md">
+                  <div className="flex items-center mb-2">
+                    <CalendarIcon className="mr-2 h-5 w-5 text-purple-500" />
+                    <span className="text-gray-700">First day of last period</span>
+                  </div>
+                  
+                  {/* Fixed calendar layout to avoid blank space on right */}
+                  <div className="flex justify-center w-full">
+                    <Calendar
+                      mode="single"
+                      selected={dateInput}
+                      onSelect={setDateInput}
+                      className="w-full block"
+                      styles={{
+                        root: { width: '100%' },
+                        month: { width: '100%' },
+                        table: { width: '100%' }
+                      }}
+                      disabled={(date) => date > new Date()}
+                    />
+                  </div>
+                  
+                  {dateInput && (
+                    <p className="text-sm text-center text-gray-600 mt-2">
+                      Selected: {format(dateInput, "MMMM d, yyyy")}
+                    </p>
+                  )}
+                  
+                  <Button
+                    variant="ghost"
+                    className="w-full mt-3 text-sm py-2 text-purple-800 hover:text-purple-900 hover:bg-purple-50/50 border border-purple-100"
+                    onClick={() => setDontKnowDate(true)}
+                  >
+                    I don't know my last period date
+                  </Button>
+                </div>
+              </div>
+            ) : (
+              <div className="flex-1 flex flex-col justify-center items-center">
+                <div className="bg-white rounded-lg p-6 w-full max-w-md text-center">
+                  <p className="text-gray-700 mb-4">
+                    You can log the first day of your last period later or log the beginning of your new one later.
+                  </p>
+                  <Button
+                    variant="outline"
+                    className="mt-2"
+                    onClick={() => setDontKnowDate(false)}
+                  >
+                    Back to calendar
+                  </Button>
+                </div>
+              </div>
+            )}
+            
+            <div className="mt-auto pt-6 space-y-3">
+              <Button
+                className="w-full py-3 gradient-primary hover:opacity-90 shadow-lg text-lg font-medium border border-white disabled:opacity-50 disabled:cursor-not-allowed"
+                onClick={goToNextStep}
+                disabled={
+                  // Add validation for each step
+                  (currentStep === 'age' && (!ageInput || isNaN(parseInt(ageInput)))) ||
+                  (currentStep === 'period' && !dateInput && !dontKnowDate) ||
+                  (currentStep === 'regularity' && !regularity) ||
+                  (currentStep === 'goals' && (!selectedGoals || selectedGoals.length === 0)) ||
+                  (currentStep === 'conditions' && (!selectedConditions || selectedConditions.length === 0)) ||
+                  (currentStep === 'lifestage' && !selectedLifeStage) ||
+                  (currentStep === 'symptoms' && (!selectedSymptoms || selectedSymptoms.length === 0))
+                }
+              >
+                Continue
+              </Button>
+              {/* Skip button shown only if not on the period date selection screen or if on period screen but NOT in "don't know" mode */}
+              {(currentStep !== 'period' || (currentStep === 'period' && !dontKnowDate)) && (
+                <Button
+                  variant="ghost"
+                  className="w-full py-2.5 text-purple-800 hover:text-purple-900 hover:bg-purple-50/50"
+                  onClick={skipStep}
+                >
+                  Skip for now
+                </Button>
+              )}
+            </div>
+          </div>
+        )}
+        
+        {/* Period Regularity Step */}
+        {currentStep === 'regularity' && (
+          <div className="flex flex-col h-full">
+            <div className="mb-6 text-center">
+              <h2 className="text-2xl font-bold text-purple-900 mb-2">Are your periods regular?</h2>
+              <p className="text-purple-800/80">
+                This helps us better understand your cycle patterns
+              </p>
+            </div>
+            
+            <div className="flex-1 flex flex-col justify-center">
+              <div className="grid grid-cols-1 gap-4 w-full max-w-md mx-auto">
+                {PERIOD_REGULARITY.map((option) => (
+                  <div key={option}>
+                    <button
+                      className={`w-full py-3 px-4 text-left border-2 rounded-lg ${
+                        periodsRegular === option 
+                          ? "border-purple-500 bg-purple-100" 
+                          : "border-white bg-white"
+                      }`}
+                      onClick={() => setPeriodsRegular(option)}
+                    >
+                      <span className="text-gray-800 font-medium">{option}</span>
+                      
+                      {/* Integrated follow-up content within the same container */}
+                      {periodsRegular === option && (
+                        <div className="text-sm text-purple-700 mt-2">
+                          {option === "Yes" && "Great! We can provide insights to help you optimize your lifestyle and habits to better align with your cycle."}
+                          {option === "No" && "Okay, we can help you track your periods and better understand your body's signals, even if they're irregular."}
+                          {option === "I'm unsure" && "No problem. We'll help you learn more about your cycle and provide personalized insights."}
+                        </div>
+                      )}
+                    </button>
+                  </div>
+                ))}
+              </div>
+            </div>
+            
+            <div className="mt-auto pt-6 space-y-3">
+              <Button
+                className="w-full py-3 gradient-primary hover:opacity-90 shadow-lg text-lg font-medium border border-white"
+                onClick={goToNextStep}
+                disabled={!periodsRegular}
+              >
+                Continue
+              </Button>
+              <Button
+                variant="ghost"
+                className="w-full py-2.5 text-purple-800 hover:text-purple-900 hover:bg-purple-50/50"
+                onClick={skipStep}
+              >
+                Skip for now
+              </Button>
+            </div>
+          </div>
+        )}
+        
+        {/* Health Goals Step */}
+        {currentStep === 'goals' && (
+          <div className="flex flex-col h-full">
+            <div className="mb-6 text-center">
+              <h2 className="text-2xl font-bold text-purple-900 mb-2">What are your primary health goals?</h2>
+              <p className="text-purple-800/80">
+                Select all that apply to personalize your journey
+              </p>
+            </div>
+            
+            <div className="flex-1 flex flex-col overflow-y-auto">
+              <div className="grid grid-cols-1 gap-3 w-full max-w-md mx-auto">
+                {HEALTH_GOALS.map((goal) => (
+                  <div 
+                    key={goal}
+                    className={`flex items-center space-x-2 rounded-md py-2 sm:py-3 px-3 sm:px-4 cursor-pointer transition-colors ${
+                      healthGoals.includes(goal) 
+                        ? "bg-purple-100 border-2 border-purple-500" 
+                        : "bg-white border-2 border-white"
+                    }`}
+                    onClick={() => toggleHealthGoal(goal)}
+                  >
+                    <Checkbox 
+                      id={`goal-${goal}`} 
+                      checked={healthGoals.includes(goal)} 
+                      onCheckedChange={() => toggleHealthGoal(goal)}
+                      className="data-[state=checked]:bg-purple-600 h-4 w-4 sm:h-5 sm:w-5"
+                    />
+                    <Label 
+                      htmlFor={`goal-${goal}`} 
+                      className="cursor-pointer w-full text-gray-700"
+                    >
+                      {goal}
+                    </Label>
+                  </div>
+                ))}
+              </div>
+            </div>
+            
+            <div className="mt-auto pt-6 space-y-3">
+              <Button
+                className="w-full py-3 gradient-primary hover:opacity-90 shadow-lg text-lg font-medium border border-white"
+                onClick={goToNextStep}
+                disabled={healthGoals.length === 0}
+              >
+                Continue
+              </Button>
+              <Button
+                variant="ghost"
+                className="w-full py-2.5 text-purple-800 hover:text-purple-900 hover:bg-purple-50/50"
+                onClick={skipStep}
+              >
+                Skip for now
+              </Button>
+            </div>
+          </div>
+        )}
+        
+        {/* Health Conditions Step */}
+        {currentStep === 'conditions' && (
+          <div className="flex flex-col h-full">
+            <div className="mb-6 text-center">
+              <h2 className="text-2xl font-bold text-purple-900 mb-2">Do you have any health conditions?</h2>
+              <p className="text-purple-800/80">
+                Select all that apply to help us provide safer recommendations
+              </p>
+            </div>
+            
+            <div className="flex-1 flex flex-col overflow-y-auto">
+              <div className="grid grid-cols-1 gap-3 w-full max-w-md mx-auto">
+                {HEALTH_CONDITIONS.map((condition) => (
+                  <div 
+                    key={condition}
+                    className={`flex items-center space-x-2 rounded-md py-2 sm:py-3 px-3 sm:px-4 cursor-pointer transition-colors ${
+                      healthConditions.includes(condition) 
+                        ? "bg-purple-100 border-2 border-purple-500" 
+                        : "bg-white border-2 border-white"
+                    }`}
+                    onClick={() => toggleHealthCondition(condition)}
+                  >
+                    <Checkbox 
+                      id={`condition-${condition}`} 
+                      checked={healthConditions.includes(condition)} 
+                      onCheckedChange={() => toggleHealthCondition(condition)}
+                      className="data-[state=checked]:bg-purple-600 h-4 w-4 sm:h-5 sm:w-5"
+                    />
+                    <Label 
+                      htmlFor={`condition-${condition}`} 
+                      className="cursor-pointer w-full text-gray-700"
+                    >
+                      {condition}
+                    </Label>
+                  </div>
+                ))}
+                
+                {/* None of these apply option */}
+                <div 
+                  className={`flex items-center space-x-2 rounded-md py-2 sm:py-3 px-3 sm:px-4 cursor-pointer transition-colors ${
+                    noneHealthCondition
+                      ? "bg-purple-100 border-2 border-purple-500" 
+                      : "bg-white border-2 border-white"
+                  }`}
+                  onClick={() => {
+                    setNoneHealthCondition(!noneHealthCondition);
+                    if (!noneHealthCondition) {
+                      setHealthConditions([]);
+                    }
+                  }}
+                >
+                  <Checkbox 
+                    id="condition-none" 
+                    checked={noneHealthCondition} 
+                    onCheckedChange={(checked) => {
+                      setNoneHealthCondition(checked === true);
+                      if (checked) {
+                        setHealthConditions([]);
+                      }
+                    }}
+                    className="data-[state=checked]:bg-purple-600 h-4 w-4 sm:h-5 sm:w-5"
+                  />
+                  <Label 
+                    htmlFor="condition-none" 
+                    className="cursor-pointer w-full text-gray-700 font-medium"
+                  >
+                    None of these apply to me
+                  </Label>
+                </div>
+              </div>
+            </div>
+            
+            <div className="mt-auto pt-6 space-y-3">
+              <Button
+                className="w-full py-3 gradient-primary hover:opacity-90 shadow-lg text-lg font-medium border border-white"
+                onClick={goToNextStep}
+              >
+                Continue
+              </Button>
+              <Button
+                variant="ghost"
+                className="w-full py-2.5 text-purple-800 hover:text-purple-900 hover:bg-purple-50/50"
+                onClick={skipStep}
+              >
+                Skip for now
+              </Button>
+            </div>
+          </div>
+        )}
+        
+        {/* Life Stage Step */}
+        {currentStep === 'lifestage' && (
+          <div className="flex flex-col h-full">
+            <div className="mb-6 text-center">
+              <h2 className="text-2xl font-bold text-purple-900 mb-2">Are you in any of these life stages?</h2>
+              <p className="text-purple-800/80">
+                Select one option that applies to you
+              </p>
+            </div>
+            
+            <div className="flex-1 flex flex-col justify-center">
+              <div className="grid grid-cols-1 gap-4 w-full max-w-md mx-auto">
+                {/* Life stage options without None first */}
+                {LIFE_STAGES.filter(stage => stage !== "None").map((stage) => (
+                  <div key={stage} className="space-y-2">
+                    <button
+                      className={`w-full py-3 px-4 text-left border-2 rounded-lg ${
+                        lifeStage === stage 
+                          ? "border-purple-500 bg-purple-100" 
+                          : "border-white bg-white"
+                      }`}
+                      onClick={() => setLifeStage(stage)}
+                    >
+                      <span className="text-gray-800 font-medium">{stage}</span>
+                      
+                      {/* Integrated follow-up content within the button */}
+                      {lifeStage === stage && (
+                        <div className="text-sm text-purple-700 mt-2">
+                          {stage === "Prenatal" && "Congratulations! We're here to support you and your changing needs during this journey."}
+                          {stage === "Postpartum" && "Congratulations! We're here to support your recovery and wellness after childbirth."}
+                          {stage === "Menopause" && "Changing bodies are hard. We are here to guide you through these changes and help adapt your lifestyle better."}
+                        </div>
+                      )}
+                    </button>
+                  </div>
+                ))}
+                
+                {/* Add "None" as the last option */}
+                <div key="None" className="space-y-2">
+                  <button
+                    className={`w-full py-3 px-4 text-left border-2 rounded-lg ${
+                      lifeStage === "None" 
+                        ? "border-purple-500 bg-purple-100" 
+                        : "border-white bg-white"
+                    }`}
+                    onClick={() => setLifeStage("None")}
+                  >
+                    <span className="text-gray-800 font-medium">None of these apply to me</span>
+                  </button>
+                </div>
+              </div>
+            </div>
+            
+            <div className="mt-auto pt-6 space-y-3">
+              <Button
+                className="w-full py-3 gradient-primary hover:opacity-90 shadow-lg text-lg font-medium border border-white"
+                onClick={goToNextStep}
+              >
+                Continue
+              </Button>
+              <Button
+                variant="ghost"
+                className="w-full py-2.5 text-purple-800 hover:text-purple-900 hover:bg-purple-50/50"
+                onClick={skipStep}
+              >
+                Skip for now
+              </Button>
+            </div>
+          </div>
+        )}
+        
+        {/* Symptoms Step */}
+        {currentStep === 'symptoms' && (
+          <div className="flex flex-col h-full">
+            <div className="mb-6 text-center">
+              <h2 className="text-2xl font-bold text-purple-900 mb-2">Have you experienced any of these symptoms?</h2>
+              <p className="text-purple-800/80">
+                In the past few months, select all that apply
+              </p>
+            </div>
+            
+            <div className="flex-1 flex flex-col overflow-y-auto">
+              <div className="grid grid-cols-1 gap-3 w-full max-w-md mx-auto">
+                {SYMPTOMS.map((symptom) => (
+                  <div 
+                    key={symptom}
+                    className={`flex items-center space-x-2 rounded-md py-2 sm:py-3 px-3 sm:px-4 cursor-pointer transition-colors ${
+                      symptoms.includes(symptom) 
+                        ? "bg-purple-100 border-2 border-purple-500" 
+                        : "bg-white border-2 border-white"
+                    }`}
+                    onClick={() => toggleSymptom(symptom)}
+                  >
+                    <Checkbox 
+                      id={`symptom-${symptom}`} 
+                      checked={symptoms.includes(symptom)} 
+                      onCheckedChange={() => toggleSymptom(symptom)}
+                      className="data-[state=checked]:bg-purple-600 h-4 w-4 sm:h-5 sm:w-5"
+                    />
+                    <Label 
+                      htmlFor={`symptom-${symptom}`} 
+                      className="cursor-pointer w-full text-gray-700"
+                    >
+                      {symptom}
+                    </Label>
+                  </div>
+                ))}
+                
+                {/* None of these apply option */}
+                <div 
+                  className={`flex items-center space-x-2 rounded-md py-2 sm:py-3 px-3 sm:px-4 cursor-pointer transition-colors ${
+                    noneSymptoms
+                      ? "bg-purple-100 border-2 border-purple-500" 
+                      : "bg-white border-2 border-white"
+                  }`}
+                  onClick={() => {
+                    setNoneSymptoms(!noneSymptoms);
+                    if (!noneSymptoms) {
+                      setSymptoms([]);
+                    }
+                  }}
+                >
+                  <Checkbox 
+                    id="symptom-none" 
+                    checked={noneSymptoms} 
+                    onCheckedChange={(checked) => {
+                      setNoneSymptoms(checked === true);
+                      if (checked) {
+                        setSymptoms([]);
+                      }
+                    }}
+                    className="data-[state=checked]:bg-purple-600 h-4 w-4 sm:h-5 sm:w-5"
+                  />
+                  <Label 
+                    htmlFor="symptom-none" 
+                    className="cursor-pointer w-full text-gray-700"
+                  >
+                    None of these apply to me
+                  </Label>
+                </div>
+              </div>
+            </div>
+            
+            <div className="mt-auto pt-6 space-y-3">
+              <Button
+                className="w-full py-3 gradient-primary hover:opacity-90 shadow-lg text-lg font-medium border border-white"
+                onClick={goToNextStep}
+              >
+                Continue
+              </Button>
+              <Button
+                variant="ghost"
+                className="w-full py-2.5 text-purple-800 hover:text-purple-900 hover:bg-purple-50/50"
+                onClick={skipStep}
+              >
+                Skip for now
+              </Button>
+            </div>
+          </div>
+        )}
+        
+        {/* Completion Step */}
+        {currentStep === 'completion' && (
+          <div className="flex flex-col h-full justify-center items-center space-y-8 py-6">
+            <div className="bg-purple-100 rounded-full p-6">
+              <CheckCircle className="h-16 w-16 text-purple-600" />
+            </div>
+            
+            <div className="text-center">
+              <h1 className="text-3xl font-bold text-purple-900 mb-3">You're all set!</h1>
+              <p className="text-purple-800/80 mb-8 max-w-md">
+                We've personalized your fitness journey based on your information
+              </p>
+            </div>
+            
+            <div className="bg-purple-50 w-full max-w-md rounded-lg p-6">
+              <h2 className="text-xl font-bold text-purple-900 mb-4">Your Cycle Information</h2>
+              
+              <div className="flex justify-between py-2 border-b border-purple-100">
+                <span className="text-gray-700">Current Cycle Day:</span>
+                <span className="text-purple-900 font-semibold">{cycleDay || "N/A"}</span>
+              </div>
+              
+              <div className="flex justify-between py-2">
+                <span className="text-gray-700">Current Phase:</span>
+                <span className="text-purple-900 font-semibold">{cyclePhase || "Unknown"}</span>
+              </div>
+            </div>
+            
+            <Button
+              className="w-full max-w-md py-3 mt-6 gradient-primary hover:opacity-90 text-lg"
+              onClick={handleSubmit}
+              disabled={isPending}
             >
-              Skip for now
-            </button>
+              {isPending ? (
+                <>
+                  <Loader2 className="h-5 w-5 mr-2 animate-spin" />
+                  Saving...
+                </>
+              ) : (
+                "Start Your Journey"
+              )}
+            </Button>
           </div>
         )}
       </div>

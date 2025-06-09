@@ -57,18 +57,17 @@ export const users = pgTable("users", {
   id: serial("id").primaryKey(),
   username: text("username").notNull().unique(),
   password: text("password").notNull(),
-  name: text("name"),
-  email: text("email"),
+  name: text("name").notNull(),
+  email: text("email").notNull().unique(),
   // Onboarding fields
   lastPeriodDate: date("last_period_date"),
   dontKnowPeriodDate: boolean("dont_know_period_date").default(false),
   age: integer("age"),
   periodsRegular: text("periods_regular"),
-  fitnessLevel: text("fitness_level"),
-  dietaryPreferences: text("dietary_preferences"),
   healthGoals: text("health_goals").array(),
   healthConditions: text("health_conditions").array(),
   lifeStage: text("life_stage"),
+  symptoms: text("symptoms").array(),
   completedOnboarding: boolean("completed_onboarding").default(false).notNull(),
 });
 
@@ -103,15 +102,14 @@ export const loginSchema = z.object({
 
 // Onboarding schema
 export const onboardingSchema = z.object({
-  lastPeriodDate: z.date().nullable().optional(),
+  lastPeriodDate: z.string().nullable().optional(),
   dontKnowPeriodDate: z.boolean().optional(),
   age: z.number().min(13).max(100).nullable().optional(),
   periodsRegular: z.string().optional(),
-  fitnessLevel: z.string().optional(),
-  dietaryPreferences: z.string().optional(),
   healthGoals: z.array(z.string()).optional(),
   healthConditions: z.array(z.string()).optional(),
   lifeStage: z.string().optional(),
+  symptoms: z.array(z.string()).optional(),
   completedOnboarding: z.boolean().optional(),
 });
 

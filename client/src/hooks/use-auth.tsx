@@ -94,11 +94,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           dontKnowPeriodDate: false,
           age: null,
           periodsRegular: null,
-          fitnessLevel: null,
-          dietaryPreferences: null,
           healthGoals: [],
           healthConditions: [],
           lifeStage: null,
+          symptoms: [],
           completedOnboarding: false,
         };
         
@@ -140,11 +139,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           dontKnowPeriodDate: false,
           age: null,
           periodsRegular: null,
-          fitnessLevel: null,
-          dietaryPreferences: null,
           healthGoals: [],
           healthConditions: [],
           lifeStage: null,
+          symptoms: [],
           completedOnboarding: false,
         };
         
@@ -199,11 +197,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       dontKnowPeriodDate: onboardingData.dontKnowPeriodDate || false,
       age: onboardingData.age || null,
       periodsRegular: onboardingData.periodsRegular || null,
-      fitnessLevel: onboardingData.fitnessLevel || null,
-      dietaryPreferences: onboardingData.dietaryPreferences || null,
       healthGoals: onboardingData.healthGoals || [],
       healthConditions: onboardingData.healthConditions || [],
       lifeStage: onboardingData.lifeStage || null,
+      symptoms: onboardingData.symptoms || [],
       completedOnboarding: true,
     };
     
