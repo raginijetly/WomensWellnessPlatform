@@ -19,10 +19,10 @@ import {
 import { format, differenceInDays, addDays } from "date-fns";
 
 // Define the different onboarding steps
-type OnboardingStep = 'age' | 'period' | 'regularity' | 'fitness' | 'dietary' | 'goals' | 'conditions' | 'lifestage' | 'symptoms' | 'completion';
+type OnboardingStep = 'age' | 'period' | 'regularity' | 'fitness' | 'dietary' | 'goals' | 'conditions' | 'lifestage' | 'completion';
 
 // Number of total onboarding steps
-const TOTAL_STEPS = 9;
+const TOTAL_STEPS = 8;
 
 const OnboardingPage: FC = () => {
   const { user, isLoading, updateOnboarding } = useAuth();
@@ -40,8 +40,7 @@ const OnboardingPage: FC = () => {
   const [healthConditions, setHealthConditions] = useState<string[]>([]);
   const [noneHealthCondition, setNoneHealthCondition] = useState<boolean>(false);
   const [lifeStage, setLifeStage] = useState<string | null>(null);
-  const [symptoms, setSymptoms] = useState<string[]>([]);
-  const [noneSymptoms, setNoneSymptoms] = useState<boolean>(false);
+
   const [isPending, setIsPending] = useState(false);
   
   // Current step in the onboarding process
@@ -58,8 +57,7 @@ const OnboardingPage: FC = () => {
       case 'goals': return 6;
       case 'conditions': return 7;
       case 'lifestage': return 8;
-      case 'symptoms': return 9;
-      case 'completion': return 10;
+      case 'completion': return 9;
       default: return 1;
     }
   };
@@ -93,20 +91,7 @@ const OnboardingPage: FC = () => {
     );
   };
   
-  const toggleSymptom = (symptom: string) => {
-    setSymptoms(prev => {
-      const newSymptoms = prev.includes(symptom)
-        ? prev.filter(s => s !== symptom)
-        : [...prev, symptom];
-      
-      // If user selects any symptom, uncheck "None" option
-      if (newSymptoms.length > 0) {
-        setNoneSymptoms(false);
-      }
-      
-      return newSymptoms;
-    });
-  };
+
 
   const toggleDietaryPreference = (preference: string) => {
     setDietaryPreferences(prev => {
@@ -150,9 +135,6 @@ const OnboardingPage: FC = () => {
         setCurrentStep('lifestage');
         break;
       case 'lifestage':
-        setCurrentStep('symptoms');
-        break;
-      case 'symptoms':
         setCurrentStep('completion');
         calculateCycleInfo();
         break;
@@ -221,7 +203,6 @@ const OnboardingPage: FC = () => {
       healthGoals: healthGoals,
       healthConditions: healthConditions,
       lifeStage: lifeStage || undefined,
-      symptoms: symptoms,
       completedOnboarding: true,
     };
     
@@ -393,11 +374,12 @@ const OnboardingPage: FC = () => {
                   // Add validation for each step
                   (currentStep === 'age' && (!ageInput || isNaN(parseInt(ageInput)))) ||
                   (currentStep === 'period' && !dateInput && !dontKnowDate) ||
-                  (currentStep === 'regularity' && !regularity) ||
-                  (currentStep === 'goals' && (!selectedGoals || selectedGoals.length === 0)) ||
-                  (currentStep === 'conditions' && (!selectedConditions || selectedConditions.length === 0)) ||
-                  (currentStep === 'lifestage' && !selectedLifeStage) ||
-                  (currentStep === 'symptoms' && (!selectedSymptoms || selectedSymptoms.length === 0))
+                  (currentStep === 'regularity' && !periodsRegular) ||
+                  (currentStep === 'fitness' && !fitnessLevel) ||
+                  (currentStep === 'dietary' && dietaryPreferences.length === 0 && !otherDietaryRestriction) ||
+                  (currentStep === 'goals' && healthGoals.length === 0) ||
+                  (currentStep === 'conditions' && healthConditions.length === 0 && !noneHealthCondition) ||
+                  (currentStep === 'lifestage' && !lifeStage)
                 }
               >
                 Continue
