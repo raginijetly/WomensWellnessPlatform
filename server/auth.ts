@@ -71,11 +71,8 @@ export function setupAuth(app: Express) {
 
   app.post("/api/register", async (req, res, next) => {
     try {
-      console.log("Registration request body:", req.body);
-      
       // Generate username from email if not provided
       const username = req.body.username || req.body.email?.split('@')[0] || 'user';
-      console.log("Generated username:", username);
       
       const existingUser = await storage.getUserByUsername(username);
       if (existingUser) {
@@ -88,7 +85,6 @@ export function setupAuth(app: Express) {
         username,
         password: await hashPassword(req.body.password),
       };
-      console.log("User data to create:", userData);
 
       const user = await storage.createUser(userData);
 
@@ -97,7 +93,6 @@ export function setupAuth(app: Express) {
         res.status(201).json(user);
       });
     } catch (error) {
-      console.error("Registration error:", error);
       next(error);
     }
   });
