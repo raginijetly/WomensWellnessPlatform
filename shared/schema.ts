@@ -80,6 +80,21 @@ export const healthConditions = pgTable("health_conditions", {
   condition: text("condition").notNull(),
 });
 
+// User recommendations table to store daily recommendations
+export const userRecommendations = pgTable("user_recommendations", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").notNull().references(() => users.id),
+  date: date("date").notNull(),
+  cycleDay: integer("cycle_day").notNull(),
+  phase: text("phase").notNull(),
+  workoutType: text("workout_type").notNull(),
+  workoutDuration: integer("workout_duration").notNull(),
+  workoutIntensity: text("workout_intensity").notNull(),
+  nutritionFocus: text("nutrition_focus").notNull(),
+  dailyMessage: text("daily_message").notNull(),
+  createdAt: date("created_at").defaultNow(),
+});
+
 // Create insert schema for the user table
 export const insertUserSchema = createInsertSchema(users).pick({
   username: true,
@@ -124,3 +139,4 @@ export type User = typeof users.$inferSelect;
 export type LoginData = z.infer<typeof loginSchema>;
 export type Onboarding = z.infer<typeof onboardingSchema>;
 export type HealthCondition = typeof healthConditions.$inferSelect;
+export type UserRecommendation = typeof userRecommendations.$inferSelect;
