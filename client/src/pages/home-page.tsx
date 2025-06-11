@@ -1,6 +1,6 @@
 import { FC, useEffect, useState } from "react";
 import { useAuth } from "@/hooks/use-auth";
-import { useLocation } from "wouter";
+import { Link, useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
 import { 
   Loader2, 
@@ -13,36 +13,103 @@ import {
   Moon, 
   Sun, 
   ArrowRight,
+  Droplet,
+  Egg,
+  HelpCircle,
   Utensils,
-  Clock
+  BookOpen
 } from "lucide-react";
-import { useQuery } from "@tanstack/react-query";
-import { type DailyRecommendation } from "@shared/recommendations";
+import { Progress } from "@/components/ui/progress";
+import { differenceInDays, addDays, format } from "date-fns";
+import { CYCLE_PHASES } from "@shared/schema";
+import { generateRecommendations, type UserProfile } from "@shared/recommendations";
 
 const HomePage: FC = () => {
   const { user, logoutMutation, isLoading } = useAuth();
   const [_, setLocation] = useLocation();
   
+  // Cycle tracking state - initialize with default values
+  const [cycleDay, setCycleDay] = useState<number>(1);
+  const [cyclePhase, setCyclePhase] = useState<string>("Unknown");
+  const [nextPhaseIn, setNextPhaseIn] = useState<number | null>(null);
+  const [cyclePercentage, setCyclePercentage] = useState<number>(0);
+  
   // State for mood popup
   const [showMoodPopup, setShowMoodPopup] = useState<boolean>(false);
   const [selectedMood, setSelectedMood] = useState<string | null>(null);
-  
-  // Fetch personalized recommendations
-  const { data: recommendations, isLoading: recommendationsLoading, error: recommendationsError } = useQuery({
-    queryKey: ['/api/user/recommendations'],
-    enabled: !!user?.completedOnboarding,
-  });
+
+  // State for personalized recommendations
+  const [recommendations, setRecommendations] = useState<any>(null);
 
   // Show the mood popup after 5 seconds on the home page
   useEffect(() => {
-    if (user && user.completedOnboarding && recommendations) {
+    if (user && user.completedOnboarding) {
       const timer = setTimeout(() => {
         setShowMoodPopup(true);
-      }, 5000);
+      }, 5000); // 5 seconds
       
       return () => clearTimeout(timer);
     }
-  }, [user, recommendations]);
+  }, [user]);
+
+  // Calculate cycle information and generate recommendations when user data is available
+  useEffect(() => {
+    if (user?.lastPeriodDate && user?.completedOnboarding) {
+      // Parse the date from ISO string
+      const periodDate = new Date(user.lastPeriodDate);
+      const today = new Date();
+      const daysSincePeriod = differenceInDays(today, periodDate);
+      
+      // Assume a 28-day cycle for demo purposes
+      const cycleDayNum = (daysSincePeriod % 28) + 1;
+      setCycleDay(cycleDayNum);
+      setCyclePercentage((cycleDayNum / 28) * 100);
+      
+      // Determine cycle phase
+      let phase = "";
+      let daysUntilNextPhase = 0;
+      
+      if (cycleDayNum <= 5) {
+        phase = "Menstruation";
+        daysUntilNextPhase = 6 - cycleDayNum;
+      } else if (cycleDayNum <= 13) {
+        phase = "Follicular";
+        daysUntilNextPhase = 14 - cycleDayNum;
+      } else if (cycleDayNum <= 16) {
+        phase = "Ovulation";
+        daysUntilNextPhase = 17 - cycleDayNum;
+      } else {
+        phase = "Luteal";
+        daysUntilNextPhase = 29 - cycleDayNum;
+      }
+      
+      setCyclePhase(phase);
+      setNextPhaseIn(daysUntilNextPhase);
+
+      // Generate personalized recommendations
+      const userProfile: UserProfile = {
+        age: user.age || undefined,
+        fitnessLevel: user.fitnessLevel || undefined,
+        healthGoals: user.healthGoals || [],
+        healthConditions: user.healthConditions || [],
+        lastPeriodDate: user.lastPeriodDate || undefined,
+        periodsRegular: user.periodsRegular || undefined,
+        dietaryPreferences: user.dietaryPreferences || undefined,
+        symptoms: user.symptoms || [],
+        lifeStage: user.lifeStage || undefined,
+      };
+
+      const personalizedRecs = generateRecommendations(userProfile);
+      setRecommendations(personalizedRecs);
+    } else {
+      // Default values if no date is selected
+      setCycleDay(1);
+      setCyclePhase("Unknown");
+      setNextPhaseIn(null);
+      setCyclePercentage(0);
+      setRecommendations(null);
+    }
+  }, [user]);
   
   // Handle navigation effects based on auth state
   useEffect(() => {
@@ -72,35 +139,140 @@ const HomePage: FC = () => {
   const handleLogout = () => {
     logoutMutation.mutate();
   };
+  
+  // Get workout recommendations - use personalized if available, fallback to cycle-based
+  const getWorkoutRecommendations = () => {
+    if (recommendations?.workout?.activities) {
+      return recommendations.workout.activities.slice(0, 3);
+    }
+    
+    switch (cyclePhase) {
+      case "Menstruation":
+        return [
+          "Gentle yoga or stretching",
+          "Walking or light cardio",
+          "Restorative exercises"
+        ];
+      case "Follicular":
+        return [
+          "High-intensity interval training",
+          "Strength training",
+          "Cardio classes"
+        ];
+      case "Ovulation":
+        return [
+          "Circuit training",
+          "Endurance workouts",
+          "Group fitness classes"
+        ];
+      case "Luteal":
+        return [
+          "Moderate strength training",
+          "Pilates or barre",
+          "Swimming or cycling"
+        ];
+      default:
+        return [
+          "Balanced strength and cardio",
+          "Flexibility exercises",
+          "Rest and recovery as needed"
+        ];
+    }
+  };
+  
+  // Get nutrition recommendations - use personalized if available, fallback to cycle-based
+  const getNutritionRecommendations = () => {
+    if (recommendations?.nutrition?.focusFoods) {
+      return recommendations.nutrition.focusFoods.slice(0, 3);
+    }
+    
+    switch (cyclePhase) {
+      case "Menstruation":
+        return [
+          "Iron-rich foods (leafy greens, lentils)",
+          "Anti-inflammatory foods (berries, nuts)",
+          "Stay hydrated with water and herbal teas"
+        ];
+      case "Follicular":
+        return [
+          "Complex carbs for energy (oats, brown rice)",
+          "Lean proteins (chicken, fish, tofu)",
+          "Vitamin B-rich foods (whole grains, eggs)"
+        ];
+      case "Ovulation":
+        return [
+          "Magnesium-rich foods (dark chocolate, avocados)",
+          "Antioxidant-rich foods (colorful fruits and vegetables)",
+          "Healthy fats (olive oil, nuts, seeds)"
+        ];
+      case "Luteal":
+        return [
+          "Calcium-rich foods (dairy or fortified plant milks)",
+          "Fiber-rich foods to reduce bloating (beans, vegetables)",
+          "Limit caffeine, salt, and sugar"
+        ];
+      default:
+        return [
+          "Balanced meals with protein, healthy fats, and complex carbs",
+          "Colorful fruits and vegetables",
+          "Stay hydrated throughout the day"
+        ];
+    }
+  };
+  
+  const workoutRecommendations = getWorkoutRecommendations();
+  const nutritionRecommendations = getNutritionRecommendations();
 
-  // Helper functions for UI theming based on cycle phase
-  const getPhaseColor = (phase: string) => {
+  // Choose color theme based on phase
+  const getPhaseColor = () => {
+    const phase = recommendations?.phase || cyclePhase;
     switch (phase) {
+      case "Menstruation":
       case "Menstrual": return "text-red-600";
       case "Follicular": return "text-green-600";
+      case "Ovulation":
       case "Ovulatory": return "text-yellow-600";
       case "Luteal": return "text-blue-600";
       default: return "text-purple-600";
     }
   };
   
-  const getPhaseIcon = (phase: string) => {
+  const getPhaseIcon = () => {
+    const phase = recommendations?.phase || cyclePhase;
     switch (phase) {
-      case "Menstrual": return <Moon className={`h-6 w-6 ${getPhaseColor(phase)}`} />;
-      case "Follicular": return <Activity className={`h-6 w-6 ${getPhaseColor(phase)}`} />;
-      case "Ovulatory": return <Sun className={`h-6 w-6 ${getPhaseColor(phase)}`} />;
-      case "Luteal": return <Moon className={`h-6 w-6 ${getPhaseColor(phase)}`} />;
+      case "Menstruation":
+      case "Menstrual": return <Moon className={`h-6 w-6 ${getPhaseColor()}`} />;
+      case "Follicular": return <Activity className={`h-6 w-6 ${getPhaseColor()}`} />;
+      case "Ovulation":
+      case "Ovulatory": return <Sun className={`h-6 w-6 ${getPhaseColor()}`} />;
+      case "Luteal": return <Moon className={`h-6 w-6 ${getPhaseColor()}`} />;
       default: return <Calendar className="h-6 w-6 text-purple-600" />;
     }
   };
   
-  const getPhaseBackgroundColor = (phase: string) => {
+  const getPhaseBackgroundColor = () => {
+    const phase = recommendations?.phase || cyclePhase;
     switch (phase) {
+      case "Menstruation":
       case "Menstrual": return "bg-red-50";
       case "Follicular": return "bg-green-50";
+      case "Ovulation":
       case "Ovulatory": return "bg-yellow-50";
       case "Luteal": return "bg-blue-50";
       default: return "bg-purple-50";
+    }
+  };
+  
+  const getPhaseBorderColor = () => {
+    const phase = recommendations?.phase || cyclePhase;
+    switch (phase) {
+      case "Menstruation":
+      case "Menstrual": return "border-red-100";
+      case "Follicular": return "border-green-100";
+      case "Ovulation":
+      case "Ovulatory": return "border-yellow-100";
+      case "Luteal": return "border-blue-100";
+      default: return "border-purple-100";
     }
   };
 
@@ -110,96 +282,8 @@ const HomePage: FC = () => {
     setShowMoodPopup(false);
   };
 
-  // Show loading state for recommendations
-  if (recommendationsLoading) {
-    return (
-      <div className="min-h-screen gradient-primary">
-        <header className="bg-white/10 backdrop-blur-sm">
-          <div className="container mx-auto px-4 py-4 flex justify-between items-center">
-            <h1 className="text-2xl font-bold text-white">FemFit</h1>
-            <div className="flex items-center gap-2">
-              <div className="relative group">
-                <Button
-                  variant="ghost"
-                  className="text-white hover:bg-white/20 p-2 bg-white/10 rounded-full border border-white/20"
-                >
-                  <User className="h-6 w-6" />
-                </Button>
-                
-                <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg overflow-hidden z-20 opacity-0 scale-95 group-hover:opacity-100 group-hover:scale-100 transition-all duration-200 origin-top-right">
-                  <div className="py-2">
-                    <button
-                      className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-purple-50 hover:text-purple-800 flex items-center gap-2"
-                      onClick={handleLogout}
-                    >
-                      <LogOut className="h-4 w-4" />
-                      Logout
-                    </button>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </header>
-        
-        <main className="container mx-auto px-4 py-8 pb-20 sm:pb-8">
-          <div className="flex items-center justify-center min-h-96">
-            <div className="text-center">
-              <Loader2 className="h-8 w-8 animate-spin text-white mx-auto mb-4" />
-              <p className="text-white">Loading your personalized recommendations...</p>
-            </div>
-          </div>
-        </main>
-      </div>
-    );
-  }
-
-  // Show error state if recommendations failed to load
-  if (recommendationsError) {
-    return (
-      <div className="min-h-screen gradient-primary">
-        <header className="bg-white/10 backdrop-blur-sm">
-          <div className="container mx-auto px-4 py-4 flex justify-between items-center">
-            <h1 className="text-2xl font-bold text-white">FemFit</h1>
-            <div className="flex items-center gap-2">
-              <div className="relative group">
-                <Button
-                  variant="ghost"
-                  className="text-white hover:bg-white/20 p-2 bg-white/10 rounded-full border border-white/20"
-                >
-                  <User className="h-6 w-6" />
-                </Button>
-                
-                <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg overflow-hidden z-20 opacity-0 scale-95 group-hover:opacity-100 group-hover:scale-100 transition-all duration-200 origin-top-right">
-                  <div className="py-2">
-                    <button
-                      className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-purple-50 hover:text-purple-800 flex items-center gap-2"
-                      onClick={handleLogout}
-                    >
-                      <LogOut className="h-4 w-4" />
-                      Logout
-                    </button>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </header>
-        
-        <main className="container mx-auto px-4 py-8 pb-20 sm:pb-8">
-          <div className="bg-white rounded-xl p-6 shadow-md">
-            <div className="text-center">
-              <h3 className="text-xl font-semibold text-gray-800 mb-2">Unable to load recommendations</h3>
-              <p className="text-gray-600 mb-4">Please ensure you have completed your onboarding and entered your period date.</p>
-              <Button onClick={() => setLocation("/onboarding")} className="gradient-primary text-white">
-                Complete Onboarding
-              </Button>
-            </div>
-          </div>
-        </main>
-      </div>
-    );
-  }
+  const currentPhase = recommendations?.phase || cyclePhase;
+  const currentDay = recommendations?.day || cycleDay;
 
   return (
     <div className="min-h-screen gradient-primary">
@@ -220,7 +304,7 @@ const HomePage: FC = () => {
             
             <div className="grid grid-cols-2 gap-4 mb-8">
               <button 
-                onClick={() => handleMoodSelect('energetic')}
+                onClick={() => handleMoodSelect('high-energy')}
                 className="flex flex-col items-center gap-3 p-6 rounded-xl bg-purple-100 hover:bg-purple-200 transition-colors"
               >
                 <span className="text-4xl">😄</span>
@@ -228,7 +312,7 @@ const HomePage: FC = () => {
               </button>
               
               <button 
-                onClick={() => handleMoodSelect('balanced')}
+                onClick={() => handleMoodSelect('average')}
                 className="flex flex-col items-center gap-3 p-6 rounded-xl bg-blue-100 hover:bg-blue-200 transition-colors"
               >
                 <span className="text-4xl">😊</span>
@@ -272,6 +356,7 @@ const HomePage: FC = () => {
                 <User className="h-6 w-6" />
               </Button>
               
+              {/* Profile dropdown menu */}
               <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg overflow-hidden z-20 opacity-0 scale-95 group-hover:opacity-100 group-hover:scale-100 transition-all duration-200 origin-top-right">
                 <div className="py-2">
                   <button
@@ -306,189 +391,149 @@ const HomePage: FC = () => {
         </div>
         
         {/* Cycle information */}
-        {recommendations && (
-          <section className="mb-8 bg-white rounded-xl p-6 shadow-md">
-            <div className="flex items-center justify-between mb-4">
-              <h3 className="text-xl font-semibold flex items-center text-gray-800">
-                <Calendar className="mr-2 h-5 w-5 text-purple-600" />
-                Your Daily Insight
-              </h3>
-              <Button variant="ghost" className="text-purple-600 hover:bg-purple-50 py-1 px-2 h-auto text-sm">
-                Update <ArrowRight className="ml-1 h-3 w-3" />
-              </Button>
-            </div>
-            
-            <div className="flex flex-col space-y-4">
-              <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center">
-                <div className="mb-4 sm:mb-0">
-                  <span className="text-sm text-gray-500">Current phase</span>
-                  <div className="flex items-center">
-                    {getPhaseIcon(recommendations.phase)}
-                    <span className="ml-2 text-lg font-medium text-gray-800">{recommendations.phase}</span>
+        <section className="mb-8 bg-white rounded-xl p-6 shadow-md">
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="text-xl font-semibold flex items-center text-gray-800">
+              <Calendar className="mr-2 h-5 w-5 text-purple-600" />
+              Your Daily Insight
+            </h3>
+            <Button variant="ghost" className="text-purple-600 hover:bg-purple-50 py-1 px-2 h-auto text-sm">
+              Update <ArrowRight className="ml-1 h-3 w-3" />
+            </Button>
+          </div>
+          
+          <div className="flex flex-col space-y-4">
+            {user.lastPeriodDate ? (
+              <>
+                <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center">
+                  <div className="mb-4 sm:mb-0">
+                    <span className="text-sm text-gray-500">Current phase</span>
+                    <div className="flex items-center">
+                      {getPhaseIcon()}
+                      <span className="ml-2 text-lg font-medium text-gray-800">{currentPhase}</span>
+                    </div>
+                    <div className="mt-1 text-sm text-gray-600 max-w-xs">
+                      {recommendations?.insight || 
+                        (currentPhase === "Menstruation" && "Your body is shedding uterine lining. Focus on rest and gentle movement.") ||
+                        (currentPhase === "Follicular" && "Your body is preparing for ovulation. Energy levels start to increase.") ||
+                        (currentPhase === "Ovulation" && "Your body is releasing an egg. Peak energy and confidence levels.") ||
+                        (currentPhase === "Luteal" && "Your body is preparing for possible pregnancy. Energy may start to decrease.") ||
+                        "Complete your profile to get personalized cycle insights."
+                      }
+                    </div>
+                    {recommendations?.dailyMessage && (
+                      <div className="mt-2 text-sm text-purple-600 font-medium">
+                        {recommendations.dailyMessage}
+                      </div>
+                    )}
                   </div>
-                  <div className="mt-1 text-sm text-gray-600 max-w-xs">
-                    {recommendations.insight}
+                  
+                  {/* Clean and sleek cycle day */}
+                  <div className="flex flex-col items-center mb-4 sm:mb-0 order-first sm:order-none">
+                    <div className="flex flex-col items-center justify-center">
+                      <div className="w-20 h-20 rounded-full bg-purple-100 flex items-center justify-center border-4 border-purple-200">
+                        <span className="text-4xl font-bold text-purple-600">{currentDay}</span>
+                      </div>
+                      <span className="text-xs text-gray-600 mt-2">Day of cycle</span>
+                    </div>
                   </div>
-                  <div className="mt-2 text-xs text-gray-500">
-                    {recommendations.hormoneStatus}
+                  
+                  <div className="mb-4 sm:mb-0">
+                    <span className="text-sm text-gray-500">Next phase in</span>
+                    <div className="flex items-center">
+                      <span className="text-lg font-medium text-gray-800">{nextPhaseIn || "—"} days</span>
+                    </div>
                   </div>
                 </div>
                 
-                {/* Cycle day display */}
-                <div className="flex flex-col items-center mb-4 sm:mb-0 order-first sm:order-none">
-                  <div className="flex flex-col items-center justify-center">
-                    <div className="w-20 h-20 rounded-full bg-purple-100 flex items-center justify-center border-4 border-purple-200">
-                      <span className="text-4xl font-bold text-purple-600">{recommendations.day}</span>
-                    </div>
-                    <span className="text-xs text-gray-600 mt-2">Day of cycle</span>
+                {/* Progress bar */}
+                <div className="mt-4">
+                  <div className="flex justify-between text-xs text-gray-500 mb-2">
+                    <span>Cycle Progress</span>
+                    <span>{Math.round(cyclePercentage)}%</span>
                   </div>
+                  <Progress value={cyclePercentage} className="h-2" />
                 </div>
-                
-                <div className="mb-4 sm:mb-0">
-                  <span className="text-sm text-gray-500">Energy level</span>
-                  <div className="flex items-center">
-                    <span className="text-lg font-medium text-gray-800 capitalize">{recommendations.energyLevel}</span>
-                  </div>
-                  {recommendations.dailyMessage && (
-                    <div className="mt-1 text-sm text-purple-600 font-medium max-w-xs">
-                      {recommendations.dailyMessage}
-                    </div>
-                  )}
-                </div>
+              </>
+            ) : (
+              <div className="text-center py-8">
+                <Calendar className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+                <h4 className="text-lg font-medium text-gray-800 mb-2">Track Your Cycle</h4>
+                <p className="text-gray-600 mb-4">Add your last period date to get personalized insights</p>
+                <Button onClick={() => setLocation("/onboarding")} className="gradient-primary text-white">
+                  Add Period Date
+                </Button>
               </div>
-            </div>
-          </section>
-        )}
+            )}
+          </div>
+        </section>
 
         {/* Workout Recommendations */}
-        {recommendations && (
-          <section className="mb-8 bg-white rounded-xl p-6 shadow-md">
-            <div className="flex items-center justify-between mb-4">
-              <h3 className="text-xl font-semibold flex items-center text-gray-800">
-                <Dumbbell className="mr-2 h-5 w-5 text-purple-600" />
-                Today's Workout
-              </h3>
-              <Button variant="ghost" className="text-purple-600 hover:bg-purple-50 py-1 px-2 h-auto text-sm">
-                Start <ArrowRight className="ml-1 h-3 w-3" />
-              </Button>
-            </div>
-            
-            <div className={`${getPhaseBackgroundColor(recommendations.phase)} rounded-lg p-4 mb-4`}>
-              <div className="flex items-center justify-between mb-2">
+        <section className="mb-8 bg-white rounded-xl p-6 shadow-md">
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="text-xl font-semibold flex items-center text-gray-800">
+              <Dumbbell className="mr-2 h-5 w-5 text-purple-600" />
+              {recommendations ? "Personalized Workout" : "Today's Workout"}
+            </h3>
+            <Button variant="ghost" className="text-purple-600 hover:bg-purple-50 py-1 px-2 h-auto text-sm">
+              Start <ArrowRight className="ml-1 h-3 w-3" />
+            </Button>
+          </div>
+          
+          <div className={`${getPhaseBackgroundColor()} rounded-lg p-4 mb-4`}>
+            {recommendations && (
+              <div className="mb-3">
                 <h4 className="font-semibold text-gray-800">{recommendations.workout.type}</h4>
-                <div className="flex items-center gap-2 text-sm text-gray-600">
-                  <Clock className="h-4 w-4" />
-                  <span>{recommendations.workout.duration} mins</span>
-                </div>
+                <p className="text-sm text-gray-600">
+                  {recommendations.workout.duration} mins • {recommendations.workout.intensity} intensity
+                </p>
               </div>
-              <p className="text-sm text-gray-600 mb-3 capitalize">
-                Intensity: {recommendations.workout.intensity}
-              </p>
-              <div className="space-y-2">
-                <div>
-                  <span className="text-sm font-medium text-gray-700">Focus Areas:</span>
-                  <div className="flex flex-wrap gap-1 mt-1">
-                    {recommendations.workout.focus.map((focus, index) => (
-                      <span key={index} className="text-xs bg-white/70 text-gray-700 px-2 py-1 rounded-full">
-                        {focus}
-                      </span>
-                    ))}
-                  </div>
-                </div>
-                <div>
-                  <span className="text-sm font-medium text-gray-700">Recommended Activities:</span>
-                  <ul className="mt-1 text-sm text-gray-600 space-y-1">
-                    {recommendations.workout.activities.slice(0, 3).map((activity, index) => (
-                      <li key={index} className="flex items-center">
-                        <span className="w-1.5 h-1.5 bg-purple-400 rounded-full mr-2"></span>
-                        {activity}
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-                {recommendations.workout.specialNotes && recommendations.workout.specialNotes.length > 0 && (
-                  <div className="mt-3 p-2 bg-yellow-50 rounded border border-yellow-200">
-                    <span className="text-sm font-medium text-yellow-800">Special Notes:</span>
-                    <ul className="mt-1 text-sm text-yellow-700 space-y-1">
-                      {recommendations.workout.specialNotes.map((note, index) => (
-                        <li key={index}>{note}</li>
-                      ))}
-                    </ul>
-                  </div>
-                )}
-              </div>
+            )}
+            
+            <div className="space-y-2">
+              <span className="text-sm font-medium text-gray-700">Recommended Activities:</span>
+              <ul className="space-y-1">
+                {workoutRecommendations.map((activity: string, index: number) => (
+                  <li key={index} className="flex items-center text-sm text-gray-600">
+                    <span className="w-1.5 h-1.5 bg-purple-400 rounded-full mr-2"></span>
+                    {activity}
+                  </li>
+                ))}
+              </ul>
             </div>
-          </section>
-        )}
+          </div>
+        </section>
 
         {/* Nutrition Recommendations */}
-        {recommendations && (
-          <section className="mb-8 bg-white rounded-xl p-6 shadow-md">
-            <div className="flex items-center justify-between mb-4">
-              <h3 className="text-xl font-semibold flex items-center text-gray-800">
-                <Utensils className="mr-2 h-5 w-5 text-purple-600" />
-                Nutrition Focus
-              </h3>
-              <Button variant="ghost" className="text-purple-600 hover:bg-purple-50 py-1 px-2 h-auto text-sm">
-                Meal Plan <ArrowRight className="ml-1 h-3 w-3" />
-              </Button>
-            </div>
+        <section className="mb-8 bg-white rounded-xl p-6 shadow-md">
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="text-xl font-semibold flex items-center text-gray-800">
+              <Utensils className="mr-2 h-5 w-5 text-purple-600" />
+              {recommendations ? "Personalized Nutrition" : "Nutrition Focus"}
+            </h3>
+            <Button variant="ghost" className="text-purple-600 hover:bg-purple-50 py-1 px-2 h-auto text-sm">
+              Meal Plan <ArrowRight className="ml-1 h-3 w-3" />
+            </Button>
+          </div>
+          
+          <div className={`${getPhaseBackgroundColor()} rounded-lg p-4`}>
+            {recommendations?.nutrition?.reason && (
+              <p className="text-sm text-gray-600 mb-3">{recommendations.nutrition.reason}</p>
+            )}
             
-            <div className={`${getPhaseBackgroundColor(recommendations.phase)} rounded-lg p-4 mb-4`}>
-              <p className="text-sm text-gray-600 mb-4">{recommendations.nutrition.reason}</p>
-              
-              <div className="space-y-4">
-                <div>
-                  <span className="text-sm font-medium text-gray-700">Key Nutrients:</span>
-                  <div className="flex flex-wrap gap-1 mt-1">
-                    {recommendations.nutrition.keyNutrients.map((nutrient, index) => (
-                      <span key={index} className="text-xs bg-green-100 text-green-700 px-2 py-1 rounded-full">
-                        {nutrient}
-                      </span>
-                    ))}
-                  </div>
-                </div>
-                
-                <div>
-                  <span className="text-sm font-medium text-gray-700">Foods to Focus On:</span>
-                  <ul className="mt-1 text-sm text-gray-600 space-y-1">
-                    {recommendations.nutrition.focusFoods.slice(0, 4).map((food, index) => (
-                      <li key={index} className="flex items-center">
-                        <span className="w-1.5 h-1.5 bg-green-400 rounded-full mr-2"></span>
-                        {food}
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-                
-                {recommendations.nutrition.avoidFoods.length > 0 && (
-                  <div>
-                    <span className="text-sm font-medium text-gray-700">Foods to Limit:</span>
-                    <ul className="mt-1 text-sm text-gray-600 space-y-1">
-                      {recommendations.nutrition.avoidFoods.slice(0, 3).map((food, index) => (
-                        <li key={index} className="flex items-center">
-                          <span className="w-1.5 h-1.5 bg-red-400 rounded-full mr-2"></span>
-                          {food}
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                )}
-                
-                {recommendations.nutrition.specialNotes && recommendations.nutrition.specialNotes.length > 0 && (
-                  <div className="mt-3 p-2 bg-blue-50 rounded border border-blue-200">
-                    <span className="text-sm font-medium text-blue-800">Special Notes:</span>
-                    <ul className="mt-1 text-sm text-blue-700 space-y-1">
-                      {recommendations.nutrition.specialNotes.map((note, index) => (
-                        <li key={index}>{note}</li>
-                      ))}
-                    </ul>
-                  </div>
-                )}
-              </div>
+            <div className="space-y-2">
+              <span className="text-sm font-medium text-gray-700">Focus Foods:</span>
+              <ul className="space-y-1">
+                {nutritionRecommendations.map((food: string, index: number) => (
+                  <li key={index} className="flex items-center text-sm text-gray-600">
+                    <span className="w-1.5 h-1.5 bg-green-400 rounded-full mr-2"></span>
+                    {food}
+                  </li>
+                ))}
+              </ul>
             </div>
-          </section>
-        )}
+          </div>
+        </section>
 
         {/* Quick Actions */}
         <section className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
@@ -524,7 +569,7 @@ const HomePage: FC = () => {
             className="h-20 flex-col gap-2 border-purple-200 hover:bg-purple-50"
             onClick={() => setLocation("/info-hub")}
           >
-            <Calendar className="h-6 w-6 text-purple-600" />
+            <BookOpen className="h-6 w-6 text-purple-600" />
             <span className="text-sm">Info Hub</span>
           </Button>
         </section>
