@@ -19,10 +19,10 @@ import {
 import { format, differenceInDays, addDays } from "date-fns";
 
 // Define the different onboarding steps
-type OnboardingStep = 'age' | 'period' | 'regularity' | 'goals' | 'conditions' | 'lifestage' | 'symptoms' | 'completion';
+type OnboardingStep = 'age' | 'period' | 'regularity' | 'fitness' | 'dietary' | 'goals' | 'conditions' | 'lifestage' | 'symptoms' | 'completion';
 
 // Number of total onboarding steps
-const TOTAL_STEPS = 7;
+const TOTAL_STEPS = 9;
 
 const OnboardingPage: FC = () => {
   const { user, isLoading, updateOnboarding } = useAuth();
@@ -33,6 +33,9 @@ const OnboardingPage: FC = () => {
   const [dontKnowDate, setDontKnowDate] = useState(false);
   const [ageInput, setAgeInput] = useState("");
   const [periodsRegular, setPeriodsRegular] = useState<string | null>(null);
+  const [fitnessLevel, setFitnessLevel] = useState<string | null>(null);
+  const [dietaryPreferences, setDietaryPreferences] = useState<string[]>([]);
+  const [otherDietaryRestriction, setOtherDietaryRestriction] = useState("");
   const [healthGoals, setHealthGoals] = useState<string[]>([]);
   const [healthConditions, setHealthConditions] = useState<string[]>([]);
   const [noneHealthCondition, setNoneHealthCondition] = useState<boolean>(false);
@@ -50,11 +53,13 @@ const OnboardingPage: FC = () => {
       case 'age': return 1;
       case 'period': return 2;
       case 'regularity': return 3;
-      case 'goals': return 4;
-      case 'conditions': return 5;
-      case 'lifestage': return 6;
-      case 'symptoms': return 7;
-      case 'completion': return 8;
+      case 'fitness': return 4;
+      case 'dietary': return 5;
+      case 'goals': return 6;
+      case 'conditions': return 7;
+      case 'lifestage': return 8;
+      case 'symptoms': return 9;
+      case 'completion': return 10;
       default: return 1;
     }
   };
@@ -102,6 +107,23 @@ const OnboardingPage: FC = () => {
       return newSymptoms;
     });
   };
+
+  const toggleDietaryPreference = (preference: string) => {
+    setDietaryPreferences(prev => {
+      const newPreferences = prev.includes(preference)
+        ? prev.filter(p => p !== preference)
+        : [...prev, preference];
+      
+      // If user selects "No restrictions", clear other selections
+      if (preference === "No restrictions") {
+        setOtherDietaryRestriction("");
+        return ["No restrictions"];
+      }
+      
+      // If user selects any specific restriction, remove "No restrictions"
+      return newPreferences.filter(p => p !== "No restrictions");
+    });
+  };
   
   // Move to the next step
   const goToNextStep = () => {
@@ -113,6 +135,12 @@ const OnboardingPage: FC = () => {
         setCurrentStep('regularity');
         break;
       case 'regularity':
+        setCurrentStep('fitness');
+        break;
+      case 'fitness':
+        setCurrentStep('dietary');
+        break;
+      case 'dietary':
         setCurrentStep('goals');
         break;
       case 'goals':
@@ -188,6 +216,8 @@ const OnboardingPage: FC = () => {
       dontKnowPeriodDate: dontKnowDate,
       age: age || null,
       periodsRegular: periodsRegular || undefined,
+      fitnessLevel: fitnessLevel || undefined,
+      dietaryPreferences: dietaryPreferences.length > 0 ? dietaryPreferences.join(", ") + (otherDietaryRestriction ? `, ${otherDietaryRestriction}` : "") : undefined,
       healthGoals: healthGoals,
       healthConditions: healthConditions,
       lifeStage: lifeStage || undefined,
@@ -429,6 +459,123 @@ const OnboardingPage: FC = () => {
                 className="w-full py-3 gradient-primary hover:opacity-90 shadow-lg text-lg font-medium border border-white"
                 onClick={goToNextStep}
                 disabled={!periodsRegular}
+              >
+                Continue
+              </Button>
+              <Button
+                variant="ghost"
+                className="w-full py-2.5 text-purple-800 hover:text-purple-900 hover:bg-purple-50/50"
+                onClick={skipStep}
+              >
+                Skip for now
+              </Button>
+            </div>
+          </div>
+        )}
+        
+        {/* Fitness Level Step */}
+        {currentStep === 'fitness' && (
+          <div className="flex flex-col h-full">
+            <div className="mb-6 text-center">
+              <h2 className="text-2xl font-bold text-purple-900 mb-2">What's your current fitness level?</h2>
+              <p className="text-purple-800/80">
+                This helps us tailor workouts to your experience
+              </p>
+            </div>
+            
+            <div className="flex-1 flex flex-col overflow-y-auto">
+              <div className="grid grid-cols-1 gap-3 w-full max-w-md mx-auto">
+                {["Just starting out", "Getting back into fitness", "Already active", "Very experienced"].map((level) => (
+                  <button
+                    key={level}
+                    className={`text-left rounded-lg py-3 px-4 border-2 transition-colors ${
+                      fitnessLevel === level
+                        ? "bg-purple-100 border-purple-500 text-purple-900"
+                        : "bg-white border-gray-200 text-gray-700 hover:border-purple-300"
+                    }`}
+                    onClick={() => setFitnessLevel(level)}
+                  >
+                    <span className="font-medium">{level}</span>
+                  </button>
+                ))}
+              </div>
+            </div>
+            
+            <div className="mt-auto pt-6 space-y-3">
+              <Button
+                className="w-full py-3 gradient-primary hover:opacity-90 shadow-lg text-lg font-medium border border-white"
+                onClick={goToNextStep}
+                disabled={!fitnessLevel}
+              >
+                Continue
+              </Button>
+              <Button
+                variant="ghost"
+                className="w-full py-2.5 text-purple-800 hover:text-purple-900 hover:bg-purple-50/50"
+                onClick={skipStep}
+              >
+                Skip for now
+              </Button>
+            </div>
+          </div>
+        )}
+        
+        {/* Dietary Preferences Step */}
+        {currentStep === 'dietary' && (
+          <div className="flex flex-col h-full">
+            <div className="mb-6 text-center">
+              <h2 className="text-2xl font-bold text-purple-900 mb-2">Do you have any dietary preferences/restrictions?</h2>
+              <p className="text-purple-800/80">
+                Select all that apply to personalize your nutrition guidance
+              </p>
+            </div>
+            
+            <div className="flex-1 flex flex-col overflow-y-auto">
+              <div className="grid grid-cols-1 gap-3 w-full max-w-md mx-auto">
+                {["No restrictions", "Vegetarian", "Vegan", "Gluten-free", "Dairy/Lactose free", "Other allergies/restrictions"].map((preference) => (
+                  <div 
+                    key={preference}
+                    className={`flex items-center space-x-2 rounded-md py-2 sm:py-3 px-3 sm:px-4 cursor-pointer transition-colors ${
+                      dietaryPreferences.includes(preference) 
+                        ? "bg-purple-100 border-2 border-purple-500" 
+                        : "bg-white border-2 border-white"
+                    }`}
+                    onClick={() => toggleDietaryPreference(preference)}
+                  >
+                    <Checkbox 
+                      id={`dietary-${preference}`} 
+                      checked={dietaryPreferences.includes(preference)} 
+                      onCheckedChange={() => toggleDietaryPreference(preference)}
+                      className="data-[state=checked]:bg-purple-600 h-4 w-4 sm:h-5 sm:w-5"
+                    />
+                    <Label 
+                      htmlFor={`dietary-${preference}`} 
+                      className="cursor-pointer w-full text-gray-700"
+                    >
+                      {preference}
+                    </Label>
+                  </div>
+                ))}
+                
+                {/* Text input for "Other allergies/restrictions" */}
+                {dietaryPreferences.includes("Other allergies/restrictions") && (
+                  <div className="mt-2">
+                    <Input
+                      placeholder="Please specify your allergies/restrictions"
+                      value={otherDietaryRestriction}
+                      onChange={(e) => setOtherDietaryRestriction(e.target.value)}
+                      className="w-full"
+                    />
+                  </div>
+                )}
+              </div>
+            </div>
+            
+            <div className="mt-auto pt-6 space-y-3">
+              <Button
+                className="w-full py-3 gradient-primary hover:opacity-90 shadow-lg text-lg font-medium border border-white"
+                onClick={goToNextStep}
+                disabled={dietaryPreferences.length === 0}
               >
                 Continue
               </Button>

@@ -42,8 +42,15 @@ export class MemStorage implements IStorage {
       name: insertUser.name || null,
       email: insertUser.email || null,
       lastPeriodDate: null,
+      dontKnowPeriodDate: false,
       age: null,
-      healthGoal: null,
+      periodsRegular: null,
+      fitnessLevel: null,
+      dietaryPreferences: null,
+      healthGoals: null,
+      healthConditions: null,
+      lifeStage: null,
+      symptoms: null,
       completedOnboarding: false
     };
     this.users.set(id, user);
