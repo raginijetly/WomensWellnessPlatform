@@ -1,4 +1,6 @@
-import { InsertUser, User } from "@shared/schema";
+import { users, type User, type InsertUser } from "@shared/schema";
+import { db } from "./db";
+import { eq } from "drizzle-orm";
 import createMemoryStore from "memorystore";
 import session from "express-session";
 
@@ -11,51 +13,32 @@ export interface IStorage {
 
 const MemoryStore = createMemoryStore(session);
 
-export class MemStorage implements IStorage {
-  private users: Map<number, User>;
-  currentId: number;
+export class DatabaseStorage implements IStorage {
   sessionStore: any;
 
   constructor() {
-    this.users = new Map();
-    this.currentId = 1;
     this.sessionStore = new MemoryStore({
       checkPeriod: 86400000, // prune expired entries every 24h
     });
   }
 
   async getUser(id: number): Promise<User | undefined> {
-    return this.users.get(id);
+    const [user] = await db.select().from(users).where(eq(users.id, id));
+    return user || undefined;
   }
 
   async getUserByUsername(username: string): Promise<User | undefined> {
-    return Array.from(this.users.values()).find(
-      (user) => user.username === username,
-    );
+    const [user] = await db.select().from(users).where(eq(users.username, username));
+    return user || undefined;
   }
 
   async createUser(insertUser: InsertUser): Promise<User> {
-    const id = this.currentId++;
-    const user: User = { 
-      ...insertUser, 
-      id,
-      name: insertUser.name || null,
-      email: insertUser.email || null,
-      lastPeriodDate: null,
-      dontKnowPeriodDate: false,
-      age: null,
-      periodsRegular: null,
-      fitnessLevel: null,
-      dietaryPreferences: null,
-      healthGoals: null,
-      healthConditions: null,
-      lifeStage: null,
-      symptoms: null,
-      completedOnboarding: false
-    };
-    this.users.set(id, user);
+    const [user] = await db
+      .insert(users)
+      .values(insertUser)
+      .returning();
     return user;
   }
 }
 
-export const storage = new MemStorage();
+export const storage = new DatabaseStorage();
