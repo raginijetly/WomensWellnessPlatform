@@ -71,21 +71,33 @@ export function setupAuth(app: Express) {
 
   app.post("/api/register", async (req, res, next) => {
     try {
-      const existingUser = await storage.getUserByUsername(req.body.username);
+      console.log("Registration request body:", req.body);
+      
+      // Generate username from email if not provided
+      const username = req.body.username || req.body.email?.split('@')[0] || 'user';
+      console.log("Generated username:", username);
+      
+      const existingUser = await storage.getUserByUsername(username);
       if (existingUser) {
         return res.status(400).json({ message: "Username already exists" });
       }
 
-      const user = await storage.createUser({
-        ...req.body,
+      const userData = {
+        name: req.body.name,
+        email: req.body.email,
+        username,
         password: await hashPassword(req.body.password),
-      });
+      };
+      console.log("User data to create:", userData);
+
+      const user = await storage.createUser(userData);
 
       req.login(user, (err) => {
         if (err) return next(err);
         res.status(201).json(user);
       });
     } catch (error) {
+      console.error("Registration error:", error);
       next(error);
     }
   });
