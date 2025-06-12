@@ -1,7 +1,6 @@
 import { createContext, ReactNode, useContext, useState, useEffect } from "react";
 import { InsertUser, User, LoginData, Onboarding } from "@shared/schema";
 import { useToast } from "@/hooks/use-toast";
-import { apiRequest } from "@/lib/queryClient";
 
 // Dummy type for mutations to simulate real functionality
 type MutationResult<TData, TVariables> = {
@@ -198,8 +197,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       dontKnowPeriodDate: onboardingData.dontKnowPeriodDate || false,
       age: onboardingData.age || null,
       periodsRegular: onboardingData.periodsRegular || null,
-      fitnessLevel: onboardingData.fitnessLevel || null,
-      dietaryPreferences: onboardingData.dietaryPreferences || null,
       healthGoals: onboardingData.healthGoals || [],
       healthConditions: onboardingData.healthConditions || [],
       lifeStage: onboardingData.lifeStage || null,
