@@ -22,7 +22,7 @@ import { format, differenceInDays, addDays } from "date-fns";
 type OnboardingStep = 'age' | 'period' | 'regularity' | 'fitness' | 'dietary' | 'goals' | 'conditions' | 'lifestage' | 'symptoms' | 'bmi' | 'completion';
 
 // Number of total onboarding steps
-const TOTAL_STEPS = 11;
+const TOTAL_STEPS = 10;
 
 const OnboardingPage: FC = () => {
   const { user, isLoading, updateOnboarding } = useAuth();
