@@ -216,6 +216,10 @@ const OnboardingPage: FC = () => {
     // Parse age to number
     const age = ageInput ? parseInt(ageInput, 10) : null;
     
+    // Parse height and weight to numbers
+    const height = heightInput ? parseInt(heightInput, 10) : null;
+    const weight = weightInput ? parseInt(weightInput, 10) : null;
+    
     // Create onboarding data
     const onboardingData = {
       lastPeriodDate: dateString,
@@ -228,6 +232,8 @@ const OnboardingPage: FC = () => {
       healthConditions: healthConditions,
       lifeStage: lifeStage || undefined,
       symptoms: symptoms,
+      height: height || null,
+      weight: weight || null,
       completedOnboarding: true,
     };
     
@@ -393,18 +399,8 @@ const OnboardingPage: FC = () => {
             
             <div className="mt-auto pt-6 space-y-3">
               <Button
-                className="w-full py-3 gradient-primary hover:opacity-90 shadow-lg text-lg font-medium border border-white disabled:opacity-50 disabled:cursor-not-allowed"
+                className="w-full py-3 gradient-primary hover:opacity-90 shadow-lg text-lg font-medium border border-white"
                 onClick={goToNextStep}
-                disabled={
-                  // Add validation for each step
-                  (currentStep === 'age' && (!ageInput || isNaN(parseInt(ageInput)))) ||
-                  (currentStep === 'period' && !dateInput && !dontKnowDate) ||
-                  (currentStep === 'regularity' && !regularity) ||
-                  (currentStep === 'goals' && (!selectedGoals || selectedGoals.length === 0)) ||
-                  (currentStep === 'conditions' && (!selectedConditions || selectedConditions.length === 0)) ||
-                  (currentStep === 'lifestage' && !selectedLifeStage) ||
-                  (currentStep === 'symptoms' && (!selectedSymptoms || selectedSymptoms.length === 0))
-                }
               >
                 Continue
               </Button>
@@ -891,6 +887,92 @@ const OnboardingPage: FC = () => {
               <Button
                 className="w-full py-3 gradient-primary hover:opacity-90 shadow-lg text-lg font-medium border border-white"
                 onClick={goToNextStep}
+              >
+                Continue
+              </Button>
+              <Button
+                variant="ghost"
+                className="w-full py-2.5 text-purple-800 hover:text-purple-900 hover:bg-purple-50/50"
+                onClick={skipStep}
+              >
+                Skip for now
+              </Button>
+            </div>
+          </div>
+        )}
+        
+        {/* BMI Step */}
+        {currentStep === 'bmi' && (
+          <div className="flex flex-col h-full">
+            <div className="mb-6 text-center">
+              <h2 className="text-2xl font-bold text-purple-900 mb-2">Let's calculate your BMI</h2>
+              <p className="text-purple-800/80">
+                This helps us personalize your fitness recommendations
+              </p>
+            </div>
+            
+            <div className="flex-1 flex flex-col justify-center">
+              <div className="space-y-6 w-full max-w-md mx-auto">
+                {/* Height Input */}
+                <div className="space-y-2">
+                  <Label htmlFor="height" className="text-purple-900 font-medium">
+                    Height (cm)
+                  </Label>
+                  <Input
+                    id="height"
+                    type="number"
+                    placeholder="e.g., 165"
+                    value={heightInput}
+                    onChange={(e) => setHeightInput(e.target.value)}
+                    className="w-full px-4 py-3 text-lg border-2 border-purple-200 rounded-lg focus:border-purple-500 focus:ring-0"
+                    min="100"
+                    max="250"
+                  />
+                </div>
+                
+                {/* Weight Input */}
+                <div className="space-y-2">
+                  <Label htmlFor="weight" className="text-purple-900 font-medium">
+                    Weight (kg)
+                  </Label>
+                  <Input
+                    id="weight"
+                    type="number"
+                    placeholder="e.g., 60"
+                    value={weightInput}
+                    onChange={(e) => setWeightInput(e.target.value)}
+                    className="w-full px-4 py-3 text-lg border-2 border-purple-200 rounded-lg focus:border-purple-500 focus:ring-0"
+                    min="30"
+                    max="300"
+                  />
+                </div>
+                
+                {/* BMI Display */}
+                {heightInput && weightInput && (
+                  <div className="bg-purple-50 rounded-lg p-4 text-center">
+                    <p className="text-purple-900 font-medium text-lg">Your BMI</p>
+                    <p className="text-3xl font-bold text-purple-600">
+                      {((parseInt(weightInput) / Math.pow(parseInt(heightInput) / 100, 2))).toFixed(1)}
+                    </p>
+                    <p className="text-purple-800/80 text-sm mt-1">
+                      {(() => {
+                        const bmi = parseInt(weightInput) / Math.pow(parseInt(heightInput) / 100, 2);
+                        if (bmi < 18.5) return "Underweight";
+                        if (bmi < 25) return "Normal weight";
+                        if (bmi < 30) return "Overweight";
+                        return "Obese";
+                      })()}
+                    </p>
+                  </div>
+                )}
+              </div>
+            </div>
+            
+            <div className="mt-auto pt-6 space-y-3">
+              <Button
+                className="w-full py-3 gradient-primary hover:opacity-90 shadow-lg text-lg font-medium border border-white"
+                onClick={goToNextStep}
+                disabled={!heightInput || !weightInput}
               >
                 Continue
               </Button>
