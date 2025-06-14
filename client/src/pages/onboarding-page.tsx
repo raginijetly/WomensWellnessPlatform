@@ -19,10 +19,10 @@ import {
 import { format, differenceInDays, addDays } from "date-fns";
 
 // Define the different onboarding steps
-type OnboardingStep = 'age' | 'period' | 'regularity' | 'fitness' | 'dietary' | 'goals' | 'conditions' | 'lifestage' | 'symptoms' | 'completion';
+type OnboardingStep = 'age' | 'period' | 'regularity' | 'fitness' | 'dietary' | 'goals' | 'conditions' | 'lifestage' | 'symptoms' | 'bmi' | 'completion';
 
 // Number of total onboarding steps
-const TOTAL_STEPS = 9;
+const TOTAL_STEPS = 11;
 
 const OnboardingPage: FC = () => {
   const { user, isLoading, updateOnboarding } = useAuth();
@@ -42,6 +42,8 @@ const OnboardingPage: FC = () => {
   const [lifeStage, setLifeStage] = useState<string | null>(null);
   const [symptoms, setSymptoms] = useState<string[]>([]);
   const [noneSymptoms, setNoneSymptoms] = useState<boolean>(false);
+  const [heightInput, setHeightInput] = useState("");
+  const [weightInput, setWeightInput] = useState("");
   const [isPending, setIsPending] = useState(false);
   
   // Current step in the onboarding process
@@ -59,7 +61,8 @@ const OnboardingPage: FC = () => {
       case 'conditions': return 7;
       case 'lifestage': return 8;
       case 'symptoms': return 9;
-      case 'completion': return 10;
+      case 'bmi': return 10;
+      case 'completion': return 11;
       default: return 1;
     }
   };
@@ -153,6 +156,9 @@ const OnboardingPage: FC = () => {
         setCurrentStep('symptoms');
         break;
       case 'symptoms':
+        setCurrentStep('bmi');
+        break;
+      case 'bmi':
         setCurrentStep('completion');
         calculateCycleInfo();
         break;

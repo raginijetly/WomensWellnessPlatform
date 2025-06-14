@@ -70,6 +70,8 @@ export const users = pgTable("users", {
   healthConditions: text("health_conditions").array(),
   lifeStage: text("life_stage"),
   symptoms: text("symptoms").array(),
+  height: integer("height"), // height in cm
+  weight: integer("weight"), // weight in kg
   completedOnboarding: boolean("completed_onboarding").default(false).notNull(),
 });
 
@@ -114,6 +116,8 @@ export const onboardingSchema = z.object({
   healthConditions: z.array(z.string()).optional(),
   lifeStage: z.string().optional(),
   symptoms: z.array(z.string()).optional(),
+  height: z.number().min(100).max(250).nullable().optional(), // height in cm
+  weight: z.number().min(30).max(300).nullable().optional(), // weight in kg
   completedOnboarding: z.boolean().optional(),
 });
 
